@@ -1,0 +1,6 @@
+Start a new repository with an already existing one
+    git init
+	git remote add origin https://git...
+	git pull
+	git merge origin/master
+	git push --set-upstream origin master
