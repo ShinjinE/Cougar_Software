@@ -1,10 +1,19 @@
-Start a new repository with an already existing one
-    git init
-	git remote add origin https://git...
+First cd into whatever folder you want to keep all the code
+then run:
+	git init
+	git remote add origin https://github.com/ShinjinE/Cougar_Software.git
 	git pull
 	git merge origin/master
 	git push --set-upstream origin master
-junk trash
 
-	I am the master commander
+Now lets create a new branch and remote branch to work on seperately:
+	git remote add [newOrigin] [URL]
+	git branch [newMaster]
+	git checkout [newMaster]
+	git push --set-upstream [newOrigin] [newMaster]
 
+Finally we will go over two different ways to add new code
+	git status
+	git add . // or the name of the file you want to add
+	git commit -m "new add" // not past tense
+	git push
