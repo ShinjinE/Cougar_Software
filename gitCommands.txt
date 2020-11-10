@@ -5,3 +5,6 @@ Start a new repository with an already existing one
 	git merge origin/master
 	git push --set-upstream origin master
 junk trash
+
+	I am the master commander
+
