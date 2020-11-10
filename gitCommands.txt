@@ -4,3 +4,6 @@ Start a new repository with an already existing one
 	git pull
 	git merge origin/master
 	git push --set-upstream origin master
+
+	I am the master commander
+
