@@ -1,0 +1,20 @@
+Test Controller Default
+joyLeftVert	Vertical movement on left joystick	3	SLIDER	Y Axis	0	1.0	0.0
+joyLeftHor	Horizontal movement on left joystick	3	SLIDER	X Axis	0	1.0	0.0
+joyRightVert	Vertical movement on right joystick	3	SLIDER	Z Rotation	0	1.0	0.0
+joyRightHor	Horizontal movement on right joystick	3	SLIDER	Z Axis	0	1.0	0.0
+dPad	Directional pad	2	HAT	cooliehat: Hat Switch	0	1.0	0.0
+aButton	A button	1	BUTTON	Button 2	0	0.0	0.0
+bButton	B button	1	BUTTON	Button 1	0	0.0	0.0
+yButton	Y button	1	BUTTON	Button 0	0	0.0	0.0
+xButton	X button	1	BUTTON	Button 3	0	0.0	0.0
+lBumper	Left bumper (L button)	1	BUTTON	Button 4	0	0.0	0.0
+rBumper	Right bumper (R button)	1	BUTTON	Button 5	0	0.0	0.0
+lTrigger	Left trigger (ZL button)	1	BUTTON	Button 6	0	0.0	0.0
+rTrigger	Right trigger (ZR button)	1	BUTTON	Button 7	0	0.0	0.0
+minusButton	Minus button	1	BUTTON	Button 8	0	0.0	0.0
+plusButton	Plus button	1	BUTTON	Button 9	0	0.0	0.0
+camButton	Screen capture button	1	BUTTON	Button 13	0	0.0	0.0
+homeButton	Home button	1	BUTTON	Button 12	0	0.0	0.0
+joyLeftPress	Press button on left joystick	1	BUTTON	Button 10	0	0.0	0.0
+joyRightPress	Press button on left joystick	1	BUTTON	Button 11	0	0.0	0.0

@@ -1,0 +1,634 @@
+{\rtf1\ansi\deff0\nouicompat{\fonttbl{\f0\fnil\fcharset0 Courier New;}}
+{\*\generator Riched20 6.3.9600}\viewkind4\uc1 
+\pard\f0\fs22\lang1033 /*\par
+ * servo_game_test\par
+ * Version: 3\par
+ * Author: Parker King\par
+ * Purpose:\par
+ *   Test code to prototype the concept of using a gamepad (Nintendo Switch\par
+ * Pro controller in this case) to control servos.\par
+ *\par
+ * New:\par
+ *   - Added functionality for 5 servos instead of 1\par
+ *     - Rove function behaves differently for each servo\par
+ *     - Perform macro maps all servos to the same positions\par
+ *   - Added wave macro (mimics people doing the wave in a stadium)\par
+ */\par
+\par
+//~~~~~~~~~~~~~~~~~ Imports ~~~~~~~~~~~~~~~~~\par
+import processing.serial.*;\par
+\par
+import net.java.games.input.*;\par
+import org.gamecontrolplus.*;\par
+import org.gamecontrolplus.gui.*;\par
+\par
+import cc.arduino.*;\par
+import org.firmata.*;\par
+\par
+//~~~~~~~~~~~~~~~~~ Constants and Variable Declaration ~~~~~~~~~~~~~~~~~\par
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`~~~~~~~~~~~~\par
+//~~~~~~~~~~~~~~~~~ Declare Control Variables ~~~~~~~~~~~~~~~~~\par
+ControlDevice device;\par
+ControlIO control;\par
+ControlSlider leftV;\par
+ControlSlider leftH;\par
+ControlSlider rightV;\par
+ControlSlider rightH;\par
+ControlButton leftBump;\par
+ControlButton leftTrigger;\par
+ControlButton rightTrigger;\par
+ControlButton aButton;\par
+ControlButton bButton;\par
+ControlButton xButton;\par
+ControlHat dPad;\par
+\par
+Arduino arduino;\par
+\par
+//~~~~~~~~~~~~~~~~~ Declare Servo Pins ~~~~~~~~~~~~~~~~~\par
+final int SERVO1_PIN = 3;\par
+final int SERVO2_PIN = 5;\par
+final int SERVO3_PIN = 6;\par
+final int SERVO4_PIN = 9;\par
+final int SERVO5_PIN = 10;\par
+final int SERVO6_PIN = 11;\par
+\par
+//~~~~~~~~~~~~~~~~~ Declare Constants ~~~~~~~~~~~~~~~~~\par
+final int MAX_POS = 135;\par
+final int MIN_POS = 45;\par
+final int MID_POS = (MIN_POS + MAX_POS) / 2;\par
+final int MID_RANGE = MAX_POS - MID_POS;\par
+final int SENS_STEP = 1;\par
+final int MAX_SENS = 20;\par
+final int MIN_SENS = 1;\par
+final int WAVE_MILLIS = 100;\par
+\par
+//~~~~~~~~~~~~~~~~~ Initialize Variables ~~~~~~~~~~~~~~~~~\par
+ControlMode controlMode;\par
+ControlMode prevManualMode;\par
+PerformMode performMode;\par
+WaveMode waveMode;\par
+int performChangeMillis;\par
+int waveDelay;\par
+int prevManualPos1;\par
+int prevManualPos2;\par
+int prevManualPos3;\par
+int prevManualPos4;\par
+int prevManualPos5;\par
+int prevManualPos6;\par
+int pos1;\par
+int pos2;\par
+int pos3;\par
+int pos4;\par
+int pos5;\par
+int pos6;\par
+int stickStepSens = 5;\par
+boolean prevStateLBump;\par
+boolean prevStateA;\par
+boolean prevStateB;\par
+boolean prevStateX;\par
+boolean prevStateDPadH;\par
+boolean prevStateDPadV;\par
+\par
+//~~~~~~~~~~~~~~~~~ Setup Function ~~~~~~~~~~~~~~~~~\par
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\par
+void setup() \{\par
+  size(360, 200);\par
+  \par
+  control = ControlIO.getInstance(this);\par
+  device = control.getMatchedDevice("test_default");\par
+  \par
+   if (device == null) \{\par
+    println("Ha! Loser!");\par
+    System.exit(-1);\par
+  \}\par
+  \par
+  leftV = device.getSlider("joyLeftVert");\par
+  leftH = device.getSlider(3);\par
+  rightV = device.getSlider("joyRightVert");\par
+  rightH = device.getSlider("joyRightHor");\par
+  leftBump = device.getButton("lBumper");\par
+  leftTrigger = device.getButton("lTrigger");\par
+  rightTrigger = device.getButton("rTrigger");\par
+  aButton = device.getButton("aButton");\par
+  bButton = device.getButton("bButton");\par
+  xButton = device.getButton("xButton");\par
+  dPad = device.getHat("dPad");\par
+  \par
+  println(Arduino.list());\par
+  arduino = new Arduino(this, Arduino.list()[0], 57600);\par
+  arduino.pinMode(SERVO1_PIN, Arduino.SERVO);\par
+  arduino.pinMode(SERVO2_PIN, Arduino.SERVO);\par
+  arduino.pinMode(SERVO3_PIN, Arduino.SERVO);\par
+  arduino.pinMode(SERVO4_PIN, Arduino.SERVO);\par
+  arduino.pinMode(SERVO5_PIN, Arduino.SERVO);\par
+  arduino.pinMode(SERVO6_PIN, Arduino.SERVO);\par
+  \par
+  pos1 = MID_POS;\par
+  pos2 = MID_POS;\par
+  pos3 = MID_POS;\par
+  pos4 = MID_POS;\par
+  pos5 = MID_POS;\par
+  pos6 = MID_POS;\par
+  \par
+  controlMode = ControlMode.EXACT_POS;\par
+  performMode = PerformMode.START;\par
+  prevStateLBump = leftBump.pressed();\par
+  \par
+  printSettings();\par
+\}\par
+\par
+//~~~~~~~~~~~~~~~~~ Get User Feedback ~~~~~~~~~~~~~~~~~\par
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\par
+public void getUserInput()\{\par
+  boolean currStateLBump = leftBump.pressed();\par
+  if (!prevStateLBump) \{\par
+    if (currStateLBump) \{\par
+      if (!isMacro(controlMode)) \{\par
+        print("Bumper Pressed: Switching from " + controlMode.toString() + " to ");\par
+        controlMode = ControlMode.nextState(controlMode);\par
+        println(controlMode.toString());\par
+      \}\par
+    \}\par
+  \}\par
+  prevStateLBump = currStateLBump;\par
+  \par
+  if (rightTrigger.pressed()) \{\par
+    if (!isMacro(controlMode)) \{\par
+      pos5 += stickStepSens;\par
+      pos6 += -stickStepSens;\par
+    \}\par
+  \}\par
+  if (leftTrigger.pressed()) \{\par
+    if (!isMacro(controlMode)) \{\par
+      pos5 -= stickStepSens;\par
+      pos6 -= -stickStepSens;\par
+    \}\par
+  \}\par
+  \par
+  boolean currStateA = aButton.pressed();\par
+  if (!prevStateA) \{\par
+    if (currStateA) \{\par
+      switch (controlMode) \{\par
+        case ROVE_MACRO_UP:\par
+        case ROVE_MACRO_DOWN:\par
+          controlMode = prevManualMode;\par
+          returnPrevManPos();\par
+          println("A Button Pressed: Switching back to " + controlMode.toString());\par
+          break;\par
+        default:\par
+          if (!isMacro(controlMode)) \{\par
+            prevManualMode = controlMode;\par
+            recordPrevManPos();\par
+          \}\par
+          controlMode = ControlMode.ROVE_MACRO_UP;\par
+          println("A Button Pressed: Switching to macro " + controlMode.toString());\par
+          //pos1 = MIN_POS;\par
+          //pos2 = MIN_POS;\par
+          //pos3 = MAX_POS;\par
+          //pos4 = MAX_POS;\par
+          //pos5 = MID_POS + (MAX_POS - MIN_POS) / 4;\par
+          //pos6 = MID_POS - (MAX_POS - MIN_POS) / 4;\par
+      \}\par
+    \}\par
+  \}\par
+  prevStateA = currStateA;\par
+  \par
+  boolean currStateB = bButton.pressed();\par
+  if (!prevStateB) \{\par
+    if (currStateB) \{\par
+      switch (controlMode) \{\par
+        case PERFORM_MACRO:\par
+          controlMode = prevManualMode;\par
+          returnPrevManPos();\par
+          println("B Button Pressed: Switching back to " + controlMode.toString());\par
+          break;\par
+        default:\par
+          if (!isMacro(controlMode)) \{\par
+            prevManualMode = controlMode;\par
+            recordPrevManPos();\par
+          \}\par
+          controlMode = ControlMode.PERFORM_MACRO;\par
+          performMode = PerformMode.begin();\par
+          println("B Button Pressed: Switching to macro " + controlMode.toString());\par
+      \}\par
+    \}\par
+  \}\par
+  prevStateB = currStateB;\par
+  \par
+  boolean currStateX = xButton.pressed();\par
+  if (!prevStateX) \{\par
+    if (currStateX) \{\par
+      switch (controlMode) \{\par
+        case WAVE_MACRO:\par
+          controlMode = prevManualMode;\par
+          returnPrevManPos();\par
+          println("X Button Pressed: Switching back to " + controlMode.toString());\par
+          break;\par
+        default:\par
+          if (!isMacro(controlMode)) \{\par
+            prevManualMode = controlMode;\par
+            recordPrevManPos();\par
+          \}\par
+          setAllPos(MIN_POS);\par
+          controlMode = ControlMode.WAVE_MACRO;\par
+          waveMode = WaveMode.begin();\par
+          waveDelay = millis() + 5 * WAVE_MILLIS;\par
+          println("X Button Pressed: Switching to macro " + controlMode.toString());\par
+      \}\par
+    \}\par
+  \}\par
+  prevStateX = currStateX;\par
+  \par
+  switch (controlMode) \{\par
+    case PERFORM_MACRO:\par
+      checkDPadH();\par
+      break;\par
+    default:\par
+      checkDPadH();\par
+      checkDPadV();\par
+  \}\par
+  \par
+ // assign our float value \par
+ //access the deviceroller.\par
+ checkMacroInterrup();\par
+ switch (controlMode) \{\par
+   case EXACT_POS:\par
+     pos1 = (int)mapServoMinToMax(leftV);\par
+     pos2 = (int)mapServoMinToMax(leftH);\par
+     pos3 = MAX_POS + MIN_POS - (int)mapServoMinToMax(rightV);\par
+     pos4 = (int)mapServoMinToMax(rightH);\par
+     break;\par
+   case STEP_POS:\par
+     pos1 += (int)mapServoCenteredRange(leftV);\par
+     pos2 += (int)mapServoCenteredRange(leftH);\par
+     pos3 += -(int)mapServoCenteredRange(rightV);\par
+     pos4 += (int)mapServoCenteredRange(rightH);\par
+     break;\par
+   case ROVE_MACRO_UP:\par
+     if (pos1 < MAX_POS) \{\par
+       pos1 += stickStepSens;\par
+       pos2 -= stickStepSens;\par
+       pos3 -= stickStepSens;\par
+       pos4 += stickStepSens;\par
+     \}\par
+     else \{\par
+       pos5 = MID_POS - (MAX_POS - MIN_POS);\par
+       pos6 = MID_POS + (MAX_POS - MIN_POS);\par
+       controlMode = ControlMode.nextState(controlMode);\par
+     \}\par
+     break;\par
+   case ROVE_MACRO_DOWN:\par
+     if (pos1 > MIN_POS) \{\par
+       pos1 -= stickStepSens;\par
+       pos2 += stickStepSens;\par
+       pos3 += stickStepSens;\par
+       pos4 -= stickStepSens;\par
+     \}\par
+     else \{\par
+       pos5 = MID_POS + (MAX_POS - MIN_POS);\par
+       pos6 = MID_POS - (MAX_POS - MIN_POS);\par
+       controlMode = ControlMode.nextState(controlMode);\par
+     \}\par
+     break;\par
+   case PERFORM_MACRO:\par
+     runPerformMacro();\par
+     break;\par
+   case WAVE_MACRO:\par
+     runWaveMacro();\par
+     break;\par
+ \}\par
+ \par
+\}\par
+\par
+//~~~~~~~~~~~~~~~~~ Program Loop ~~~~~~~~~~~~~~~~~\par
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\par
+void draw()\{\par
+ getUserInput();\par
+ background(map(pos1, MIN_POS, MAX_POS, 0, 255),\par
+           map(pos3, MIN_POS, MAX_POS, 0, 255),\par
+           map(pos5, MIN_POS, MAX_POS, 0, 255));\par
+ \par
+ if (controlMode == ControlMode.PERFORM_MACRO) println("Before Check -- Position 5: " + pos5 + "\\tPosition 6: " + pos6);\par
+ pos1 = boundCheckInt(pos1, MAX_POS, MIN_POS);\par
+ pos2 = boundCheckInt(pos2, MAX_POS, MIN_POS);\par
+ pos3 = boundCheckInt(pos3, MAX_POS, MIN_POS);\par
+ pos4 = boundCheckInt(pos4, MAX_POS, MIN_POS);\par
+ pos5 = boundCheckInt(pos5, MAX_POS, MIN_POS);\par
+ pos6 = boundCheckInt(pos6, MAX_POS, MIN_POS);\par
+ if (controlMode == ControlMode.PERFORM_MACRO) println("Before Write -- Position 5: " + pos5 + "\\tPosition 6: " + pos6);\par
+ arduino.servoWrite(SERVO1_PIN, pos1);\par
+ arduino.servoWrite(SERVO2_PIN, pos2);\par
+ arduino.servoWrite(SERVO3_PIN, pos3);\par
+ arduino.servoWrite(SERVO4_PIN, pos4);\par
+ arduino.servoWrite(SERVO5_PIN, pos5);\par
+ arduino.servoWrite(SERVO6_PIN, pos6);\par
+ if (controlMode == ControlMode.PERFORM_MACRO) println("After Write  -- Position 5: " + pos5 + "\\tPosition 6: " + pos6);\par
+ if (controlMode == ControlMode.PERFORM_MACRO) println();\par
+\}\par
+\par
+//~~~~~~~~~~~~~~~~~ Helper Functions ~~~~~~~~~~~~~~~~~\par
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\par
+//~~~~~~~~~~~~~~~~~ DPad Checks ~~~~~~~~~~~~~~~~~\par
+void checkDPadH() \{\par
+  boolean currStateDPadH = dPad.left() || dPad.right();\par
+  if (!prevStateDPadH) \{\par
+    if (currStateDPadH) \{\par
+      if (dPad.left()) \{\par
+        stickStepSens = boundCheckInt(stickStepSens - SENS_STEP, MAX_SENS, MIN_SENS);\par
+        println("Stick Sensitivity: " + stickStepSens);\par
+      \}\par
+      if (dPad.right()) \{\par
+        stickStepSens = boundCheckInt(stickStepSens + SENS_STEP, MAX_SENS, MIN_SENS);\par
+        println("Stick Sensitivity: " + stickStepSens);\par
+      \}\par
+    \}\par
+  \}\par
+  prevStateDPadH = currStateDPadH;\par
+\}\par
+\par
+void checkDPadV() \{\par
+  boolean currStateDPadV = dPad.up() || dPad.down();\par
+  if (!prevStateDPadV) \{\par
+    if (currStateDPadV) \{\par
+      int step = (MAX_POS - MIN_POS) / stickStepSens;\par
+      if (dPad.up()) pos1 += step;\par
+      if (dPad.down()) pos1 -= step;\par
+    \}\par
+  \}\par
+  prevStateDPadV = currStateDPadV;\par
+\}\par
+\par
+//~~~~~~~~~~~~~~~~~ isMacro Function ~~~~~~~~~~~~~~~~~\par
+boolean isMacro(ControlMode currMode) \{\par
+  switch (currMode) \{\par
+    case ROVE_MACRO_UP:\par
+    case ROVE_MACRO_DOWN:\par
+    case PERFORM_MACRO:\par
+    case WAVE_MACRO:\par
+      return true;\par
+    case EXACT_POS:\par
+    case STEP_POS:\par
+    default:\par
+      return false;\par
+  \}\par
+\}\par
+\par
+//~~~~~~~~~~~~~~~~~ Check Macro Interrupts ~~~~~~~~~~~~~~~~~\par
+void checkMacroInterrup() \{\par
+  if (!isMacro(controlMode)) return;\par
+  \par
+  float tolerance = .25;\par
+  if (controlMode != ControlMode.PERFORM_MACRO &&\par
+      joysticksAboveTolerance(tolerance)) \{\par
+    println("Joystick Interrupt: Switching from " + controlMode.toString() +\par
+            " to " + controlMode.STEP_POS.toString());\par
+    controlMode = ControlMode.STEP_POS;\par
+  \}\par
+\}\par
+\par
+boolean joysticksAboveTolerance(float tolerance) \{\par
+  float leftCheckV = leftV.getValue();\par
+  float leftCheckH = leftH.getValue();\par
+  float rightCheckV = rightV.getValue();\par
+  float rightCheckH = rightH.getValue();\par
+  \par
+  \par
+  return leftCheckV > tolerance || leftCheckV < -tolerance ||\par
+         leftCheckH > tolerance || leftCheckH < -tolerance ||\par
+         rightCheckV > tolerance || rightCheckV < -tolerance ||\par
+         rightCheckH > tolerance || rightCheckH < -tolerance;\par
+\}\par
+\par
+//~~~~~~~~~~~~~~~~~ Performance Macro State Switcher ~~~~~~~~~~~~~~~~~\par
+void runPerformMacro() \{\par
+  final int OFFSET = 5;\par
+  switch (performMode) \{\par
+  case START:\par
+    performMode = PerformMode.nextState(performMode);\par
+    println("START Set All");\par
+    setAllPos(MIN_POS + OFFSET);\par
+    performChangeMillis = millis() + performMode.getDuration();\par
+    break;\par
+  case MIN_1:\par
+    if (millis() >= performChangeMillis) \{\par
+      performMode = PerformMode.nextState(performMode);\par
+      println("MIN_1 Set All");\par
+      setAllPos(MID_POS);\par
+      performChangeMillis = millis() + performMode.getDuration();\par
+    \}\par
+    break;\par
+  case MID:\par
+    if (millis() >= performChangeMillis) \{\par
+      performMode = PerformMode.nextState(performMode);\par
+      println("MAX_POS Set All");\par
+      setAllPos(MAX_POS - OFFSET);\par
+      performChangeMillis = millis() + performMode.getDuration();\par
+    \}\par
+    break;\par
+  case MAX_1:\par
+    if (millis() >= performChangeMillis) \{\par
+      performMode = PerformMode.nextState(performMode);\par
+      println("MAX_1 Set All");\par
+      setAllPos(MIN_POS + OFFSET);\par
+      performChangeMillis = millis() + performMode.getDuration();\par
+    \}\par
+    break;\par
+  case WAIT_1:\par
+    if (millis() >= performChangeMillis) \{\par
+      performMode = PerformMode.nextState(performMode);\par
+    \}\par
+    break;\par
+  case ROVE_UP:\par
+    if (pos1 >= MAX_POS - OFFSET) \{\par
+      performMode = PerformMode.nextState(performMode);\par
+      performChangeMillis = millis() + performMode.getDuration();\par
+    \}\par
+    else incrementAllPos(stickStepSens);\par
+    break;\par
+  case WAIT_2:\par
+    if (millis() >= performChangeMillis) \{\par
+      performMode = PerformMode.nextState(performMode);\par
+    \}\par
+    break;\par
+  case ROVE_DOWN:\par
+    if (pos1 <= MIN_POS + OFFSET) \{\par
+      performMode = PerformMode.nextState(performMode);\par
+      performChangeMillis = millis() + performMode.getDuration();\par
+    \}\par
+    else incrementAllPos(-stickStepSens);\par
+    break;\par
+  case WAIT_3:\par
+    if (millis() >= performChangeMillis) \{\par
+      performMode = PerformMode.nextState(performMode);\par
+      setAllPos(MAX_POS - OFFSET);\par
+      performChangeMillis = millis() + performMode.getDuration();\par
+    \}\par
+    break;\par
+  case MAX_2:\par
+    if (millis() >= performChangeMillis) \{\par
+      performMode = PerformMode.nextState(performMode);\par
+      setAllPos(MIN_POS + OFFSET);\par
+      performChangeMillis = millis() + performMode.getDuration();\par
+    \}\par
+    break;\par
+  case MIN_2:\par
+    if (millis() >= performChangeMillis) \{\par
+      performMode = PerformMode.nextState(performMode);\par
+      performChangeMillis = millis() + performMode.getDuration();\par
+    \}\par
+    break;\par
+  case END:\par
+    if (millis() >= performChangeMillis) \{\par
+      performMode = PerformMode.nextState(performMode);\par
+      controlMode = prevManualMode;\par
+      returnPrevManPos();\par
+      println("Macro Finished: Switching back to " + controlMode.toString());\par
+    \}\par
+    break;\par
+  \}\par
+\}\par
+\par
+//~~~~~~~~~~~~~~~~~ Wave Macro State Switcher ~~~~~~~~~~~~~~~~~\par
+void runWaveMacro() \{\par
+  switch (waveMode) \{\par
+  case START:\par
+    if (millis() >= waveDelay) waveMode = WaveMode.nextState(waveMode);\par
+    break;\par
+  case UP_1:\par
+    if (pos1 >= MAX_POS) waveMode = WaveMode.nextState(waveMode);\par
+    else pos1 += stickStepSens;\par
+    break;\par
+  case UP_2:\par
+    if (pos2 >= MAX_POS) waveMode = WaveMode.nextState(waveMode);\par
+    else pos2 += stickStepSens;\par
+    break;\par
+  case UP_3:\par
+    if (pos3 >= MAX_POS) waveMode = WaveMode.nextState(waveMode);\par
+    else pos3 += stickStepSens;\par
+    break;\par
+  case UP_4:\par
+    if (pos4 >= MAX_POS) waveMode = WaveMode.nextState(waveMode);\par
+    else pos4 += stickStepSens;\par
+    break;\par
+  case UP_5:\par
+    if (pos5 >= MAX_POS) waveMode = WaveMode.nextState(waveMode);\par
+    else pos5 += stickStepSens; pos6 += -stickStepSens;\par
+    break;\par
+  case UP_6:\par
+    waveMode = WaveMode.nextState(waveMode);\par
+    waveDelay = millis() + WAVE_MILLIS * stickStepSens / 4;\par
+    break;\par
+  case DOWN_6:\par
+    waveMode = WaveMode.nextState(waveMode);\par
+    break;\par
+  case DOWN_5:\par
+    if (pos5 <= MIN_POS) waveMode = WaveMode.nextState(waveMode);\par
+    else pos5 -= stickStepSens; pos6 -= -stickStepSens;\par
+    break;\par
+  case DOWN_4:\par
+    if (pos4 <= MIN_POS) waveMode = WaveMode.nextState(waveMode);\par
+    else pos4 -= stickStepSens;\par
+    break;\par
+  case DOWN_3:\par
+    if (pos3 <= MIN_POS) waveMode = WaveMode.nextState(waveMode);\par
+    else pos3 -= stickStepSens;\par
+    break;\par
+  case DOWN_2:\par
+    if (pos2 <= MIN_POS) waveMode = WaveMode.nextState(waveMode);\par
+    else pos2 -= stickStepSens;\par
+    break;\par
+  case DOWN_1:\par
+    if (pos1 <= MIN_POS) \{\par
+      waveMode = WaveMode.nextState(waveMode);\par
+      waveDelay = millis() + WAVE_MILLIS * stickStepSens / 4;\par
+    \}\par
+    else pos1 -= stickStepSens;\par
+    break;\par
+  case END:\par
+    if (millis() >= waveDelay) \{\par
+      waveMode = WaveMode.nextState(waveMode);\par
+      controlMode = prevManualMode;\par
+      returnPrevManPos();\par
+      println("Macro Finished: Switching back to " + controlMode.toString());\par
+    \}\par
+    break;\par
+  \}\par
+\}\par
+\par
+//~~~~~~~~~~~~~~~~~ Map Function For Servo Position ~~~~~~~~~~~~~~~~~\par
+float mapServoMinToMax(ControlSlider input) \{\par
+  return map(input.getValue(), -1, 1, MAX_POS, MIN_POS);\par
+\}\par
+\par
+float mapServoCenteredRange(ControlSlider input) \{\par
+  return map(input.getValue(), -1, 1, stickStepSens, -stickStepSens);\par
+\}\par
+\par
+//~~~~~~~~~~~~~~~~~ Functions for all Positions ~~~~~~~~~~~~~~~~~\par
+void setAllPos(int pos) \{\par
+  pos1 = pos;\par
+  pos2 = pos;\par
+  pos3 = pos;\par
+  pos4 = pos;\par
+  pos5 = pos;\par
+  pos6 = MAX_POS + MIN_POS - pos;\par
+  println("After Set -- Position 5: " + pos5 + "\\tPosition 6: " + pos6);\par
+\}\par
+\par
+void incrementAllPos(int step) \{\par
+  pos1 += step;\par
+  pos2 += step;\par
+  pos3 += step;\par
+  pos4 += step;\par
+  pos5 += step;\par
+  pos6 += -step;\par
+\}\par
+\par
+void recordPrevManPos() \{\par
+  prevManualPos1 = pos1;\par
+  prevManualPos2 = pos2;\par
+  prevManualPos3 = pos3;\par
+  prevManualPos4 = pos4;\par
+  prevManualPos5 = pos5;\par
+  prevManualPos6 = pos6;\par
+\}\par
+\par
+void returnPrevManPos() \{\par
+  pos1 = prevManualPos1;\par
+  pos2 = prevManualPos2;\par
+  pos3 = prevManualPos3;\par
+  pos4 = prevManualPos4;\par
+  pos5 = prevManualPos5;\par
+  pos6 = prevManualPos6;\par
+\}\par
+\par
+//~~~~~~~~~~~~~~~~~ Bound Checker Functions ~~~~~~~~~~~~~~~~~\par
+int boundCheckInt(int check, int max, int min) \{\par
+ if (check > max) check = max;\par
+ if (check < min) check = min;\par
+ return check;\par
+\}\par
+\par
+float boundCheckFloat(float check, float max, float min) \{\par
+ if (check > max) check = max;\par
+ if (check < min) check = min;\par
+ return check;\par
+\}\par
+\par
+//~~~~~~~~~~~~~~~~~ Display Initial Settings ~~~~~~~~~~~~~~~~~\par
+void printSettings() \{\par
+  println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");\par
+  println("Program Settings\\n");\par
+  println("Max Servo Position: " + MAX_POS);\par
+  println("Middle Servo Position: " + MID_POS);\par
+  println("Min Servo Position: " + MIN_POS);\par
+  println("Control Mode: " + controlMode.toString());\par
+  println("Sensitivity Step Increments: " + SENS_STEP);\par
+  println("Max Sensitivity: " + MAX_SENS);\par
+  println("Min Sensitivity: " + MIN_SENS);\par
+  println("Stick Sensitivity: " + stickStepSens);\par
+  println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\\n");\par
+\}\par
+\par
+}
+ 
