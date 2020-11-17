@@ -50,7 +50,7 @@ i2c = busio.I2C(board.SCL, board.SDA)
 hat = adafruit_pca9685.PCA9685(i2c)
 
 hat.frequency = 50
-led_channel = hat.channels[1]
+# led_channel = hat.channels[15]
 
 kit = ServoKit(channels=16)
 
@@ -79,10 +79,10 @@ textPrint = TextPrint()
 joystick = pygame.joystick.Joystick(0)
 joystick.init()
 
-xButton = joystick.get_button(0)
-circleButton = joystick.get_button(1)
-triangleButton = joystick.get_button(2)
-squareButton = joystick.get_button(3)
+xButton = 0
+circleButton = 1
+triangleButton = 2
+squareButton = 3
 
 # -------- Main Program Loop -----------
 while not done:
@@ -95,6 +95,10 @@ while not done:
         # JOYBUTTONUP JOYHATMOTION
         if event.type == pygame.JOYBUTTONDOWN:
             print("Joystick button pressed.")
+            if joystick.get_button(xButton) == 1:
+                kit.servo[0].angle = 180
+            elif joystick.get_button(circleButton) == 1:
+                kit.servo[0].angle = 80
         if event.type == pygame.JOYBUTTONUP:
             print("Joystick button released.")
 
@@ -113,24 +117,6 @@ while not done:
     textPrint.print(screen, "Number of buttons: {}".format(buttons))
     textPrint.indent()
 
-    # Go through all buttons and do x
-    for i in range(buttons):
-        button = joystick.get_button(i)
-        if button == xButton:
-            kit.servo[0].angle = 180
-            time.sleep(1)
-            kit.servo[0].angle = 0
-            time.sleep(1)
-            kit.servo[0].angle = 90
-        elif button == circleButton:
-            for i in range(0x0, 0xffff, 0xf):
-                led_channel.duty_cycle = i
-
-            # Decrease brightness:
-            for i in range(0xffff, 0, -0xf):
-                led_channel.duty_cycle = i
-
-        textPrint.print(screen, "Button {:>2} value: {}".format(i, button))
     textPrint.unindent()
 
     textPrint.unindent()
