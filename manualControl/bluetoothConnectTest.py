@@ -4,11 +4,15 @@ sudo bluetoothctl
 power on
 agent on
 default-agent
-(if not paired already: 
+(if not paired already use specific MAC address: 
     scan on 
     pair 4C:B9:9B:68:F1:EA
-    pair A4:AE:12:C4:C3:5D)
+    trust 4C:B9:9B:68:F1:EA
+    pair A4:AE:12:C4:C3:5D
+    trust A4:AE:12:C4:C3:5D)
 hold PS button and share button down to turn controller to pair mode
+connect 4C:B9:9B:68:F1:EA
+connect A4:AE:12:C4:C3:5D
 agent off
 power off
 exit
