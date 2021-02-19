@@ -31,6 +31,8 @@ Buttons have type 01, val 01 (up) or 00 (down)
     touchpad_press = code 272
     touchpad_touch = code 325 and 330 (both are activated simultaneously)
 
+    the extra back button extension does not register
+
 '''
 
 import evdev
