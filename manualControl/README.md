@@ -6,7 +6,7 @@ Setup:
     sudo apt-get install python3-pip
     sudo pip3 install evdev
     
-Can now import evdev, asyncio, and time
+Can now import evdev, asyncio, and time (current evdev version = 1.4.0)
 
 To run, must type into terminal:
 
