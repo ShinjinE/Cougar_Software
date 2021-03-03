@@ -15,6 +15,15 @@ from evdev import list_devices, InputDevice, categorize, ecodes
 xButton = 304
 L1 = 310
 R1 = 311
+circle = 305
+triangle = 307
+square = 308
+share = 314
+options = 315
+PS_symbol = 316
+L3 = 317
+R3 = 318
+
 
 async def print_events(device):
     '''Async helper function. Print the events from either device in an asyncronous fashion'''
@@ -28,6 +37,22 @@ async def print_events(device):
                     print("R1")
                 elif event.code == L1:
                     print("L1")
+                elif event.code == circle:
+                    print("circle")
+                elif event.code == triangle:
+                    print("triangle")
+                elif event.code == square:
+                    print("square")
+                elif event.code == share:
+                    print("share")
+                elif event.code == options:
+                    print("options")
+                elif event.code == PS_symbol:
+                    print("ps_symbol")
+                elif event.code == L3:
+                    print("L3")
+                elif event.code == R3:
+                    print("R3")
             elif device.path == "/dev/input/event5":
                 print("from controller 2")
                 if event.code == xButton:
@@ -36,6 +61,23 @@ async def print_events(device):
                     print("R1")
                 elif event.code == L1:
                     print("L1")
+                elif event.code == circle:
+                    print("circle")
+                elif event.code == triangle:
+                    print("triangle")
+                elif event.code == square:
+                    print("square")
+                elif event.code == share:
+                    print("share")
+                elif event.code == options:
+                    print("options")
+                elif event.code == PS_symbol:
+                    print("ps_symbol")
+                elif event.code == L3:
+                    print("L3")
+                elif event.code == R3:
+                    print("R3")
+
 
 # create gamecontroller objects. Wait until both controllers are plugged in
 while True:
