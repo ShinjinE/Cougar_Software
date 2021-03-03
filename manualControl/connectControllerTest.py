@@ -33,6 +33,13 @@ Buttons have type 01, val 01 (up) or 00 (down)
 
     the extra back button extension does not register
 
+Analog inputs have six important axis types with a range from 0-255
+    right joystick = ABS_RX and ABS_RY 
+    left joystick = ABS_X and ABS_Y 
+    R2 = ABS_RZ 
+    L2 = ABS_Z 
+The joysticks are at center at 128 and triggers rest at 0
+
 '''
 
 import evdev
@@ -51,7 +58,7 @@ for event in gamepad.read_loop():
     if event.type == ecodes.EV_KEY:
         print(event)
     # Analog gamepad
-    # elif event.type == ecodes.EV_ABS:
-    #     absevent = categorize(event)
-    #     print(ecodes.bytype[absevent.event.type]
-    #           [absevent.event.code], absevent.event.value)
+    elif event.type == ecodes.EV_ABS:
+        absevent = categorize(event)
+        print(ecodes.bytype[absevent.event.type]
+              [absevent.event.code], absevent.event.value)
