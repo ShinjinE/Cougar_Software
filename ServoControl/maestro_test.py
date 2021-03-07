@@ -1,25 +1,28 @@
-import maestro
+from ServoHandler import ServoHandler, DigitalOutputObject, AnalogOutputObject
 from time import sleep
 
-servoBoard = maestro.Controller()
+servoHandler = ServoHandler()
+inputTestDigital = DigitalOutputObject('test digital', 2, [0, 1])
+inputTestDigital.set_outputs([8000, 4000],[4000, 8000])
+inputTestAnalog = AnalogOutputObject('test analog', 2, [0, 1])
+inputTestAnalog.set_outputs([8000, 4000],[4000, 8000])
 
-smallServo = 0
-largeServo = 1
-rangeMin = 1000*4
-rangeMax = 2000*4
-currPosSmall = rangeMin
-currPosLarge = rangeMax
-for x in range(5):
-    while currPosSmall < rangeMax:
-        servoBoard.setTarget(smallServo,currPosSmall)
-        servoBoard.setTarget(largeServo,currPosLarge)
-        currPosSmall += 1
-        currPosLarge -= 1
-        sleep(.001)
-    while currPosSmall > rangeMin:
-        servoBoard.setTarget(smallServo,currPosSmall)
-        servoBoard.setTarget(largeServo,currPosLarge)
-        currPosSmall -= 1
-        currPosLarge += 1
+for x in [False, True]:
+    print("Digital: " + str(x))
+    [out_channels, out_pulse] = inputTestDigital.get_output(x) 
+    print([out_channels, out_pulse])
+    for i in range(inputTestDigital.get_num_channels()):
+        servoHandler.servoBoard.setTarget(out_channels[i], int(out_pulse[i]))
+    sleep(.5)
 
-servoBoard.close()
+sleep(.5)
+
+for x in [-1, -.5, 0, .5, 1]:
+    print("Analog: " + str(x))
+    [out_channels, out_pulse] = inputTestAnalog.get_output(x) 
+    print([out_channels, out_pulse])
+    for i in range(inputTestAnalog.get_num_channels()):
+        servoHandler.servoBoard.setTarget(out_channels[i], int(out_pulse[i]))
+    sleep(.5)
+
+servoHandler.servoBoard.close()
