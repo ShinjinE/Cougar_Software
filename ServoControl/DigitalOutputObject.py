@@ -1,4 +1,4 @@
-from OutputObject import *
+from OutputObject import OutputObject, ControlType, ToggleState
 
 class DigitalOutputObject(OutputObject):
     """
@@ -50,7 +50,7 @@ class DigitalOutputObject(OutputObject):
         Maps an input value to its output.
     """
     
-    def __init__(self, name, num_outputs):
+    def __init__(self, name, num_outputs, channels_output):
         """
         Class constructor.
 
@@ -61,7 +61,7 @@ class DigitalOutputObject(OutputObject):
         num_outputs : int
             number of output channels controlled by the output object
         """
-        super().__init__(name, num_outputs)
+        super().__init__(name, num_outputs, channels_output)
         self.maximum_input = 1
         self.minimum_input = 0
 
@@ -87,16 +87,22 @@ class DigitalOutputObject(OutputObject):
         # TODO Make ugly nested ifs pretty using functions
         if self.control_type is ControlType.DIRECT:
             # TODO Finish output
+            for i in range(self.num_outputs):
+                self.current_output[i] = self.map_values(input_value, self.minimum_input, self.maximum_input,
+                    self.minimums_output[i], self.maximums_output[i])
             return [self.channels_output, self.current_output]
+
         elif self.control_type is ControlType.TOGGLE:
             if input_value is False:
                 if self.toggle_state is ToggleState.ON:
                     self.toggle_state = ToggleState.OFF
-                    return [self.channels_output, self.minimums_output]
-                else:
-                    # Same but opposite
-                    # TODO Finish output
+                    self.current_output = self.minimums_output
                     return [self.channels_output, self.current_output]
+                else:
+                    self.toggle_state = ToggleState.ON
+                    self.current_output = self.maximums_output
+                return [self.channels_output, self.current_output]
+
         elif self.control_type is ControlType.INCREMENT:
             # TODO Finish output
             return [self.channels_output, self.current_output]
