@@ -71,8 +71,8 @@ class OutputObject:
         # self.neutral_output = self.minimums_output
         self.current_output = self.minimums_output
 
-        self.maximum_input = 1
-        self.minimum_input = -1
+        self.maximum_input = 255
+        self.minimum_input = 0
         self.is_inverted = [False for i in range(num_outputs)]
 
         self.control_type = ControlType.DIRECT
