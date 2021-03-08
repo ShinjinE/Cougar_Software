@@ -7,7 +7,7 @@ inputTestDigital.set_outputs([8000, 4000],[4000, 8000])
 inputTestAnalog = AnalogOutputObject('test analog', 2, [0, 1])
 inputTestAnalog.set_outputs([8000, 4000],[4000, 8000])
 
-for x in [False, True]:
+for x in [0, 1, 0]:
     print("Digital: " + str(x))
     [out_channels, out_pulse] = inputTestDigital.get_output(x) 
     print([out_channels, out_pulse])
@@ -17,7 +17,7 @@ for x in [False, True]:
 
 sleep(.5)
 
-for x in [-1, -.5, 0, .5, 1]:
+for x in [0, 64, 128, 192, 255, 192, 128, 64, 0]:
     print("Analog: " + str(x))
     [out_channels, out_pulse] = inputTestAnalog.get_output(x) 
     print([out_channels, out_pulse])
