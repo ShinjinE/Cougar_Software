@@ -12,18 +12,18 @@ servo = maestro.Controller()
 # x = servo.getPosition(1) #get the current position of servo 1
 # print(x)
 
+channel = 5
 rangeMin = 1792*4
 rangeMax = 2496*4
 currPos = rangeMin
 for x in range(5):
     while currPos < rangeMax:
-        servo.setTarget(5,currPos)
+        servo.setTarget(channel,currPos)
         currPos += 1
         sleep(.001)
     # sleep(0.5)
     while currPos > rangeMin:
-        servo.setTarget(5,currPos)
+        servo.setTarget(channel,currPos)
         currPos -= 1
         # sleep(.001)
-
 servo.close()
