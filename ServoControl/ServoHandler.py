@@ -29,7 +29,7 @@ class ServoHandler:
         # TODO: Create map for input objects
         self.input_map = {
             "x_button_1": self.right_ear,
-            "x_button_2": self.right_ear,#self.right_lip,
+            "x_button_2": self.right_lip,
             "r1_button_1": None,
             "r1_button_2": None,
             "l1_button_1": None,
@@ -50,11 +50,11 @@ class ServoHandler:
             "l3_button_2": None,
             "r3_button_1": None,
             "r3_button_2": None,
-            "r2_analog_1": self.left_ear,#self.bottom_eyelids,
+            "r2_analog_1": self.bottom_eyelids,
             "r2_analog_2": self.neck,
             "l2_analog_1": self.top_eyelids,
             "l2_analog_2": self.neck,
-            # "r_joystick_x_analog_1": self.eyebrows,
+            "r_joystick_x_analog_1": self.eyebrows,
             "r_joystick_x_analog_2": None,
             "l_joystick_x_analog_1": self.eyes_horizontal,
             "l_joystick_x_analog_2": self.neck,
@@ -62,14 +62,14 @@ class ServoHandler:
             "r_joystick_y_analog_2": self.jaw,
             "l_joystick_y_analog_1": self.eyes_vertical,
             "l_joystick_y_analog_2": self.neck,
-            # "down_button_1"
-            # "down_button_2"
-            # "up_button_1"
-            # "up_button_2"
-            "right_button_1": self.left_ear
-            # "right_button_2"
-            # "left_button_1"
-            # "left_button_2"
+            # "down_button_1": None,
+            # "down_button_2": None,
+            "up_button_1": None,
+            "up_button_2": None,
+            "right_button_1": None,
+            "right_button_2": None#,
+            # "left_button_1": None,
+            # "left_button_2": None
         }
 
     def process_input(self, input_object):

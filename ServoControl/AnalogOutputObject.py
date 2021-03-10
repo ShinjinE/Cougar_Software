@@ -62,6 +62,8 @@ class AnalogOutputObject(OutputObject):
             number of output channels controlled by the output object
         """
         super().__init__(name, num_outputs, channels_output)
+        # for i in range(len(self.minimums_output)):
+        #     self.current_output[i] = (self.minimums_output[i] + self.maximums_output[i])/2
 
     def get_output(self, input_value):
         """
