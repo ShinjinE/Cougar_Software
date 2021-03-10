@@ -132,10 +132,10 @@ async def print_events(device):
 
             if ecodes.bytype[absevent.event.type][absevent.event.code] == 'ABS_HAT0Y':
                 if lastInput["ABS_HAT0Y"] != currentEvent:
-                    if currentEvent == 32767:
+                    if currentEvent == 1:
                         dDownInput = ControllerEvent("down_button_1" if fromGamepad1 else "down_button_2", True)
                         servoHandler.process_input(dDownInput)
-                    elif currentEvent == -32767:
+                    elif currentEvent == -1:
                         dUpInput = ControllerEvent("up_button_1" if fromGamepad1 else "up_button_2", True)
                         servoHandler.process_input(dUpInput)
                     else:
@@ -147,10 +147,10 @@ async def print_events(device):
 
             if ecodes.bytype[absevent.event.type][absevent.event.code] == 'ABS_HAT0X':
                 if lastInput["ABS_HAT0X"] != currentEvent:
-                    if currentEvent == 32767:
+                    if currentEvent == 1:
                         dRightInput = ControllerEvent("right_button_1" if fromGamepad1 else "right_button_2", True)
                         servoHandler.process_input(dRightInput)
-                    elif currentEvent == -32767:
+                    elif currentEvent == -1:
                         dLeftInput = ControllerEvent("left_button_1" if fromGamepad1 else "left_button_2", True)
                         servoHandler.process_input(dLeftInput)
                     else:
