@@ -51,7 +51,7 @@ class OutputObject:
         Maps an input value to its output.
     """
 
-    def __init__(self, name, num_outputs):
+    def __init__(self, name, num_outputs, channels_output):
         """
         Class constructor.
 
@@ -65,21 +65,25 @@ class OutputObject:
         self.name = name
         self.num_outputs = num_outputs
 
-        self.channels_output = range(num_outputs)
+        self.channels_output = channels_output# range(num_outputs)
         self.maximums_output = [8000 for i in range(num_outputs)] 
         self.minimums_output = [4000 for i in range(num_outputs)]
         # self.neutral_output = self.minimums_output
         self.current_output = self.minimums_output
 
-        self.maximum_input = 1
-        self.mininum_input = -1
+        self.maximum_input = 255
+        self.minimum_input = 0
         self.is_inverted = [False for i in range(num_outputs)]
 
         self.control_type = ControlType.DIRECT
 
         self.toggle_state = ToggleState.OFF
 
-    def set_outputs(self, channels_output, maximums_output, minimums_output):
+    # TODO: Add to documentation
+    def set_output_channels(self, channels_output):
+        self.channels_output = channels_output
+
+    def set_outputs(self, maximums_output, minimums_output):
         """
         Sets which channels to output to and the maximum and minimun pulse width for each of
         those channels.
@@ -97,7 +101,7 @@ class OutputObject:
         -------
         None
         """
-        self.channels_output = channels_output
+        # self.channels_output = channels_output
         self.maximums_output = maximums_output
         self.minimums_output = minimums_output
         self.current_output = minimums_output
@@ -158,6 +162,10 @@ class OutputObject:
         None
         """
         self.control_type = ControlType.INCREMENT
+
+    # TODO Write documentation
+    def get_num_channels(self):
+        return self.num_outputs
 
     # def get_output(self, input_value):
     #     """
