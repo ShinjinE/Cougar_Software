@@ -8,7 +8,7 @@ class ServoHandler:
         # TODO: Multi-input object?
         self.right_ear = DigitalOutputObject("right ear", 1, [0])
         # TODO: Multi-input object?
-        self.left_ear = AnalogOutputObject("left ear", 1, [1])
+        self.left_ear = DigitalOutputObject("left ear", 1, [1])
         self.top_eyelids = AnalogOutputObject("top eyelids", 1, [2])
         self.bottom_eyelids = AnalogOutputObject("bottom eyelids", 1, [3])
         self.eyes_horizontal = AnalogOutputObject("eyes horizontal", 2, [5, 7])
@@ -29,47 +29,48 @@ class ServoHandler:
         # TODO: Create map for input objects
         self.input_map = {
             "x_button_1": self.right_ear,
-            "x_button_2": self.right_ear,#self.right_lip,
-            "r1_button_1": None,
-            "r1_button_2": None,
-            "l1_button_1": None,
-            "l1_button_2": self.top_lip,
             "circle_button_1": self.right_ear,
-            "circle_button_2": self.right_lip,
-            "triangle_button_1": None,
-            "triangle_button_2": None,
+            "triangle_button_1": self.nose,
             "square_button_1": None,
-            "square_button_2": None,
-            "share_button_1": None,
-            "share_button_2": None,
-            "options_button_1": None,
-            "options_button_2": None,
-            "ps_symbol_button_1": None,
-            "ps_symbol_button_2": None,
-            "l3_button_1": None,
-            "l3_button_2": None,
-            "r3_button_1": None,
-            "r3_button_2": None,
-            "r2_analog_1": self.left_ear,#self.bottom_eyelids,
-            "r2_analog_2": self.neck,
+            "down_button_1": self.left_ear,
+            "up_button_1": None,
+            "right_button_1": None,
+            "left_button_1": self.left_ear,
+            "r1_button_1": None,
+            "l1_button_1": None,
+            "r2_analog_1": self.bottom_eyelids,
             "l2_analog_1": self.top_eyelids,
-            "l2_analog_2": self.neck,
-            # "r_joystick_x_analog_1": self.eyebrows,
-            "r_joystick_x_analog_2": None,
+            "r3_button_1": None,
+            "l3_button_1": None,
+            "r_joystick_x_analog_1": self.eyebrows,
             "l_joystick_x_analog_1": self.eyes_horizontal,
-            "l_joystick_x_analog_2": self.neck,
-            "r_joystick_y_analog_1": self.eyebrows,
-            "r_joystick_y_analog_2": self.jaw,
+            # "r_joystick_y_analog_1": self.eyebrows,
             "l_joystick_y_analog_1": self.eyes_vertical,
+            "share_button_1": None,
+            "options_button_1": None,
+            "ps_symbol_button_1": None,
+
+            "x_button_2": self.right_lip,
+            "circle_button_2": self.right_lip,
+            "triangle_button_2": None,
+            "square_button_2": None,
+            "down_button_2": self.left_lip,
+            "up_button_2": None,
+            "right_button_2": None,
+            "left_button_2": self.left_lip,
+            "r1_button_2": None,
+            "l1_button_2": self.top_lip,
+            # "r2_analog_2": self.neck,
+            # "l2_analog_2": self.neck,
+            "r3_button_2": None,
+            "l3_button_2": None,
+            "r_joystick_x_analog_2": None,
+            # "l_joystick_x_analog_2": self.neck,
+            "r_joystick_y_analog_2": self.jaw,
             "l_joystick_y_analog_2": self.neck,
-            # "down_button_1"
-            # "down_button_2"
-            # "up_button_1"
-            # "up_button_2"
-            "right_button_1": self.left_ear
-            # "right_button_2"
-            # "left_button_1"
-            # "left_button_2"
+            "share_button_2": None,
+            "options_button_2": None,
+            "ps_symbol_button_2": None
         }
 
     def process_input(self, input_object):

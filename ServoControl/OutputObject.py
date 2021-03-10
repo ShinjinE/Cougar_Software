@@ -69,7 +69,7 @@ class OutputObject:
         self.maximums_output = [8000 for i in range(num_outputs)] 
         self.minimums_output = [4000 for i in range(num_outputs)]
         # self.neutral_output = self.minimums_output
-        self.current_output = self.minimums_output
+        self.current_output = [4000 for i in range(num_outputs)]
 
         self.maximum_input = 255
         self.minimum_input = 0
@@ -83,7 +83,7 @@ class OutputObject:
     def set_output_channels(self, channels_output):
         self.channels_output = channels_output
 
-    def set_outputs(self, maximums_output, minimums_output):
+    def set_outputs(self, maximums_output, minimums_output, default_output):
         """
         Sets which channels to output to and the maximum and minimun pulse width for each of
         those channels.
@@ -104,7 +104,7 @@ class OutputObject:
         # self.channels_output = channels_output
         self.maximums_output = maximums_output
         self.minimums_output = minimums_output
-        self.current_output = minimums_output
+        self.current_output = default_output
 
     def set_inversion(self, is_inverted):
         """

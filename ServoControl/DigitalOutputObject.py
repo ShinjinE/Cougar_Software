@@ -64,6 +64,8 @@ class DigitalOutputObject(OutputObject):
         super().__init__(name, num_outputs, channels_output)
         self.maximum_input = 1
         self.minimum_input = 0
+        # for i in range(len(self.minimums_output)):
+        #     self.current_output[i] = self.minimums_output[i]
 
     def get_output(self, input_value):
         """
