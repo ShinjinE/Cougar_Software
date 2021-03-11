@@ -57,7 +57,7 @@ piglow==1.2.5
 pigpio==1.44
 Pillow==7.1.0
 pip==18.1
-psutil==5.5.1
+psutil==5.6.6
 pycairo==1.16.2
 pycodestyle==2.6.0
 pycrypto==2.6.1
