@@ -2,7 +2,7 @@ import asyncio
 import evdev
 import time
 from evdev import list_devices, InputDevice, categorize, ecodes
-from ButtonTest_ServoHandler import ServoHandler
+from ButtonTest_ServoHandler_2 import ServoHandler
 
 MAX_VARIANCE = 5
 xButton = 304
