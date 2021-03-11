@@ -74,5 +74,5 @@ touchphat==0.0.1
 twython==3.7.0
 unicornhathd==0.0.4
 urllib3==1.24.1
-Werkzeug==0.14.1
+Werkzeug==0.15.3
 wheel==0.32.3
