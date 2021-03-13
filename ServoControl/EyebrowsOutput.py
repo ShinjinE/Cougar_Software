@@ -1,6 +1,6 @@
-from OutputObject import OutputObject, ControlType, ToggleState
+from OutputObject import OutputObject, ControlType
 
-class DigitalOutputObject(OutputObject):
+class EyebrowsOutput(OutputObject):
     """
     A class to represent a an output object for a digital controller input.
 
@@ -49,8 +49,8 @@ class DigitalOutputObject(OutputObject):
     map_input(input_value, input_min, input_max, out_max, out_min):
         Maps an input value to its output.
     """
-    
-    def __init__(self, name, num_outputs, channels_output):
+
+    def __init__(self, name, num_outputs, channels_output, names_input):
         """
         Class constructor.
 
@@ -59,13 +59,20 @@ class DigitalOutputObject(OutputObject):
         name : string
             name of the output group represented by output object
         num_outputs : int
-            number of output channels controlled by the output object
+            number of output channels controlled by the output object, must be 2 for this object
+        channels_output : int list
+            the two channels to output to, order matters
+        names_input : string list
+            the two associated controller inputs with the object, first horizontal twist, second is vertical twist
+        current_input : int list
+            since input is given one at a time, this list keeps track of both inputs
         """
         super().__init__(name, num_outputs, channels_output)
-        self.maximum_input = 1
-        self.minimum_input = 0
-        # for i in range(len(self.minimums_output)):
-        #     self.current_output[i] = self.minimums_output[i]
+        self.names_input = names_input
+        self.num_inputs = len(self.names_input)
+        self.current_input = [int((self.maximum_input + self.minimum_input)/2) for i in range(self.num_inputs)]
+        # self.out_raw_max = self.maximum_input + (self.maximum_input - self.minimum_input)
+        # self.out_raw_min = self.minimum_input
 
     def get_output(self, input_name, input_value):
         """
@@ -73,8 +80,10 @@ class DigitalOutputObject(OutputObject):
 
         Parameters
         ----------
-        input_value : boolean
-            the digital input from the PS4 controller, true for press and false for unpressed
+        input_name : string
+            name of the associated controller input
+        input_value : int
+            the analog input from the PS4 controller
 
         Returns
         -------
@@ -86,27 +95,30 @@ class DigitalOutputObject(OutputObject):
             the max and the min output values and switch between these values whenever the input is
             released. Increment will increment the output value whenever input is given.
         """
-        # TODO Make ugly nested ifs pretty using functions
+        # TODO Write functions for each if statement
         if self.control_type is ControlType.DIRECT:
-            # TODO Finish output
+            for i in range(self.num_inputs):
+                if self.names_input[i] == input_name:
+                    self.current_input[i] = input_value
+
+            # The first input is assumed to be for general up and down movement
+            y_axis = self.current_input[0]
+            # The second input is assumed to be shifting focus left and right
+            x_axis = self.current_input[1]
+            axis_max = self.maximum_input
+            raw_output = [0, 0, 0, 0]
+            raw_output[0] = 2 * ((axis_max - x_axis)/axis_max) * (axis_max - y_axis)
+            raw_output[1] = 2 * ((axis_max - x_axis)/axis_max) * y_axis
+            raw_output[2] = 2 * (x_axis/axis_max) * y_axis
+            raw_output[3] = 2 * (x_axis/axis_max) * (axis_max - y_axis)
             for i in range(self.num_outputs):
-                self.current_output[i] = self.map_values(input_value, self.minimum_input, self.maximum_input,
+                self.current_output[i] = self.map_values(raw_output[i], self.minimum_input, self.maximum_input,
                     self.minimums_output[i], self.maximums_output[i])
             return [self.channels_output, self.current_output]
-
-        elif self.control_type is ControlType.TOGGLE:
-            if input_value is False:
-                if self.toggle_state is ToggleState.ON:
-                    self.toggle_state = ToggleState.OFF
-                    self.current_output = self.minimums_output
-                    return [self.channels_output, self.current_output]
-                else:
-                    self.toggle_state = ToggleState.ON
-                    self.current_output = self.maximums_output
-                return [self.channels_output, self.current_output]
 
         elif self.control_type is ControlType.INCREMENT:
             # TODO Finish output
             return [self.channels_output, self.current_output]
+
         else:
             return [self.channels_output, self.current_output]

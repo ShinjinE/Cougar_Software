@@ -65,7 +65,7 @@ class AnalogOutputObject(OutputObject):
         # for i in range(len(self.minimums_output)):
         #     self.current_output[i] = (self.minimums_output[i] + self.maximums_output[i])/2
 
-    def get_output(self, input_value):
+    def get_output(self, input_name, input_value):
         """
         Returns servo outputs based off of the mapped inputs.
 
