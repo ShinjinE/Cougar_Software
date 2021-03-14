@@ -94,8 +94,8 @@ class ServoHandler:
 
         [out_channels, out_pulse] = output_object.get_output( input_name, input_value)
 
-        print( input_name + ": " + str(input_value))
-        print([out_channels, out_pulse])
+        # print( input_name + ": " + str(input_value))
+        # print([out_channels, out_pulse])
 
         for i in range(output_object.get_num_channels()):
             self.servoBoard.setTarget(out_channels[i], int(out_pulse[i]))
