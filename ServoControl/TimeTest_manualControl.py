@@ -77,7 +77,7 @@ async def print_events(device):
                 process_time.start()
                 servoHandler.process_input(xButtonInput)
                 process_time.end()
-                process_time.print_results("x_button")
+                # process_time.print_results("x_button")
             elif event.code == R1:
                 r1ButtonInput = ControllerEvent(
                     "r1_button_1" if fromGamepad1 else "r1_button_2", event.value)
@@ -160,7 +160,7 @@ async def print_events(device):
                     process_time.start()
                     servoHandler.process_input(r2AnalogInput)
                     process_time.end()
-                    # process_time.print_results("r2_trigger")
+                    process_time.print_results("r2_trigger")
                     lastInput["ABS_RZ"] = currentEvent
 
             elif ecodes.bytype[absevent.event.type][absevent.event.code] == 'ABS_Z':
@@ -170,7 +170,7 @@ async def print_events(device):
                     process_time.start()
                     servoHandler.process_input(l2AnalogInput)
                     process_time.end()
-                    # process_time.print_results("l2_trigger")
+                    process_time.print_results("l2_trigger")
                     lastInput["ABS_Z"] = currentEvent
 
             elif ecodes.bytype[absevent.event.type][absevent.event.code] == 'ABS_RX':
@@ -180,7 +180,7 @@ async def print_events(device):
                     process_time.start()
                     servoHandler.process_input(rJoystickXAnalogInput)
                     process_time.end()
-                    # process_time.print_results("l-stick-x")
+                    process_time.print_results("r-stick-x")
                     lastInput["ABS_RX"] = currentEvent
 
             elif ecodes.bytype[absevent.event.type][absevent.event.code] == 'ABS_X':
@@ -190,7 +190,7 @@ async def print_events(device):
                     process_time.start()
                     servoHandler.process_input(lJoystickXAnalogInput)
                     process_time.end()
-                    # process_time.print_results("l-stick-x")
+                    process_time.print_results("l-stick-x")
                     lastInput["ABS_X"] = currentEvent
 
             elif ecodes.bytype[absevent.event.type][absevent.event.code] == 'ABS_RY':
@@ -200,7 +200,7 @@ async def print_events(device):
                     process_time.start()
                     servoHandler.process_input(rJoystickYAnalogInput)
                     process_time.end()
-                    # process_time.print_results("r-stick-y")
+                    process_time.print_results("r-stick-y")
                     lastInput["ABS_RY"] = currentEvent
 
             elif ecodes.bytype[absevent.event.type][absevent.event.code] == 'ABS_Y':
@@ -210,7 +210,7 @@ async def print_events(device):
                     process_time.start()
                     servoHandler.process_input(lJoystickYAnalogInput)
                     process_time.end()
-                    # process_time.print_results("l-stick-y")
+                    process_time.print_results("l-stick-y")
                     lastInput["ABS_Y"] = currentEvent
 
             elif ecodes.bytype[absevent.event.type][absevent.event.code] == 'ABS_HAT0Y':
@@ -235,7 +235,7 @@ async def print_events(device):
                         process_time.start()
                         servoHandler.process_input(dUpInput)
                         process_time.end()
-                        # process_time.print_results("u_d_button_release")
+                        # process_time.print_results("d_button_release")
                         dDownInput = ControllerEvent(
                             "down_button_1" if fromGamepad1 else "down_button_2", currentEvent)
                         process_time.start()
