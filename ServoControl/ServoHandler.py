@@ -41,13 +41,13 @@ class ServoHandler:
         self.input_map = {
             "x_button_1": None,
             "circle_button_1": None,
-            "triangle_button_1": self.nose,
+            "triangle_button_1": None,
             "square_button_1": None,
             "down_button_1": None,
             "up_button_1": None,
             "right_button_1": None,
             "left_button_1": None,
-            "r1_button_1": None,
+            "r1_button_1": self.nose,
             "l1_button_1": None,
             "r2_analog_1": self.right_ear,
             "l2_analog_1": self.left_ear,
@@ -94,8 +94,8 @@ class ServoHandler:
 
         [out_channels, out_pulse] = output_object.get_output( input_name, input_value)
 
-        print( input_name + ": " + str(input_value))
-        print([out_channels, out_pulse])
+        # print( input_name + ": " + str(input_value))
+        # print([out_channels, out_pulse])
 
         for i in range(output_object.get_num_channels()):
             self.servoBoard.setTarget(out_channels[i], int(out_pulse[i]))
