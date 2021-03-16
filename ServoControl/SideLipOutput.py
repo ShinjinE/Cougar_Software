@@ -1,6 +1,6 @@
 from MultiInputOutputObject import MultiInputOutputObject, ControlType
 
-class NeckTiltOutput(MultiInputOutputObject):
+class SideLipOutput(MultiInputOutputObject):
     """
     A class to represent a an output object for a digital controller input.
 
@@ -68,6 +68,11 @@ class NeckTiltOutput(MultiInputOutputObject):
             since input is given one at a time, this list keeps track of both inputs
         """
         super().__init__(name, num_outputs, channels_output, names_input)
+        self.maximum_input = 1
+        self.minimum_input = 0
+        self.current_input = [0, 0]
+        self.out_raw_max = 1
+        self.out_raw_min = -1
 
     def get_output(self, input_name, input_value):
         """
@@ -96,12 +101,11 @@ class NeckTiltOutput(MultiInputOutputObject):
                 if self.names_input[i] == input_name:
                     self.current_input[i] = input_value
 
-            # The first input is assumed to be for tilting head left and right
-            # The second input is assumed to be for tilting head up and down
-            self.raw_output[0] = self.current_input[0] + self.current_input[1]
-            self.raw_output[1] = self.current_input[0] - self.current_input[1] + self.maximum_input
+            # First input is assumed to be the one that moves the lip up
+            # Second input is assumed to be the one that moves the lip down
+            raw_output = self.current_input[0] - self.current_input[1]
             for i in range(self.num_outputs):
-                self.current_output[i] = self.map_values(self.raw_output[i], self.out_raw_min,
+                self.current_output[i] = self.map_values(raw_output, self.out_raw_min,
                     self.out_raw_max, self.minimums_output[i], self.maximums_output[i])
             return [self.channels_output, self.current_output]
 

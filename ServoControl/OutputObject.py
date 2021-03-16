@@ -67,8 +67,8 @@ class OutputObject:
         self.channels_output = channels_output# range(num_outputs)
         self.maximums_output = [8000 for i in range(num_outputs)] 
         self.minimums_output = [4000 for i in range(num_outputs)]
-        # self.neutral_output = self.minimums_output
-        self.current_output = [4000 for i in range(num_outputs)]
+        self.default_output = [6000 for i in range(num_outputs)]
+        self.current_output = [6000 for i in range(num_outputs)]
 
         self.maximum_input = 255
         self.minimum_input = 0
@@ -78,11 +78,7 @@ class OutputObject:
 
         self.toggle_state = ToggleState.OFF
 
-    # TODO: Add to documentation
-    def set_output_channels(self, channels_output):
-        self.channels_output = channels_output
-
-    def set_outputs(self, maximums_output, minimums_output, default_output):
+    def set_outputs(self, minimums_output, default_output, maximums_output):
         """
         Sets which channels to output to and the maximum and minimun pulse width for each of
         those channels.
@@ -91,19 +87,22 @@ class OutputObject:
         ----------
         channels_output : int list
             channels corresponding to the servos controlled by the outputs
-        maximums_output : int list
-            maximum pulse width values for the corresponding servo channel
         minimums_output : int list
             minimum pulse width values for the corresponding servo channel
+        default_output : int list
+            neutral pulse width values for the corresponding servo channel, also determines starting position
+        maximums_output : int list
+            maximum pulse width values for the corresponding servo channel
 
         Returns
         -------
         None
         """
-        # self.channels_output = channels_output
-        self.maximums_output = maximums_output
+        
         self.minimums_output = minimums_output
+        self.default_output = default_output
         self.current_output = default_output
+        self.maximums_output = maximums_output
 
     def set_inversion(self, is_inverted):
         """
@@ -181,6 +180,9 @@ class OutputObject:
     #         Definition
     #     """
     #     return [0]
+
+    def get_default_outputs(self):
+        return [self.channels_output, self.default_output]
 
     def map_values(self, value, input_min, input_max, out_min, out_max):
         """
