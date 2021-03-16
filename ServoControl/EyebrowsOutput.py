@@ -1,6 +1,6 @@
-from OutputObject import OutputObject, ControlType
+from MultiInputOutputObject import MultiInputOutputObject, ControlType
 
-class EyebrowsOutput(OutputObject):
+class EyebrowsOutput(MultiInputOutputObject):
     """
     A class to represent a an output object for a digital controller input.
 
@@ -67,12 +67,7 @@ class EyebrowsOutput(OutputObject):
         current_input : int list
             since input is given one at a time, this list keeps track of both inputs
         """
-        super().__init__(name, num_outputs, channels_output)
-        self.names_input = names_input
-        self.num_inputs = len(self.names_input)
-        self.current_input = [int((self.maximum_input + self.minimum_input)/2) for i in range(self.num_inputs)]
-        # self.out_raw_max = self.maximum_input + (self.maximum_input - self.minimum_input)
-        # self.out_raw_min = self.minimum_input
+        super().__init__(name, num_outputs, channels_output, names_input)
 
     def get_output(self, input_name, input_value):
         """
@@ -106,14 +101,13 @@ class EyebrowsOutput(OutputObject):
             # The second input is assumed to be shifting focus left and right
             x_axis = self.current_input[1]
             axis_max = self.maximum_input
-            raw_output = [0, 0, 0, 0]
-            raw_output[0] = 2 * ((axis_max - x_axis)/axis_max) * (axis_max - y_axis)
-            raw_output[1] = 2 * ((axis_max - x_axis)/axis_max) * y_axis
-            raw_output[2] = 2 * (x_axis/axis_max) * y_axis
-            raw_output[3] = 2 * (x_axis/axis_max) * (axis_max - y_axis)
+            self.raw_output[0] = 2 * ((axis_max - x_axis)/axis_max) * (axis_max - y_axis)
+            self.raw_output[1] = 2 * ((axis_max - x_axis)/axis_max) * y_axis
+            self.raw_output[2] = 2 * (x_axis/axis_max) * y_axis
+            self.raw_output[3] = 2 * (x_axis/axis_max) * (axis_max - y_axis)
             for i in range(self.num_outputs):
-                self.current_output[i] = self.map_values(raw_output[i], self.minimum_input, self.maximum_input,
-                    self.minimums_output[i], self.maximums_output[i])
+                self.current_output[i] = self.map_values(self.raw_output[i], self.minimum_input,
+                    self.maximum_input, self.minimums_output[i], self.maximums_output[i])
             return [self.channels_output, self.current_output]
 
         elif self.control_type is ControlType.INCREMENT:
