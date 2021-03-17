@@ -34,6 +34,7 @@ class ServoHandler:
         self.output_objects = []
 
         # TODO: Put both ears on L2-1 and top&bottom eyelids on R2-1?
+        # TODO: Set ears to move like side lips
         self.right_ear = AnalogOutputObject("right ear", 1, [0])
         self.output_objects.append(self.right_ear)
 
@@ -102,6 +103,7 @@ class ServoHandler:
             "r1_button_1": self.nose,
             "l1_button_1": None,
             "r2_analog_1": self.right_ear,
+            # TODO: Put eyelids on L2
             "l2_analog_1": self.left_ear,
             "r3_button_1": None,
             "l3_button_1": None,
@@ -125,6 +127,7 @@ class ServoHandler:
             "r1_button_2": None,
             "l1_button_2": self.top_lip,
             "r2_analog_2": self.jaw,
+            # TODO: Put eyelids on L2
             "l2_analog_2": self.eyelids,
             "r3_button_2": None,
             "l3_button_2": None,
