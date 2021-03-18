@@ -1,6 +1,6 @@
-from MultiInputOutputObject import MultiInputOutputObject, ControlType
+from OutputObject import OutputObject, ControlType
 
-class NeckTiltOutput(MultiInputOutputObject):
+class MultiInputOutputObject(OutputObject):
     """
     A class to represent a an output object for a digital controller input.
 
@@ -67,47 +67,10 @@ class NeckTiltOutput(MultiInputOutputObject):
         current_input : int list
             since input is given one at a time, this list keeps track of both inputs
         """
-        super().__init__(name, num_outputs, channels_output, names_input)
-
-    def get_output(self, input_name, input_value):
-        """
-        Returns servo outputs based off of the mapped inputs.
-
-        Parameters
-        ----------
-        input_name : string
-            name of the associated controller input
-        input_value : int
-            the analog input from the PS4 controller
-
-        Returns
-        -------
-        [channels_output, current_output] : [int list, int list]
-            current_output is the pulse widths in quarter microseconds to output, and channels_output
-            is which channels those outputs will be sent over. How the ouptut is calculated is based
-            off of which control type the output object is set to. Direct will map the output directly
-            based on the input and the set input and output ranges. Toggle will set the output between
-            the max and the min output values and switch between these values whenever the input is
-            released. Increment will increment the output value whenever input is given.
-        """
-        # TODO Write functions for each if statement
-        if self.control_type is ControlType.DIRECT:
-            for i in range(self.num_inputs):
-                if self.names_input[i] == input_name:
-                    self.current_input[i] = input_value
-
-            # The first input is assumed to be for tilting head left and right
-            # The second input is assumed to be for tilting head up and down
-            self.raw_output[0] = self.current_input[0] + self.current_input[1]
-            self.raw_output[1] = self.current_input[0] - self.current_input[1] + self.maximum_input
-            for i in range(self.num_outputs):
-                self.current_output[i] = self.map_values(self.raw_output[i], self.out_raw_min,
-                    self.out_raw_max, self.minimums_output[i], self.maximums_output[i])
-            return [self.channels_output, self.current_output]
-
-        elif self.control_type is ControlType.INCREMENT:
-            # TODO Finish output
-            return [self.channels_output, self.current_output]
-
-        else:
-            return [self.channels_output, self.current_output]
+        super().__init__(name, num_outputs, channels_output)
+        self.names_input = names_input
+        self.num_inputs = len(self.names_input)
+        self.current_input = [int((self.maximum_input + self.minimum_input)/2) for i in range(self.num_inputs)]
+        self.out_raw_max = self.maximum_input + (self.maximum_input - self.minimum_input)
+        self.out_raw_min = self.minimum_input
+        self.raw_output = [0 for i in range(self.num_outputs)]
