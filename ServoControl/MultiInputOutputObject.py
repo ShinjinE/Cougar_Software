@@ -1,6 +1,6 @@
 from OutputObject import OutputObject, ControlType
 
-class AnalogOutputObject(OutputObject):
+class MultiInputOutputObject(OutputObject):
     """
     A class to represent a an output object for a digital controller input.
 
@@ -50,7 +50,7 @@ class AnalogOutputObject(OutputObject):
         Maps an input value to its output.
     """
 
-    def __init__(self, name, num_outputs, channels_output):
+    def __init__(self, name, num_outputs, channels_output, names_input):
         """
         Class constructor.
 
@@ -59,39 +59,18 @@ class AnalogOutputObject(OutputObject):
         name : string
             name of the output group represented by output object
         num_outputs : int
-            number of output channels controlled by the output object
+            number of output channels controlled by the output object, must be 2 for this object
+        channels_output : int list
+            the two channels to output to, order matters
+        names_input : string list
+            the two associated controller inputs with the object, first horizontal twist, second is vertical twist
+        current_input : int list
+            since input is given one at a time, this list keeps track of both inputs
         """
         super().__init__(name, num_outputs, channels_output)
-        # for i in range(len(self.minimums_output)):
-        #     self.current_output[i] = (self.minimums_output[i] + self.maximums_output[i])/2
-
-    def get_output(self, input_name, input_value):
-        """
-        Returns servo outputs based off of the mapped inputs.
-
-        Parameters
-        ----------
-        input_value : boolean
-            the analog input from the PS4 controller
-
-        Returns
-        -------
-        [channels_output, current_output] : [int list, int list]
-            current_output is the pulse widths in quarter microseconds to output, and channels_output
-            is which channels those outputs will be sent over. How the ouptut is calculated is based
-            off of which control type the output object is set to. Direct will map the output directly
-            based on the input and the set input and output ranges. Toggle will set the output between
-            the max and the min output values and switch between these values whenever the input is
-            released. Increment will increment the output value whenever input is given.
-        """
-        # TODO Write functions for each if statement
-        if self.control_type is ControlType.DIRECT:
-            for i in range(self.num_outputs):
-                self.current_output[i] = self.map_values(input_value, self.minimum_input, self.maximum_input,
-                    self.minimums_output[i], self.maximums_output[i])
-            return [self.channels_output, self.current_output]
-        elif self.control_type is ControlType.INCREMENT:
-            # TODO Finish output
-            return [self.channels_output, self.current_output]
-        else:
-            return [self.channels_output, self.current_output]
+        self.names_input = names_input
+        self.num_inputs = len(self.names_input)
+        self.current_input = [int((self.maximum_input + self.minimum_input)/2) for i in range(self.num_inputs)]
+        self.out_raw_max = self.maximum_input + (self.maximum_input - self.minimum_input)
+        self.out_raw_min = self.minimum_input
+        self.raw_output = [0 for i in range(self.num_outputs)]
