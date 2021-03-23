@@ -1,0 +1,5 @@
+First cd into whatever folder you want to keep all the code then run:
+	git init
+	git remote [origin] https://github.com/ShinjinE/Cougar_Software.git
+	git fetch [origin]
+	git checkout <BrainPi>
