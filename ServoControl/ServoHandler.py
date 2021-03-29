@@ -6,6 +6,7 @@ from SideLipOutput import SideLipOutput
 from NeckTiltOutput import NeckTiltOutput
 # from AnalogMixerOutput import AnalogMixerOutput
 import maestro
+from time import sleep
 
 class ServoHandler:
     """
@@ -15,10 +16,8 @@ class ServoHandler:
 
     Attributes
     ----------
-    # TODO: Add all output members
     servoBoard : maestro.Controller
         object that establishes serial conection to the Maestro and has functions to send commands to the board
-    # TODO: Change to a dictionary of each channel and it's default output so sequential startup can match relays
     output_objects : [OutputObject]
         list of all the output objects, used to activate each output on the Maestro board on startup
     right_ear : AnalogOutputObject
@@ -77,13 +76,9 @@ class ServoHandler:
         # List to store each output object in
         self.output_objects = []
 
-        # TODO: Put ears on left&down and x&circle, with top&bottom eyelids on L2-1
-
-        # TODO: Set ears to move like side lips
         self.right_ear = EarOutput("right ear", 1, [0], ["x_button_1", "circle_button_1"])
         self.output_objects.append(self.right_ear)
 
-        # TODO: Set ears to move like side lips
         self.left_ear = EarOutput("left ear", 1, [1], ["down_button_1", "left_button_1"])
         self.output_objects.append(self.left_ear)
 
@@ -184,9 +179,8 @@ class ServoHandler:
             "ps_symbol_button_2": None
         }
 
-        # TODO: Uncomment this to activate Maestro when program begins
-        # # Start outputting to the Maestro board using starting positions
-        # self.start_outputs()
+        # Start outputting to the Maestro board using starting positions
+        self.start_outputs()
 
     def send_outputs(self, num_outputs, channel, output):
         """
@@ -250,6 +244,12 @@ class ServoHandler:
         -------
         None
         """
+        # Time to delay between activating servo groups
+        # Total time to activate is about 1 second for all 13 groups
+        sleep_sec = 1.0/13.0
+
+        # Loop to activate each movement group
         for output_object in self.output_objects:
             [out_channels, out_pulse] = output_object.get_default_outputs()
             self.send_outputs(output_object.get_num_channels(), out_channels, out_pulse)
+            sleep(sleep_sec)
