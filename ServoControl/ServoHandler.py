@@ -77,9 +77,11 @@ class ServoHandler:
         self.output_objects = []
 
         self.right_ear = EarOutput("right ear", 1, [0], ["x_button_1", "circle_button_1"])
+        self.right_ear.set_outputs([4000], [4000], [8000])
         self.output_objects.append(self.right_ear)
 
         self.left_ear = EarOutput("left ear", 1, [1], ["down_button_1", "left_button_1"])
+        self.left_ear.set_outputs([4000], [4000], [8000])
         self.output_objects.append(self.left_ear)
 
         self.eyelids = AnalogOutputObject("eylids", 2, [2, 3])
