@@ -1,10 +1,12 @@
 from DigitalOutputObject import DigitalOutputObject
 from AnalogOutputObject import AnalogOutputObject
+from EarOutput import EarOutput
 from EyebrowsOutput import EyebrowsOutput
-from NeckTiltOutput import NeckTiltOutput
 from SideLipOutput import SideLipOutput
+from NeckTiltOutput import NeckTiltOutput
 # from AnalogMixerOutput import AnalogMixerOutput
 import maestro
+from time import sleep
 
 class ServoHandler:
     """
@@ -14,31 +16,70 @@ class ServoHandler:
 
     Attributes
     ----------
-    # TODO: Add all output members
+    servoBoard : maestro.Controller
+        object that establishes serial conection to the Maestro and has functions to send commands to the board
+    output_objects : [OutputObject]
+        list of all the output objects, used to activate each output on the Maestro board on startup
+    right_ear : AnalogOutputObject
+        object to map inputs to output for the right ear movements
+    left_ear : AnalogOutputObject
+        object to map inputs to output for the left ear movements
+    eyelids : AnalogOutputObject
+        object to map input to outputs for the top and bottom eyelid movements
+    eyes_horizontal : AnalogOutputObject
+        object to map input to outputs for the left and right eye horizontal movements
+    eyes_vertical : AnalogOutputObject
+        object to map input to outputs for the left and right eye vertical movements
+    eyebrows : EybrowsOutput
+        object to map inputs to outputs for the eyebrow movements
+    nose : DigitalOutputObject
+        object to map input to output for the nose movements
+    top_lip : DigitalOutputObject
+        object to map input to output for the top lip movements
+    right_lip : SideLipOutput
+        object to map inputs to outputs for the right lip movements
+    left_lip : SideLipOutput
+        object to map inputs to outputs for the left lip movements
+    jaw : AnalogOutputObject
+        object to map input to outputs for the jaw movements
+    neck_twist : AnalogOutputObject
+        object to map input to output for the neck twist movements
+    neck_tilt : NeckTiltOutput
+        object to map inputs to outpus for the neck tilt movements
     input_map : dictionary [input_name (string): output_object (OutputObject)]
         mapping of the controller inputs to movement outputs
 
     Methods
     -------
     __init_():
-        Class constructor. Creates needed output objects and the input map
+        Class constructor. Creates needed output objects and sets their parameters. Also creates the input map.
+    send_outputs(num_outputs, channel, output):
+        Sends the output to the corresponding channel from the given lists of channels and outputs.
     process_input(input_object):
-        Using the input map, sends input values to correct output objects, 
+        Using the input map, determines the correct output object to send the input value to. The returned outputs are passed to the maestro board.
+    start_outputs():
+        Sends the starting outputs for each motor to the Maestro board to activate each channel in default positions.
     """
 
     def __init__(self):
+        """
+        Class constructor. Creates needed output objects and sets their parameters. Also creates the input map.
+
+        Parameters
+        ----------
+        None
+        """
         # Create connection to Maestro
-        # If connection fails, unplug and replug the USB cable, then try again
+        # If connection fails, unplug and replug the USB cable, then run code again
         self.servoBoard = maestro.Controller()
 
+        # List to store each output object in
         self.output_objects = []
 
-        # TODO: Put both ears on L2-1 and top&bottom eyelids on R2-1?
-        # TODO: Set ears to move like side lips
-        self.right_ear = AnalogOutputObject("right ear", 1, [0])
+        self.right_ear = EarOutput("right ear", 1, [0], ["x_button_1", "circle_button_1"])
         self.output_objects.append(self.right_ear)
 
-        self.left_ear = AnalogOutputObject("left ear", 1, [1])
+        self.left_ear = EarOutput("left ear", 1, [1], ["down_button_1", "left_button_1"])
         self.output_objects.append(self.left_ear)
 
         self.eyelids = AnalogOutputObject("eylids", 2, [2, 3])
@@ -92,19 +133,18 @@ class ServoHandler:
         # If an input is not mapped to any output, the value for the dictionary is set to None
         self.input_map = {
             # Input mapping for controller 1
-            "x_button_1": None,
-            "circle_button_1": None,
+            "x_button_1": self.right_ear,
+            "circle_button_1": self.right_ear,
             "triangle_button_1": None,
             "square_button_1": None,
-            "down_button_1": None,
+            "down_button_1": self.left_ear,
             "up_button_1": None,
             "right_button_1": None,
-            "left_button_1": None,
+            "left_button_1": self.left_ear,
             "r1_button_1": self.nose,
             "l1_button_1": None,
-            "r2_analog_1": self.right_ear,
-            # TODO: Put eyelids on L2
-            "l2_analog_1": self.left_ear,
+            "r2_analog_1": None,
+            "l2_analog_1": self.eyelids,
             "r3_button_1": None,
             "l3_button_1": None,
             "r_joystick_x_analog_1": self.eyebrows,
@@ -127,8 +167,7 @@ class ServoHandler:
             "r1_button_2": None,
             "l1_button_2": self.top_lip,
             "r2_analog_2": self.jaw,
-            # TODO: Put eyelids on L2
-            "l2_analog_2": self.eyelids,
+            "l2_analog_2": None,
             "r3_button_2": None,
             "l3_button_2": None,
             "r_joystick_x_analog_2": self.neck_twist,
@@ -140,17 +179,41 @@ class ServoHandler:
             "ps_symbol_button_2": None
         }
 
-        # TODO: Uncomment this to activate Maestro when program begins
-        # # Start outputting to the Maestro board using starting positions
-        # self.start_outputs()
+        # Start outputting to the Maestro board using starting positions
+        self.start_outputs()
 
     def send_outputs(self, num_outputs, channel, output):
+        """
+        Sends the output to the corresponding channel from the given lists of channels and outputs.
+
+        Parameters
+        ----------
+        num_outputs : int
+            number of channels and outputs to loop through
+        channel : [int]
+            channel numbers on the Maestro board to send outputs to
+        output : [double]
+            values to output on the Maestro board, cast to int to ensure proper typing
+
+        Returns
+        -------
+        None
+        """
         for i in range(num_outputs):
             self.servoBoard.setTarget(channel[i], int(output[i]))
 
     def process_input(self, input_object):
-        # TODO: Document method
+        """
+        Using the input map, determines the correct output object to send the input value to. The returned outputs are passed to the maestro board.
 
+        Parameters
+        ----------
+        input_object : ControllerEvent
+            object containing the name of the input and its associated value to be processed
+
+        Returns
+        -------
+        """
         # Get info about input
         input_name = input_object.name
         output_object = self.input_map.get(input_name)
@@ -168,10 +231,25 @@ class ServoHandler:
 
         # Send outputs to Maestro
         self.send_outputs(output_object.get_num_channels(), out_channels, out_pulse)
-        # for i in range(output_object.get_num_channels()):
-        #     self.servoBoard.setTarget(out_channels[i], int(out_pulse[i]))
 
     def start_outputs(self):
+        """
+        Sends the starting outputs for each motor to the Maestro board to activate each channel in default positions.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+        # Time to delay between activating servo groups
+        # Total time to activate is about 1 second for all 13 groups
+        sleep_sec = 1.0/13.0
+
+        # Loop to activate each movement group
         for output_object in self.output_objects:
             [out_channels, out_pulse] = output_object.get_default_outputs()
             self.send_outputs(output_object.get_num_channels(), out_channels, out_pulse)
+            sleep(sleep_sec)

@@ -2,7 +2,7 @@ from enum import Enum, auto
 
 class OutputObject:
     """
-    A class to represent a an output object for a controller input.
+    A base class to represent a an output object for a controller input.
 
     ...
 
@@ -11,31 +11,35 @@ class OutputObject:
     name : str
         name of the servo group for the output
     num_outputs : int
-        total number of outputs from the given input
-    channels_output : int list
+        total number of outputs calculated from the given input
+    channels_output : [int]
         channels corresponding to the servos controlled by the outputs
-    maximums_output : int list
+    maximums_output : [int]
         maximum pulse width values for the corresponding servo channel
-    minimums_output : int list
+    minimums_output : [int]
         minimum pulse width values for the corresponding servo channel
-    current_output : int list
-        current output position of the servos to be used for increment mode
+    default_output : [int]
+        default output position of the servos for start up position and used for some multi input objects
+    current_output : [int]
+        current output position of the servos to be used for increment mode or multi input objects
     maximum_input : int
-        maximum input value used for mapping inputs to outputs
+        maximum input value used for mapping inputs to outputs, 255 for analog and 1 for digital
     minimum_input : int
-        minimum input value used for mapping inputs to outputs
+        minimum input value used for mapping inputs to outputs, 0 for both analog and digital
     is_inverted : Boolean list
         whether to invert the output mapping
     control_type : Enum ControlType
         mode on how to determine the output
+    toggle_state : Enum ToggleState
+        used when control mode is set to TOGGLE to determine the current output state
 
     Methods
     -------
-    __init_(name, num_outputs):
-        Class constructor.
+    __init_(name, num_outputs, channels_output):
+        Class constructor. Assigns the values passed in and initalizes remaining members to default values.
     set_outputs(channels_output, maximums_output, minimums_output):
-        Sets which channels to output to and the maximum and minimun pulse width for each of
-        those channels.
+        Sets which channels to output to and the minimun, default, and maximum pulse width for each of those channels.
+        Also sets current outputs to the same values as the default.
     set_inversion(is_inverted):
         Sets whether to invert the output signal or not.
     set_control_direct():
@@ -44,15 +48,17 @@ class OutputObject:
         Sets control mode to toggle.
     set_control_increment():
         Sets control mode to increment.
-    get_output(input_value):
-        Returns servo outputs based off of the mapped inputs.
-    map_input(input_value, input_min, input_max, out_max, out_min):
+    get_num_channels():
+        Returns the number of output channels for the object.
+    get_default_outputs():
+        Returns the default output values for the object.
+    map_values(value, input_min, input_max, out_min, out_max):
         Maps an input value to its output.
     """
 
     def __init__(self, name, num_outputs, channels_output):
         """
-        Class constructor.
+        Class constructor. Assigns the values passed in and initalizes remaining members to default values.
 
         Parameters
         ----------
@@ -60,38 +66,41 @@ class OutputObject:
             name of the output group represented by output object
         num_outputs : int
             number of output channels controlled by the output object
+        channels_output : [int]
+            list of the output channels used by the object
         """
+        # Set parameters from values passed into constructor
         self.name = name
         self.num_outputs = num_outputs
+        self.channels_output = channels_output
 
-        self.channels_output = channels_output# range(num_outputs)
+        # Set default values for output members
         self.maximums_output = [8000 for i in range(num_outputs)] 
         self.minimums_output = [4000 for i in range(num_outputs)]
         self.default_output = [6000 for i in range(num_outputs)]
         self.current_output = [6000 for i in range(num_outputs)]
 
+        # Set default values for input members
         self.maximum_input = 255
         self.minimum_input = 0
         self.is_inverted = [False for i in range(num_outputs)]
 
+        # Set default values for object states
         self.control_type = ControlType.DIRECT
-
         self.toggle_state = ToggleState.OFF
 
     def set_outputs(self, minimums_output, default_output, maximums_output):
         """
-        Sets which channels to output to and the maximum and minimun pulse width for each of
-        those channels.
+        Sets which channels to output to and the minimun, default, and maximum pulse width for each of those channels.
+        Also sets current outputs to the same values as the default.
 
         Parameters
         ----------
-        channels_output : int list
-            channels corresponding to the servos controlled by the outputs
-        minimums_output : int list
+        minimums_output : [int]
             minimum pulse width values for the corresponding servo channel
-        default_output : int list
+        default_output : [int]
             neutral pulse width values for the corresponding servo channel, also determines starting position
-        maximums_output : int list
+        maximums_output : [int]
             maximum pulse width values for the corresponding servo channel
 
         Returns
@@ -161,27 +170,34 @@ class OutputObject:
         """
         self.control_type = ControlType.INCREMENT
 
-    # TODO Write documentation
     def get_num_channels(self):
+        """
+        Returns the number of output channels for the object.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        num_outputs : int
+            number of output channels the object sends output to
+        """
         return self.num_outputs
 
-    # def get_output(self, input_value):
-    #     """
-    #     Use summary from methods section of the class docstring
-
-    #     Parameters
-    #     ----------
-    #     inputVar : type
-    #         Definition
-
-    #     Returns
-    #     -------
-    #     outputVar : type
-    #         Definition
-    #     """
-    #     return [0]
-
     def get_default_outputs(self):
+        """
+         Returns the default output values for the object.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        [channels_output, default_output] : [[int], [int]]
+            corresponding channels to the default output values for the object
+        """
         return [self.channels_output, self.default_output]
 
     def map_values(self, value, input_min, input_max, out_min, out_max):
