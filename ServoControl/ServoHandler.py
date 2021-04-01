@@ -76,57 +76,74 @@ class ServoHandler:
         # List to store each output object in
         self.output_objects = []
 
+        # Right Ear
         self.right_ear = EarOutput("right ear", 1, [0], ["x_button_1", "circle_button_1"])
         self.right_ear.set_outputs([4000], [4000], [8000])
         self.output_objects.append(self.right_ear)
 
+        # Left Ear
         self.left_ear = EarOutput("left ear", 1, [1], ["down_button_1", "left_button_1"])
         self.left_ear.set_outputs([4000], [4000], [8000])
         self.output_objects.append(self.left_ear)
 
+        # Eyelids
         self.eyelids = AnalogOutputObject("eylids", 2, [2, 3])
-        self.eyelids.set_outputs([6500, 5000], [6500, 5000], [5750, 6250])
+        self.eyelids.set_outputs([6800, 5300], [6800, 5300], [6050, 6550])
         self.output_objects.append(self.eyelids)
 
+        # Horizontal Eye Movement
         self.eyes_horizontal = AnalogOutputObject("eyes horizontal", 2, [5, 7])
-        self.eyes_horizontal.set_outputs([7000, 7000], [6000, 6000], [5000, 5000])
+        lh_eye_offset = 500 # Positive moves left
+        rh_eye_offset = 600 # Positive moves left
+        self.eyes_horizontal.set_outputs([7000+lh_eye_offset, 7000+rh_eye_offset], [6000+lh_eye_offset, 6000+rh_eye_offset], [5000+lh_eye_offset, 5000+rh_eye_offset])
         self.output_objects.append(self.eyes_horizontal)
-
+        
+        # Vertical Eye Movement
         self.eyes_vertical = AnalogOutputObject("eyes vertical", 2, [4, 6])
-        self.eyes_vertical.set_outputs([7000, 7000], [6000, 6000], [5000, 5000])
+        lv_eye_offset = 500 # Positive moves up
+        rv_eye_offset = 400 # Positive moves up
+        self.eyes_vertical.set_outputs([7000+lv_eye_offset, 7000+rv_eye_offset], [6000+lv_eye_offset, 6000+rv_eye_offset], [5000+lv_eye_offset, 5000+rv_eye_offset])
         self.output_objects.append(self.eyes_vertical)
 
+        # Eyebrows
         self.eyebrows = EyebrowsOutput("eyebrows", 4, [8, 9, 10, 11], ["r_joystick_y_analog_1", "r_joystick_x_analog_1"])
-        self.eyebrows.set_outputs([8000, 4000, 8000, 4000], [6000, 6000, 6000, 6000], [4000, 8000, 4000, 8000])
+        self.eyebrows.set_outputs([8000, 8000, 4000, 4000], [6000, 6000, 6000, 6000], [4000, 4000, 8000, 8000])
         self.output_objects.append(self.eyebrows)
 
+        # Nose
         self.nose = DigitalOutputObject("nose", 1, [12])
         self.nose.set_outputs([4000, 4000], [4000, 4000], [2000, 2000])
         self.output_objects.append(self.nose)
 
+        # Top Lip
         self.top_lip = DigitalOutputObject("top lip", 1, [13])
         self.top_lip.set_outputs([4800], [4800], [6050])
         self.output_objects.append(self.top_lip)
 
+        # Right Lip
         self.right_lip = SideLipOutput("right lip", 2, [14, 15], ["circle_button_2", "x_button_2"])
         self.right_lip.set_outputs([6500, 5000], [6000, 6000], [5500, 7000])
         self.output_objects.append(self.right_lip)
         
+        # Left Lip
         self.left_lip = SideLipOutput("left lip", 2, [16, 17], ["left_button_2", "down_button_2"])
         self.left_lip.set_outputs([5500, 7000], [6000, 6000], [6500, 5000])
         self.output_objects.append(self.left_lip)
 
+        # Jaw
         self.jaw = AnalogOutputObject("jaw", 2, [18, 19])
         self.jaw.set_outputs([6000, 6000], [6000, 6000], [7000, 5000])
         self.output_objects.append(self.jaw)
 
+        # Neck Twist (Look left and right)
         self.neck_twist = AnalogOutputObject("neck twist", 1, [20])
         self.neck_twist.set_outputs([8000], [6000], [4000])
         self.output_objects.append(self.neck_twist)
 
+        # Neck Tilt (Forward and backward, side to side)
         self.neck_tilt = NeckTiltOutput("neck tilt", 2, [21, 22], ["l_joystick_x_analog_2", "l_joystick_y_analog_2"])
-        offset = 500
-        self.neck_tilt.set_outputs([3000, 3000+offset], [6000, 6000+offset], [9000, 9000+offset])
+        tilt_offset = 500 # Positive moves up
+        self.neck_tilt.set_outputs([3000, 3000+tilt_offset], [6000, 6000+tilt_offset], [9000, 9000+tilt_offset])
         self.output_objects.append(self.neck_tilt)
 
         # Dictionary that maps inputs to the correlated output object
