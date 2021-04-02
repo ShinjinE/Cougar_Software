@@ -131,6 +131,9 @@ class EarOutput(MultiInputOutputObject):
             for i in range(self.num_outputs):
                 self.current_output[i] = self.map_values(raw_output, self.out_raw_min,
                     self.out_raw_max, self.minimums_output[i], self.maximums_output[i])
+
+            # print( input_name + ": " + str(input_value))
+            # print([self.channels_output, self.current_output])
             return [self.channels_output, self.current_output]
 
         elif self.control_type is ControlType.INCREMENT:
