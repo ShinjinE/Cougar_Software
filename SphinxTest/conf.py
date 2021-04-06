@@ -16,6 +16,7 @@
 import os
 import sys
 sys.path.insert(0, '/home/pi/Cougar_Files/movementMapping/')
+from manualControl import ControllerEvent, process_events
 import MovementMap
 
 
