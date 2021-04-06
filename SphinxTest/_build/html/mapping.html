@@ -1,0 +1,194 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Movement Mapping &#8212; Cosmotron 2021 documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Output Objects" href="output.html" />
+    <link rel="prev" title="Input Event Handling" href="input.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-MovementMap">
+<span id="movement-mapping"></span><h1>Movement Mapping<a class="headerlink" href="#module-MovementMap" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="MovementMap.MovementMap">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">MovementMap.</span></code><code class="sig-name descname"><span class="pre">MovementMap</span></code><a class="headerlink" href="#MovementMap.MovementMap" title="Permalink to this definition">¶</a></dt>
+<dd><p>A class that handles controller inputs. Contains a mapping of input objects to output objects.</p>
+<p>…</p>
+<dl class="simple">
+<dt>servoBoard<span class="classifier">maestro.Controller</span></dt><dd><p>object that establishes serial conection to the Maestro and has functions to send commands to the board</p>
+</dd>
+<dt>output_objects<span class="classifier">[OutputObject]</span></dt><dd><p>list of all the output objects, used to activate each output on the Maestro board on startup</p>
+</dd>
+<dt>right_ear<span class="classifier">AnalogOutputObject</span></dt><dd><p>object to map inputs to output for the right ear movements</p>
+</dd>
+<dt>left_ear<span class="classifier">AnalogOutputObject</span></dt><dd><p>object to map inputs to output for the left ear movements</p>
+</dd>
+<dt>eyelids<span class="classifier">AnalogOutputObject</span></dt><dd><p>object to map input to outputs for the top and bottom eyelid movements</p>
+</dd>
+<dt>eyes_horizontal<span class="classifier">AnalogOutputObject</span></dt><dd><p>object to map input to outputs for the left and right eye horizontal movements</p>
+</dd>
+<dt>eyes_vertical<span class="classifier">AnalogOutputObject</span></dt><dd><p>object to map input to outputs for the left and right eye vertical movements</p>
+</dd>
+<dt>eyebrows<span class="classifier">EybrowsOutput</span></dt><dd><p>object to map inputs to outputs for the eyebrow movements</p>
+</dd>
+<dt>nose<span class="classifier">DigitalOutputObject</span></dt><dd><p>object to map input to output for the nose movements</p>
+</dd>
+<dt>top_lip<span class="classifier">DigitalOutputObject</span></dt><dd><p>object to map input to output for the top lip movements</p>
+</dd>
+<dt>right_lip<span class="classifier">SideLipOutput</span></dt><dd><p>object to map inputs to outputs for the right lip movements</p>
+</dd>
+<dt>left_lip<span class="classifier">SideLipOutput</span></dt><dd><p>object to map inputs to outputs for the left lip movements</p>
+</dd>
+<dt>jaw<span class="classifier">AnalogOutputObject</span></dt><dd><p>object to map input to outputs for the jaw movements</p>
+</dd>
+<dt>neck_twist<span class="classifier">AnalogOutputObject</span></dt><dd><p>object to map input to output for the neck twist movements</p>
+</dd>
+<dt>neck_tilt<span class="classifier">NeckTiltOutput</span></dt><dd><p>object to map inputs to outpus for the neck tilt movements</p>
+</dd>
+<dt>input_map<span class="classifier">dictionary [input_name (string): output_object (OutputObject)]</span></dt><dd><p>mapping of the controller inputs to movement outputs</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>__init_():</dt><dd><p>Class constructor. Creates needed output objects and sets their parameters. Also creates the input map.</p>
+</dd>
+<dt>send_outputs(num_outputs, channel, output):</dt><dd><p>Sends the output to the corresponding channel from the given lists of channels and outputs.</p>
+</dd>
+<dt>process_input(input_object):</dt><dd><p>Using the input map, determines the correct output object to send the input value to. The returned outputs are passed to the maestro board.</p>
+</dd>
+<dt>start_outputs():</dt><dd><p>Sends the starting outputs for each motor to the Maestro board to activate each channel in default positions.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="MovementMap.MovementMap.process_input">
+<code class="sig-name descname"><span class="pre">process_input</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MovementMap.MovementMap.process_input" title="Permalink to this definition">¶</a></dt>
+<dd><p>Using the input map, determines the correct output object to send the input value to. The returned outputs are passed to the maestro board.</p>
+<dl class="simple">
+<dt>input_object<span class="classifier">ControllerEvent</span></dt><dd><p>object containing the name of the input and its associated value to be processed</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="MovementMap.MovementMap.send_outputs">
+<code class="sig-name descname"><span class="pre">send_outputs</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_outputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MovementMap.MovementMap.send_outputs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends the output to the corresponding channel from the given lists of channels and outputs.</p>
+<dl class="simple">
+<dt>num_outputs<span class="classifier">int</span></dt><dd><p>number of channels and outputs to loop through</p>
+</dd>
+<dt>channel<span class="classifier">[int]</span></dt><dd><p>channel numbers on the Maestro board to send outputs to</p>
+</dd>
+<dt>output<span class="classifier">[double]</span></dt><dd><p>values to output on the Maestro board, cast to int to ensure proper typing</p>
+</dd>
+</dl>
+<p>None</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="MovementMap.MovementMap.start_outputs">
+<code class="sig-name descname"><span class="pre">start_outputs</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MovementMap.MovementMap.start_outputs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends the starting outputs for each motor to the Maestro board to activate each channel in default positions.</p>
+<p>None</p>
+<p>None</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Cosmotron</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="input.html">Input Event Handling</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Movement Mapping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="output.html">Output Objects</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="input.html" title="previous chapter">Input Event Handling</a></li>
+      <li>Next: <a href="output.html" title="next chapter">Output Objects</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Parker King, Ethan.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/mapping.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
