@@ -1,0 +1,487 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Specific Objects &#8212; Cosmotron 2021 documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Generic Objects" href="generic.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="specific-objects">
+<h1>Specific Objects<a class="headerlink" href="#specific-objects" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-EarOutput">
+<span id="ear-output"></span><h2>Ear Output<a class="headerlink" href="#module-EarOutput" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="EarOutput.EarOutput">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">EarOutput.</span></code><code class="sig-name descname"><span class="pre">EarOutput</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_outputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channels_output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names_input</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EarOutput.EarOutput" title="Permalink to this definition">¶</a></dt>
+<dd><p>A class to represent the output object for the left or right ear that will take multiple inputs.
+It inherits attributes and methods from MultiInputOutputObject.</p>
+<p>…</p>
+<dl class="simple">
+<dt>name<span class="classifier">str</span></dt><dd><p>name of the servo group for the output</p>
+</dd>
+<dt>num_outputs<span class="classifier">int</span></dt><dd><p>total number of outputs calculated from the given input</p>
+</dd>
+<dt>channels_output<span class="classifier">[int]</span></dt><dd><p>channels corresponding to the servos controlled by the outputs</p>
+</dd>
+<dt>maximums_output<span class="classifier">[int]</span></dt><dd><p>maximum pulse width values for the corresponding servo channel</p>
+</dd>
+<dt>minimums_output<span class="classifier">[int]</span></dt><dd><p>minimum pulse width values for the corresponding servo channel</p>
+</dd>
+<dt>default_output<span class="classifier">[int]</span></dt><dd><p>default output position of the servos for start up position</p>
+</dd>
+<dt>current_output<span class="classifier">[int]</span></dt><dd><p>current output position of the servos to be used for increment mode</p>
+</dd>
+<dt>maximum_input<span class="classifier">int</span></dt><dd><p>maximum input value used for mapping inputs to outputs</p>
+</dd>
+<dt>minimum_input<span class="classifier">int</span></dt><dd><p>minimum input value used for mapping inputs to outputs</p>
+</dd>
+<dt>is_inverted<span class="classifier">Boolean list</span></dt><dd><p>whether to invert the output mapping</p>
+</dd>
+<dt>control_type<span class="classifier">Enum ControlType</span></dt><dd><p>mode on how to determine the output</p>
+</dd>
+<dt>toggle_state<span class="classifier">Enum ToggleState</span></dt><dd><p>used when control mode is set to TOGGLE to determine the current output state</p>
+</dd>
+<dt>names_input<span class="classifier">[str]</span></dt><dd><p>list of the input names used by the object, this allows the object to know which input value to update</p>
+</dd>
+<dt>num_inputs<span class="classifier">int</span></dt><dd><p>number of inputs the object uses</p>
+</dd>
+<dt>current_input<span class="classifier">[int]</span></dt><dd><p>since input is given one at a time, this list keeps track of previous inputs</p>
+</dd>
+<dt>out_raw_min<span class="classifier">int</span></dt><dd><p>minimum value of an intermediate value used to calculate output</p>
+</dd>
+<dt>out_raw_max<span class="classifier">int</span></dt><dd><p>maximum value of an intermediate value used to calculate output</p>
+</dd>
+<dt>raw_output<span class="classifier">[int]</span></dt><dd><p>list to store the calculated intermediate values that will be mapped to final output values</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>__init_(name, num_outputs, channels_output, names_input):</dt><dd><p>Class constructor. Assigns the values passed in and initalizes remaining members to default values.</p>
+</dd>
+<dt>set_outputs(channels_output, maximums_output, minimums_output):</dt><dd><p>Sets which channels to output to and the minimun, default, and maximum pulse width for each of those channels.
+Also sets current outputs to the same values as the default.</p>
+</dd>
+<dt>set_inversion(is_inverted):</dt><dd><p>Sets whether to invert the output signal or not.</p>
+</dd>
+<dt>set_control_direct():</dt><dd><p>Sets control mode to direct.</p>
+</dd>
+<dt>set_control_toggle():</dt><dd><p>Sets control mode to toggle.</p>
+</dd>
+<dt>set_control_increment():</dt><dd><p>Sets control mode to increment.</p>
+</dd>
+<dt>get_num_channels():</dt><dd><p>Returns the number of output channels for the object.</p>
+</dd>
+<dt>get_default_outputs():</dt><dd><p>Returns the default output values for the object.</p>
+</dd>
+<dt>get_output(input_name, input_value):</dt><dd><p>Calculate and returns the output based on the given input value and current control mode.</p>
+</dd>
+<dt>map_values(value, input_min, input_max, out_min, out_max):</dt><dd><p>Maps an input value to its output.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="EarOutput.EarOutput.get_output">
+<code class="sig-name descname"><span class="pre">get_output</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EarOutput.EarOutput.get_output" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate and returns the output based on the given input value and current control mode.</p>
+<dl class="simple">
+<dt>input_name<span class="classifier">str</span></dt><dd><p>name associated with the input</p>
+</dd>
+<dt>input_value<span class="classifier">int</span></dt><dd><p>the input value from the PS4 controller</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>[channels_output, current_output]<span class="classifier">[[int], [int]]</span></dt><dd><p>current_output is the pulse widths in quarter microseconds to output, and channels_output
+is which channels those outputs will be sent over. How the ouptut is calculated is based
+off of which control type the output object is set to. Direct will map the output directly
+based on the input and the set input and output ranges. Toggle will set the output between
+the max and the min output values and switch between these values whenever the input is
+released. Increment will increment the output value whenever input is given.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-EyebrowsOutput">
+<span id="eyebrows-output"></span><h2>Eyebrows Output<a class="headerlink" href="#module-EyebrowsOutput" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="EyebrowsOutput.EyebrowsOutput">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">EyebrowsOutput.</span></code><code class="sig-name descname"><span class="pre">EyebrowsOutput</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_outputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channels_output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names_input</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EyebrowsOutput.EyebrowsOutput" title="Permalink to this definition">¶</a></dt>
+<dd><p>A class to represent the output object for the eyebrows that will take multiple inputs.
+It inherits attributes and methods from MultiInputOutputObject.</p>
+<p>…</p>
+<dl class="simple">
+<dt>name<span class="classifier">str</span></dt><dd><p>name of the servo group for the output</p>
+</dd>
+<dt>num_outputs<span class="classifier">int</span></dt><dd><p>total number of outputs calculated from the given input</p>
+</dd>
+<dt>channels_output<span class="classifier">[int]</span></dt><dd><p>channels corresponding to the servos controlled by the outputs</p>
+</dd>
+<dt>maximums_output<span class="classifier">[int]</span></dt><dd><p>maximum pulse width values for the corresponding servo channel</p>
+</dd>
+<dt>minimums_output<span class="classifier">[int]</span></dt><dd><p>minimum pulse width values for the corresponding servo channel</p>
+</dd>
+<dt>default_output<span class="classifier">[int]</span></dt><dd><p>default output position of the servos for start up position</p>
+</dd>
+<dt>current_output<span class="classifier">[int]</span></dt><dd><p>current output position of the servos to be used for increment mode</p>
+</dd>
+<dt>maximum_input<span class="classifier">int</span></dt><dd><p>maximum input value used for mapping inputs to outputs</p>
+</dd>
+<dt>minimum_input<span class="classifier">int</span></dt><dd><p>minimum input value used for mapping inputs to outputs</p>
+</dd>
+<dt>is_inverted<span class="classifier">Boolean list</span></dt><dd><p>whether to invert the output mapping</p>
+</dd>
+<dt>control_type<span class="classifier">Enum ControlType</span></dt><dd><p>mode on how to determine the output</p>
+</dd>
+<dt>toggle_state<span class="classifier">Enum ToggleState</span></dt><dd><p>used when control mode is set to TOGGLE to determine the current output state</p>
+</dd>
+<dt>names_input<span class="classifier">[str]</span></dt><dd><p>list of the input names used by the object, this allows the object to know which input value to update</p>
+</dd>
+<dt>num_inputs<span class="classifier">int</span></dt><dd><p>number of inputs the object uses</p>
+</dd>
+<dt>current_input<span class="classifier">[int]</span></dt><dd><p>since input is given one at a time, this list keeps track of previous inputs</p>
+</dd>
+<dt>out_raw_min<span class="classifier">int</span></dt><dd><p>minimum value of an intermediate value used to calculate output</p>
+</dd>
+<dt>out_raw_max<span class="classifier">int</span></dt><dd><p>maximum value of an intermediate value used to calculate output</p>
+</dd>
+<dt>raw_output<span class="classifier">[int]</span></dt><dd><p>list to store the calculated intermediate values that will be mapped to final output values</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>__init_(name, num_outputs, channels_output, names_input):</dt><dd><p>Class constructor. Assigns the values passed in and initalizes remaining members to default values.</p>
+</dd>
+<dt>set_outputs(channels_output, maximums_output, minimums_output):</dt><dd><p>Sets which channels to output to and the minimun, default, and maximum pulse width for each of those channels.
+Also sets current outputs to the same values as the default.</p>
+</dd>
+<dt>set_inversion(is_inverted):</dt><dd><p>Sets whether to invert the output signal or not.</p>
+</dd>
+<dt>set_control_direct():</dt><dd><p>Sets control mode to direct.</p>
+</dd>
+<dt>set_control_toggle():</dt><dd><p>Sets control mode to toggle.</p>
+</dd>
+<dt>set_control_increment():</dt><dd><p>Sets control mode to increment.</p>
+</dd>
+<dt>get_num_channels():</dt><dd><p>Returns the number of output channels for the object.</p>
+</dd>
+<dt>get_default_outputs():</dt><dd><p>Returns the default output values for the object.</p>
+</dd>
+<dt>get_output(input_name, input_value):</dt><dd><p>Calculate and returns the output based on the given input value and current control mode.</p>
+</dd>
+<dt>map_values(value, input_min, input_max, out_min, out_max):</dt><dd><p>Maps an input value to its output.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="EyebrowsOutput.EyebrowsOutput.get_output">
+<code class="sig-name descname"><span class="pre">get_output</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EyebrowsOutput.EyebrowsOutput.get_output" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate and returns the output based on the given input value and current control mode.</p>
+<dl class="simple">
+<dt>input_name<span class="classifier">str</span></dt><dd><p>name associated with the input</p>
+</dd>
+<dt>input_value<span class="classifier">int</span></dt><dd><p>the input value from the PS4 controller</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>[channels_output, current_output]<span class="classifier">[[int], [int]]</span></dt><dd><p>current_output is the pulse widths in quarter microseconds to output, and channels_output
+is which channels those outputs will be sent over. How the ouptut is calculated is based
+off of which control type the output object is set to. Direct will map the output directly
+based on the input and the set input and output ranges. Toggle will set the output between
+the max and the min output values and switch between these values whenever the input is
+released. Increment will increment the output value whenever input is given.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-SideLipOutput">
+<span id="side-lip-output"></span><h2>Side Lip Output<a class="headerlink" href="#module-SideLipOutput" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="SideLipOutput.SideLipOutput">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">SideLipOutput.</span></code><code class="sig-name descname"><span class="pre">SideLipOutput</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_outputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channels_output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names_input</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#SideLipOutput.SideLipOutput" title="Permalink to this definition">¶</a></dt>
+<dd><p>A class to represent the output object for the left or right lip that will take multiple inputs.
+It inherits attributes and methods from MultiInputOutputObject.</p>
+<p>…</p>
+<dl class="simple">
+<dt>name<span class="classifier">str</span></dt><dd><p>name of the servo group for the output</p>
+</dd>
+<dt>num_outputs<span class="classifier">int</span></dt><dd><p>total number of outputs calculated from the given input</p>
+</dd>
+<dt>channels_output<span class="classifier">[int]</span></dt><dd><p>channels corresponding to the servos controlled by the outputs</p>
+</dd>
+<dt>maximums_output<span class="classifier">[int]</span></dt><dd><p>maximum pulse width values for the corresponding servo channel</p>
+</dd>
+<dt>minimums_output<span class="classifier">[int]</span></dt><dd><p>minimum pulse width values for the corresponding servo channel</p>
+</dd>
+<dt>default_output<span class="classifier">[int]</span></dt><dd><p>default output position of the servos for start up position</p>
+</dd>
+<dt>current_output<span class="classifier">[int]</span></dt><dd><p>current output position of the servos to be used for increment mode</p>
+</dd>
+<dt>maximum_input<span class="classifier">int</span></dt><dd><p>maximum input value used for mapping inputs to outputs</p>
+</dd>
+<dt>minimum_input<span class="classifier">int</span></dt><dd><p>minimum input value used for mapping inputs to outputs</p>
+</dd>
+<dt>is_inverted<span class="classifier">Boolean list</span></dt><dd><p>whether to invert the output mapping</p>
+</dd>
+<dt>control_type<span class="classifier">Enum ControlType</span></dt><dd><p>mode on how to determine the output</p>
+</dd>
+<dt>toggle_state<span class="classifier">Enum ToggleState</span></dt><dd><p>used when control mode is set to TOGGLE to determine the current output state</p>
+</dd>
+<dt>names_input<span class="classifier">[str]</span></dt><dd><p>list of the input names used by the object, this allows the object to know which input value to update</p>
+</dd>
+<dt>num_inputs<span class="classifier">int</span></dt><dd><p>number of inputs the object uses</p>
+</dd>
+<dt>current_input<span class="classifier">[int]</span></dt><dd><p>since input is given one at a time, this list keeps track of previous inputs</p>
+</dd>
+<dt>out_raw_min<span class="classifier">int</span></dt><dd><p>minimum value of an intermediate value used to calculate output</p>
+</dd>
+<dt>out_raw_max<span class="classifier">int</span></dt><dd><p>maximum value of an intermediate value used to calculate output</p>
+</dd>
+<dt>raw_output<span class="classifier">[int]</span></dt><dd><p>list to store the calculated intermediate values that will be mapped to final output values</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>__init_(name, num_outputs, channels_output, names_input:</dt><dd><p>Class constructor. Assigns the values passed in and initalizes remaining members to default values.</p>
+</dd>
+<dt>set_outputs(channels_output, maximums_output, minimums_output):</dt><dd><p>Sets which channels to output to and the minimun, default, and maximum pulse width for each of those channels.
+Also sets current outputs to the same values as the default.</p>
+</dd>
+<dt>set_inversion(is_inverted):</dt><dd><p>Sets whether to invert the output signal or not.</p>
+</dd>
+<dt>set_control_direct():</dt><dd><p>Sets control mode to direct.</p>
+</dd>
+<dt>set_control_toggle():</dt><dd><p>Sets control mode to toggle.</p>
+</dd>
+<dt>set_control_increment():</dt><dd><p>Sets control mode to increment.</p>
+</dd>
+<dt>get_num_channels():</dt><dd><p>Returns the number of output channels for the object.</p>
+</dd>
+<dt>get_default_outputs():</dt><dd><p>Returns the default output values for the object.</p>
+</dd>
+<dt>get_output(input_name, input_value):</dt><dd><p>Calculate and returns the output based on the given input value and current control mode.</p>
+</dd>
+<dt>map_values(value, input_min, input_max, out_min, out_max):</dt><dd><p>Maps an input value to its output.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="SideLipOutput.SideLipOutput.get_output">
+<code class="sig-name descname"><span class="pre">get_output</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#SideLipOutput.SideLipOutput.get_output" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate and returns the output based on the given input value and current control mode.</p>
+<dl class="simple">
+<dt>input_name<span class="classifier">str</span></dt><dd><p>name associated with the input</p>
+</dd>
+<dt>input_value<span class="classifier">int</span></dt><dd><p>the input value from the PS4 controller</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>[channels_output, current_output]<span class="classifier">[[int], [int]]</span></dt><dd><p>current_output is the pulse widths in quarter microseconds to output, and channels_output
+is which channels those outputs will be sent over. How the ouptut is calculated is based
+off of which control type the output object is set to. Direct will map the output directly
+based on the input and the set input and output ranges. Toggle will set the output between
+the max and the min output values and switch between these values whenever the input is
+released. Increment will increment the output value whenever input is given.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-NeckTiltOutput">
+<span id="neck-tilt-output"></span><h2>Neck Tilt Output<a class="headerlink" href="#module-NeckTiltOutput" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="NeckTiltOutput.NeckTiltOutput">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">NeckTiltOutput.</span></code><code class="sig-name descname"><span class="pre">NeckTiltOutput</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_outputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channels_output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names_input</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#NeckTiltOutput.NeckTiltOutput" title="Permalink to this definition">¶</a></dt>
+<dd><p>A class to represent the output object for the two axes of neck tilting that will take multiple inputs.
+It inherits attributes and methods from MultiInputOutputObject.</p>
+<p>…</p>
+<dl class="simple">
+<dt>name<span class="classifier">str</span></dt><dd><p>name of the servo group for the output</p>
+</dd>
+<dt>num_outputs<span class="classifier">int</span></dt><dd><p>total number of outputs calculated from the given input</p>
+</dd>
+<dt>channels_output<span class="classifier">[int]</span></dt><dd><p>channels corresponding to the servos controlled by the outputs</p>
+</dd>
+<dt>maximums_output<span class="classifier">[int]</span></dt><dd><p>maximum pulse width values for the corresponding servo channel</p>
+</dd>
+<dt>minimums_output<span class="classifier">[int]</span></dt><dd><p>minimum pulse width values for the corresponding servo channel</p>
+</dd>
+<dt>default_output<span class="classifier">[int]</span></dt><dd><p>default output position of the servos for start up position</p>
+</dd>
+<dt>current_output<span class="classifier">[int]</span></dt><dd><p>current output position of the servos to be used for increment mode</p>
+</dd>
+<dt>maximum_input<span class="classifier">int</span></dt><dd><p>maximum input value used for mapping inputs to outputs</p>
+</dd>
+<dt>minimum_input<span class="classifier">int</span></dt><dd><p>minimum input value used for mapping inputs to outputs</p>
+</dd>
+<dt>is_inverted<span class="classifier">Boolean list</span></dt><dd><p>whether to invert the output mapping</p>
+</dd>
+<dt>control_type<span class="classifier">Enum ControlType</span></dt><dd><p>mode on how to determine the output</p>
+</dd>
+<dt>toggle_state<span class="classifier">Enum ToggleState</span></dt><dd><p>used when control mode is set to TOGGLE to determine the current output state</p>
+</dd>
+<dt>names_input<span class="classifier">[str]</span></dt><dd><p>list of the input names used by the object, this allows the object to know which input value to update</p>
+</dd>
+<dt>num_inputs<span class="classifier">int</span></dt><dd><p>number of inputs the object uses</p>
+</dd>
+<dt>current_input<span class="classifier">[int]</span></dt><dd><p>since input is given one at a time, this list keeps track of previous inputs</p>
+</dd>
+<dt>out_raw_min<span class="classifier">int</span></dt><dd><p>minimum value of an intermediate value used to calculate output</p>
+</dd>
+<dt>out_raw_max<span class="classifier">int</span></dt><dd><p>maximum value of an intermediate value used to calculate output</p>
+</dd>
+<dt>raw_output<span class="classifier">[int]</span></dt><dd><p>list to store the calculated intermediate values that will be mapped to final output values</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>__init_(name, num_outputs, channels_output, names_input):</dt><dd><p>Class constructor. Assigns the values passed in and initalizes remaining members to default values.</p>
+</dd>
+<dt>set_outputs(channels_output, maximums_output, minimums_output):</dt><dd><p>Sets which channels to output to and the minimun, default, and maximum pulse width for each of those channels.
+Also sets current outputs to the same values as the default.</p>
+</dd>
+<dt>set_inversion(is_inverted):</dt><dd><p>Sets whether to invert the output signal or not.</p>
+</dd>
+<dt>set_control_direct():</dt><dd><p>Sets control mode to direct.</p>
+</dd>
+<dt>set_control_toggle():</dt><dd><p>Sets control mode to toggle.</p>
+</dd>
+<dt>set_control_increment():</dt><dd><p>Sets control mode to increment.</p>
+</dd>
+<dt>get_num_channels():</dt><dd><p>Returns the number of output channels for the object.</p>
+</dd>
+<dt>get_default_outputs():</dt><dd><p>Returns the default output values for the object.</p>
+</dd>
+<dt>get_output(input_name, input_value):</dt><dd><p>Calculate and returns the output based on the given input value and current control mode.</p>
+</dd>
+<dt>map_values(value, input_min, input_max, out_min, out_max):</dt><dd><p>Maps an input value to its output.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="NeckTiltOutput.NeckTiltOutput.get_output">
+<code class="sig-name descname"><span class="pre">get_output</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#NeckTiltOutput.NeckTiltOutput.get_output" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate and returns the output based on the given input value and current control mode.</p>
+<dl class="simple">
+<dt>input_name<span class="classifier">str</span></dt><dd><p>name associated with the input</p>
+</dd>
+<dt>input_value<span class="classifier">int</span></dt><dd><p>the input value from the PS4 controller</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>[channels_output, current_output]<span class="classifier">[[int], [int]]</span></dt><dd><p>current_output is the pulse widths in quarter microseconds to output, and channels_output
+is which channels those outputs will be sent over. How the ouptut is calculated is based
+off of which control type the output object is set to. Direct will map the output directly
+based on the input and the set input and output ranges. Toggle will set the output between
+the max and the min output values and switch between these values whenever the input is
+released. Increment will increment the output value whenever input is given.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Cosmotron</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="input.html">Input Event Handling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mapping.html">Movement Mapping</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="output.html">Output Objects</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="base.html">Base Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generic.html">Generic Objects</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Specific Objects</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="output.html">Output Objects</a><ul>
+      <li>Previous: <a href="generic.html" title="previous chapter">Generic Objects</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Parker King, Ethan.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/specific.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
