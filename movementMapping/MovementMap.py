@@ -8,7 +8,7 @@ from NeckTiltOutput import NeckTiltOutput
 import maestro
 from time import sleep
 
-class ServoHandler:
+class MovementMap:
     """
     A class that handles controller inputs. Contains a mapping of input objects to output objects.
 

@@ -1,12 +1,12 @@
 """
 This module will handle all input from the Bluetooth connected PS4 controllers in an asynchronous manner. It expects two controllers to be connected 
 and will not run until then. If either controller is disconnected the program will need to be restarted in order to reconnect.
-Sends modified controller input to the ServoHandler.
+Sends modified controller input to the MovementMap.
 """
 import asyncio
 import evdev
 from evdev import list_devices, InputDevice, categorize, ecodes
-from ServoHandler import ServoHandler
+from MovementMap import MovementMap
 
 # absolute paths to input files interpreted by the evdev kernel driver for PS4 events
 PS4_INPUT_PATH_1 = "/dev/input/event2"  # first controller connected
@@ -42,7 +42,7 @@ LAST_INPUT = {
     "ABS_HAT0Y": 0
 }
 # custom servo handler class object
-servoHandler = ServoHandler()
+movementMap = MovementMap()
 
 
 class ControllerEvent:
@@ -56,7 +56,7 @@ class ControllerEvent:
 
 
 async def process_events(device):
-    """Async helper function. Process PS4 events and create ControllerEvent objects to be passed to the servoHandler"""
+    """Async helper function. Process PS4 events and create ControllerEvent objects to be passed to the movementMap"""
     fromGamepad1 = False
     # fromGamepad2 = False
     async for event in device.async_read_loop():
@@ -69,47 +69,47 @@ async def process_events(device):
             if event.code == X_BUTTON:
                 xButtonInput = ControllerEvent(
                     "x_button_1" if fromGamepad1 else "x_button_2", event.value)
-                servoHandler.process_input(xButtonInput)
+                movementMap.process_input(xButtonInput)
             elif event.code == R1:
                 r1ButtonInput = ControllerEvent(
                     "r1_button_1" if fromGamepad1 else "r1_button_2", event.value)
-                servoHandler.process_input(r1ButtonInput)
+                movementMap.process_input(r1ButtonInput)
             elif event.code == L1:
                 l1ButtonInput = ControllerEvent(
                     "l1_button_1" if fromGamepad1 else "l1_button_2", event.value)
-                servoHandler.process_input(l1ButtonInput)
+                movementMap.process_input(l1ButtonInput)
             elif event.code == CIRCLE:
                 circleButtonInput = ControllerEvent(
                     "circle_button_1" if fromGamepad1 else "circle_button_2", event.value)
-                servoHandler.process_input(circleButtonInput)
+                movementMap.process_input(circleButtonInput)
             elif event.code == TRIANGLE:
                 triangleButtonInput = ControllerEvent(
                     "triangle_button_1" if fromGamepad1 else "triangle_button_2", event.value)
-                servoHandler.process_input(triangleButtonInput)
+                movementMap.process_input(triangleButtonInput)
             elif event.code == SQUARE:
                 squareButtonInput = ControllerEvent(
                     "square_button_1" if fromGamepad1 else "square_button_2", event.value)
-                servoHandler.process_input(squareButtonInput)
+                movementMap.process_input(squareButtonInput)
             elif event.code == SHARE:
                 shareButtonInput = ControllerEvent(
                     "share_button_1" if fromGamepad1 else "share_button_2", event.value)
-                servoHandler.process_input(shareButtonInput)
+                movementMap.process_input(shareButtonInput)
             elif event.code == OPTIONS:
                 optionsButtonInput = ControllerEvent(
                     "options_button_1" if fromGamepad1 else "options_button_2", event.value)
-                servoHandler.process_input(optionsButtonInput)
+                movementMap.process_input(optionsButtonInput)
             elif event.code == PS_SYMBOL:
                 PS_symbolButtonInput = ControllerEvent(
                     "ps_symbol_button_1" if fromGamepad1 else "ps_symbol_button_2", event.value)
-                servoHandler.process_input(PS_symbolButtonInput)
+                movementMap.process_input(PS_symbolButtonInput)
             elif event.code == L3:
                 l3ButtonInput = ControllerEvent(
                     "l3_button_1" if fromGamepad1 else "l3_button_2", event.value)
-                servoHandler.process_input(l3ButtonInput)
+                movementMap.process_input(l3ButtonInput)
             elif event.code == R3:
                 r3ButtonInput = ControllerEvent(
                     "r3_button_1" if fromGamepad1 else "r3_button_2", event.value)
-                servoHandler.process_input(r3ButtonInput)
+                movementMap.process_input(r3ButtonInput)
 
         elif event.type == ecodes.EV_ABS:  # analog and d-pad events
             absevent = categorize(event)
@@ -119,42 +119,42 @@ async def process_events(device):
                 if LAST_INPUT["ABS_RZ"] != currentEvent:
                     r2AnalogInput = ControllerEvent(
                         "r2_analog_1" if fromGamepad1 else "r2_analog_2", currentEvent)
-                    servoHandler.process_input(r2AnalogInput)
+                    movementMap.process_input(r2AnalogInput)
                     LAST_INPUT["ABS_RZ"] = currentEvent
             # left trigger
             elif ecodes.bytype[absevent.event.type][absevent.event.code] == 'ABS_Z':
                 if LAST_INPUT["ABS_Z"] != currentEvent:
                     l2AnalogInput = ControllerEvent(
                         "l2_analog_1" if fromGamepad1 else "l2_analog_2", currentEvent)
-                    servoHandler.process_input(l2AnalogInput)
+                    movementMap.process_input(l2AnalogInput)
                     LAST_INPUT["ABS_Z"] = currentEvent
             # right joystick x-axis
             elif ecodes.bytype[absevent.event.type][absevent.event.code] == 'ABS_RX':
                 if abs(LAST_INPUT["ABS_RX"] - currentEvent) >= MAX_VARIANCE:
                     rJoystickXAnalogInput = ControllerEvent(
                         "r_joystick_x_analog_1" if fromGamepad1 else "r_joystick_x_analog_2", currentEvent)
-                    servoHandler.process_input(rJoystickXAnalogInput)
+                    movementMap.process_input(rJoystickXAnalogInput)
                     LAST_INPUT["ABS_RX"] = currentEvent
             # left joystick x-axis
             elif ecodes.bytype[absevent.event.type][absevent.event.code] == 'ABS_X':
                 if abs(LAST_INPUT["ABS_X"] - currentEvent) >= MAX_VARIANCE:
                     lJoystickXAnalogInput = ControllerEvent(
                         "l_joystick_x_analog_1" if fromGamepad1 else "l_joystick_x_analog_2", currentEvent)
-                    servoHandler.process_input(lJoystickXAnalogInput)
+                    movementMap.process_input(lJoystickXAnalogInput)
                     LAST_INPUT["ABS_X"] = currentEvent
             # right joystick y-axis
             elif ecodes.bytype[absevent.event.type][absevent.event.code] == 'ABS_RY':
                 if abs(LAST_INPUT["ABS_RY"] - currentEvent) >= MAX_VARIANCE:
                     rJoystickYAnalogInput = ControllerEvent(
                         "r_joystick_y_analog_1" if fromGamepad1 else "r_joystick_y_analog_2", currentEvent)
-                    servoHandler.process_input(rJoystickYAnalogInput)
+                    movementMap.process_input(rJoystickYAnalogInput)
                     LAST_INPUT["ABS_RY"] = currentEvent
             # left joystick y-axis
             elif ecodes.bytype[absevent.event.type][absevent.event.code] == 'ABS_Y':
                 if abs(LAST_INPUT["ABS_Y"] - currentEvent) >= MAX_VARIANCE:
                     lJoystickYAnalogInput = ControllerEvent(
                         "l_joystick_y_analog_1" if fromGamepad1 else "l_joystick_y_analog_2", currentEvent)
-                    servoHandler.process_input(lJoystickYAnalogInput)
+                    movementMap.process_input(lJoystickYAnalogInput)
                     LAST_INPUT["ABS_Y"] = currentEvent
             # up and down d-pad
             elif ecodes.bytype[absevent.event.type][absevent.event.code] == 'ABS_HAT0Y':
@@ -162,18 +162,18 @@ async def process_events(device):
                     if currentEvent == D_DOWN:
                         dDownInput = ControllerEvent(
                             "down_button_1" if fromGamepad1 else "down_button_2", True)
-                        servoHandler.process_input(dDownInput)
+                        movementMap.process_input(dDownInput)
                     elif currentEvent == D_UP:
                         dUpInput = ControllerEvent(
                             "up_button_1" if fromGamepad1 else "up_button_2", True)
-                        servoHandler.process_input(dUpInput)
+                        movementMap.process_input(dUpInput)
                     else:  # because the last input could've been from either up or down, reset both on zero
                         dUpInput = ControllerEvent(
                             "up_button_1" if fromGamepad1 else "up_button_2", currentEvent)
-                        servoHandler.process_input(dUpInput)
+                        movementMap.process_input(dUpInput)
                         dDownInput = ControllerEvent(
                             "down_button_1" if fromGamepad1 else "down_button_2", currentEvent)
-                        servoHandler.process_input(dDownInput)
+                        movementMap.process_input(dDownInput)
                     LAST_INPUT["ABS_HAT0Y"] = currentEvent
             # right and left d-pad
             elif ecodes.bytype[absevent.event.type][absevent.event.code] == 'ABS_HAT0X':
@@ -181,18 +181,18 @@ async def process_events(device):
                     if currentEvent == D_RIGHT:
                         dRightInput = ControllerEvent(
                             "right_button_1" if fromGamepad1 else "right_button_2", True)
-                        servoHandler.process_input(dRightInput)
+                        movementMap.process_input(dRightInput)
                     elif currentEvent == D_LEFT:
                         dLeftInput = ControllerEvent(
                             "left_button_1" if fromGamepad1 else "left_button_2", True)
-                        servoHandler.process_input(dLeftInput)
+                        movementMap.process_input(dLeftInput)
                     else:  # because the last input could've been from either right or left, reset both on zero
                         dRightInput = ControllerEvent(
                             "right_button_1" if fromGamepad1 else "right_button_2", currentEvent)
-                        servoHandler.process_input(dRightInput)
+                        movementMap.process_input(dRightInput)
                         dLeftInput = ControllerEvent(
                             "left_button_1" if fromGamepad1 else "left_button_2", currentEvent)
-                        servoHandler.process_input(dLeftInput)
+                        movementMap.process_input(dLeftInput)
                     LAST_INPUT["ABS_HAT0X"] = currentEvent
         # reset boolean for next PS4 event
         fromGamepad1 = False
