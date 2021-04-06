@@ -1,4 +1,4 @@
-from enum import Enum, auto
+from enum import Enum
 
 class OutputObject:
     """
@@ -237,9 +237,9 @@ class ControlType(Enum):
     INCREMENT : auto
         output is incremented by the input
     """
-    DIRECT = auto()
-    TOGGLE = auto()
-    INCREMENT = auto()
+    DIRECT = 0
+    TOGGLE = 1
+    INCREMENT = 2
 
 class ToggleState(Enum):
     """
@@ -252,5 +252,5 @@ class ToggleState(Enum):
     OFF : auto
         the output is toggled "off"
     """
-    ON = auto()
-    OFF = auto()
+    ON = 1
+    OFF = 0
