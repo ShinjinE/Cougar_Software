@@ -23,8 +23,8 @@ import MovementMap
 # -- Project information -----------------------------------------------------
 
 project = 'Cosmotron'
-copyright = '2021, Parker King, Ethan'
-author = 'Parker King, Ethan'
+copyright = '2021, Parker King, Ethan Harris'
+author = 'Parker King, Ethan Harris'
 
 # The full version, including alpha/beta/rc tags
 release = '2021'
