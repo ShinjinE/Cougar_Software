@@ -1,2 +1,0 @@
-.. toctree::
-   :name: output_objects

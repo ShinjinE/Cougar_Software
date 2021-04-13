@@ -32,8 +32,25 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="input-event-handling">
-<h1>Input Event Handling<a class="headerlink" href="#input-event-handling" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-manualControl">
+<span id="input-event-handling"></span><h1>Input Event Handling<a class="headerlink" href="#module-manualControl" title="Permalink to this headline">¶</a></h1>
+<p>This module will handle all input from the Bluetooth connected PS4 controllers in an asynchronous manner. It expects two controllers to be connected 
+and will not run until then. If either controller is disconnected the program will need to be restarted in order to reconnect.
+Sends modified controller input to the MovementMap.</p>
+<dl class="py class">
+<dt id="manualControl.ControllerEvent">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">manualControl.</span></code><code class="sig-name descname"><span class="pre">ControllerEvent</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#manualControl.ControllerEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Controller event object. To be sent to the servo handler to convert a button press to movement, for example. 
+Contains a predetermined name and the current event’s value. 
+For buttons the value is 1 or 0. For analog axes it is 0-255. For d-pad hat axes it is -1,0,1.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="manualControl.process_events">
+<em class="property"><span class="pre">async</span> </em><code class="sig-prename descclassname"><span class="pre">manualControl.</span></code><code class="sig-name descname"><span class="pre">process_events</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#manualControl.process_events" title="Permalink to this definition">¶</a></dt>
+<dd><p>Async helper function. Process PS4 events and create ControllerEvent objects to be passed to the movementMap</p>
+</dd></dl>
+
 </div>
 
 
@@ -92,7 +109,7 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2021, Parker King, Ethan.
+      &copy;2021, Parker King, Ethan Harris.
       
       |
       Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
