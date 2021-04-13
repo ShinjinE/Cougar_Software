@@ -5,11 +5,25 @@ Base Objects
 Output Object
 =============
 
-.. automodule:: OutputObject
+.. module:: OutputObject
+.. autoclass:: OutputObject
+   :members:
+   :inherited-members:
+
+   .. automethod:: __init__
+
+.. autoclass:: ControlType
+   :members:
+
+.. autoclass:: ToggleState
    :members:
 
 Multi Input Output Object
 =========================
 
-.. automodule:: MultiInputOutputObject
+.. module:: MultiInputOutputObject
+.. autoclass:: MultiInputOutputObject
    :members:
+   :inherited-members:
+
+   .. automethod:: __init__

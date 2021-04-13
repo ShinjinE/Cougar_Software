@@ -5,23 +5,39 @@ Specific Objects
 Ear Output
 ==========
 
-.. automodule:: EarOutput
+.. module:: EarOutput
+.. autoclass:: EarOutput
    :members:
+   :inherited-members:
+
+   .. automethod:: __init__
 
 Eyebrows Output
 ===============
 
-.. automodule:: EyebrowsOutput
+.. module:: EyebrowsOutput
+.. autoclass:: EyebrowsOutput
    :members:
+   :inherited-members:
+
+   .. automethod:: __init__
 
 Side Lip Output
 ===============
 
-.. automodule:: SideLipOutput
+.. module:: SideLipOutput
+.. autoclass:: SideLipOutput
    :members:
+   :inherited-members:
+
+   .. automethod:: __init__
 
 Neck Tilt Output
 ================
 
-.. automodule:: NeckTiltOutput
+.. module:: NeckTiltOutput
+.. autoclass:: NeckTiltOutput
    :members:
+   :inherited-members:
+
+   .. automethod:: __init__
