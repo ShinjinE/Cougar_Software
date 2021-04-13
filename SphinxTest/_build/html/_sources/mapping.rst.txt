@@ -2,5 +2,8 @@
 Movement Mapping
 ================
 
-.. automodule:: MovementMap
+.. module:: MovementMap
+.. autoclass:: MovementMap
    :members:
+
+   .. automethod:: __init__

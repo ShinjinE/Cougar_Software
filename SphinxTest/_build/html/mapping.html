@@ -39,6 +39,10 @@
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">MovementMap.</span></code><code class="sig-name descname"><span class="pre">MovementMap</span></code><a class="headerlink" href="#MovementMap.MovementMap" title="Permalink to this definition">¶</a></dt>
 <dd><p>A class that handles controller inputs. Contains a mapping of input objects to output objects.</p>
 <p>…</p>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
 <dl class="simple">
 <dt>servoBoard<span class="classifier">maestro.Controller</span></dt><dd><p>object that establishes serial conection to the Maestro and has functions to send commands to the board</p>
 </dd>
@@ -73,23 +77,37 @@
 <dt>input_map<span class="classifier">dictionary [input_name (string): output_object (OutputObject)]</span></dt><dd><p>mapping of the controller inputs to movement outputs</p>
 </dd>
 </dl>
-<dl class="simple">
-<dt>__init_():</dt><dd><p>Class constructor. Creates needed output objects and sets their parameters. Also creates the input map.</p>
-</dd>
-<dt>send_outputs(num_outputs, channel, output):</dt><dd><p>Sends the output to the corresponding channel from the given lists of channels and outputs.</p>
-</dd>
-<dt>process_input(input_object):</dt><dd><p>Using the input map, determines the correct output object to send the input value to. The returned outputs are passed to the maestro board.</p>
-</dd>
-<dt>start_outputs():</dt><dd><p>Sends the starting outputs for each motor to the Maestro board to activate each channel in default positions.</p>
-</dd>
+<p>…</p>
+<dl class="field-list simple">
+<dt class="field-odd">Methods</dt>
+<dd class="field-odd"><p></p></dd>
 </dl>
+<dl class="py method">
+<dt id="MovementMap.MovementMap.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MovementMap.MovementMap.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class constructor. Creates needed output objects and sets their parameters. Also creates the input map.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<p>None</p>
+</dd></dl>
+
 <dl class="py method">
 <dt id="MovementMap.MovementMap.process_input">
 <code class="sig-name descname"><span class="pre">process_input</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MovementMap.MovementMap.process_input" title="Permalink to this definition">¶</a></dt>
 <dd><p>Using the input map, determines the correct output object to send the input value to. The returned outputs are passed to the maestro board.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
 <dl class="simple">
 <dt>input_object<span class="classifier">ControllerEvent</span></dt><dd><p>object containing the name of the input and its associated value to be processed</p>
 </dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p></dd>
 </dl>
 </dd></dl>
 
@@ -97,6 +115,10 @@
 <dt id="MovementMap.MovementMap.send_outputs">
 <code class="sig-name descname"><span class="pre">send_outputs</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_outputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MovementMap.MovementMap.send_outputs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sends the output to the corresponding channel from the given lists of channels and outputs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
 <dl class="simple">
 <dt>num_outputs<span class="classifier">int</span></dt><dd><p>number of channels and outputs to loop through</p>
 </dd>
@@ -105,6 +127,10 @@
 <dt>output<span class="classifier">[double]</span></dt><dd><p>values to output on the Maestro board, cast to int to ensure proper typing</p>
 </dd>
 </dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
 <p>None</p>
 </dd></dl>
 
@@ -112,7 +138,15 @@
 <dt id="MovementMap.MovementMap.start_outputs">
 <code class="sig-name descname"><span class="pre">start_outputs</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MovementMap.MovementMap.start_outputs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sends the starting outputs for each motor to the Maestro board to activate each channel in default positions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
 <p>None</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
 <p>None</p>
 </dd></dl>
 
