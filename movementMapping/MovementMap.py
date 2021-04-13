@@ -14,8 +14,8 @@ class MovementMap:
 
     ...
 
-    Attributes
-    ----------
+    :Attributes:
+
     servoBoard : maestro.Controller
         object that establishes serial conection to the Maestro and has functions to send commands to the board
     output_objects : [OutputObject]
@@ -49,24 +49,18 @@ class MovementMap:
     input_map : dictionary [input_name (string): output_object (OutputObject)]
         mapping of the controller inputs to movement outputs
 
-    Methods
-    -------
-    __init_():
-        Class constructor. Creates needed output objects and sets their parameters. Also creates the input map.
-    send_outputs(num_outputs, channel, output):
-        Sends the output to the corresponding channel from the given lists of channels and outputs.
-    process_input(input_object):
-        Using the input map, determines the correct output object to send the input value to. The returned outputs are passed to the maestro board.
-    start_outputs():
-        Sends the starting outputs for each motor to the Maestro board to activate each channel in default positions.
+    ...
+
+    :Methods:
+
     """
 
     def __init__(self):
         """
         Class constructor. Creates needed output objects and sets their parameters. Also creates the input map.
 
-        Parameters
-        ----------
+        :Parameters:
+
         None
         """
         # Create connection to Maestro
@@ -205,8 +199,8 @@ class MovementMap:
         """
         Sends the output to the corresponding channel from the given lists of channels and outputs.
 
-        Parameters
-        ----------
+        :Parameters:
+
         num_outputs : int
             number of channels and outputs to loop through
         channel : [int]
@@ -214,8 +208,8 @@ class MovementMap:
         output : [double]
             values to output on the Maestro board, cast to int to ensure proper typing
 
-        Returns
-        -------
+        :Returns:
+
         None
         """
         for i in range(num_outputs):
@@ -225,13 +219,14 @@ class MovementMap:
         """
         Using the input map, determines the correct output object to send the input value to. The returned outputs are passed to the maestro board.
 
-        Parameters
-        ----------
+        :Parameters:
+        
         input_object : ControllerEvent
             object containing the name of the input and its associated value to be processed
 
-        Returns
-        -------
+        :Returns:
+
+        None
         """
         # Get info about input
         input_name = input_object.name
@@ -255,13 +250,15 @@ class MovementMap:
         """
         Sends the starting outputs for each motor to the Maestro board to activate each channel in default positions.
 
-        Parameters
-        ----------
+        
+        :Parameters:
+
         None
 
-        Returns
-        -------
+        :Returns:
+
         None
+
         """
         # Time to delay between activating servo groups
         # Total time to activate is about 1 second for all 13 groups

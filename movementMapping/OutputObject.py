@@ -6,8 +6,8 @@ class OutputObject:
 
     ...
 
-    Attributes
-    ----------
+    :Attributes:
+
     name : str
         name of the servo group for the output
     num_outputs : int
@@ -26,42 +26,25 @@ class OutputObject:
         maximum input value used for mapping inputs to outputs, 255 for analog and 1 for digital
     minimum_input : int
         minimum input value used for mapping inputs to outputs, 0 for both analog and digital
-    is_inverted : Boolean list
+    is_inverted : [Boolean]
         whether to invert the output mapping
     control_type : Enum ControlType
         mode on how to determine the output
     toggle_state : Enum ToggleState
         used when control mode is set to TOGGLE to determine the current output state
+    
+    ...
 
-    Methods
-    -------
-    __init_(name, num_outputs, channels_output):
-        Class constructor. Assigns the values passed in and initalizes remaining members to default values.
-    set_outputs(channels_output, maximums_output, minimums_output):
-        Sets which channels to output to and the minimun, default, and maximum pulse width for each of those channels.
-        Also sets current outputs to the same values as the default.
-    set_inversion(is_inverted):
-        Sets whether to invert the output signal or not.
-    set_control_direct():
-        Sets control mode to direct.
-    set_control_toggle():
-        Sets control mode to toggle.
-    set_control_increment():
-        Sets control mode to increment.
-    get_num_channels():
-        Returns the number of output channels for the object.
-    get_default_outputs():
-        Returns the default output values for the object.
-    map_values(value, input_min, input_max, out_min, out_max):
-        Maps an input value to its output.
+    :Methods:
+
     """
 
     def __init__(self, name, num_outputs, channels_output):
         """
         Class constructor. Assigns the values passed in and initalizes remaining members to default values.
 
-        Parameters
-        ----------
+        :Parameters:
+
         name : string
             name of the output group represented by output object
         num_outputs : int
@@ -94,8 +77,8 @@ class OutputObject:
         Sets which channels to output to and the minimun, default, and maximum pulse width for each of those channels.
         Also sets current outputs to the same values as the default.
 
-        Parameters
-        ----------
+        :Parameters:
+
         minimums_output : [int]
             minimum pulse width values for the corresponding servo channel
         default_output : [int]
@@ -103,8 +86,8 @@ class OutputObject:
         maximums_output : [int]
             maximum pulse width values for the corresponding servo channel
 
-        Returns
-        -------
+        :Returns:
+
         None
         """
         
@@ -117,13 +100,13 @@ class OutputObject:
         """
         Sets whether to invert the output signal or not.
 
-        Parameters
-        ----------
+        :Parameters:
+
         is_inverted : boolean
             the state to set the attribute is_inverted to
 
-        Returns
-        -------
+        :Returns:
+
         None
         """
         self.is_inverted = is_inverted
@@ -132,12 +115,12 @@ class OutputObject:
         """
         Sets control mode to direct.
 
-        Parameters
-        ----------
+        :Parameters:
+
         None
 
-        Returns
-        -------
+        :Returns:
+
         None
         """
         self.control_type = ControlType.DIRECT
@@ -146,12 +129,12 @@ class OutputObject:
         """
         Sets control mode to toggle.
 
-        Parameters
-        ----------
+        :Parameters:
+
         None
 
-        Returns
-        -------
+        :Returns:
+
         None
         """
         self.control_type = ControlType.TOGGLE
@@ -160,12 +143,12 @@ class OutputObject:
         """
         Sets control mode to increment.
 
-        Parameters
-        ----------
+        :Parameters:
+
         None
 
-        Returns
-        -------
+        :Returns:
+
         None
         """
         self.control_type = ControlType.INCREMENT
@@ -174,12 +157,12 @@ class OutputObject:
         """
         Returns the number of output channels for the object.
 
-        Parameters
-        ----------
+        :Parameters:
+
         None
 
-        Returns
-        -------
+        :Returns:
+
         num_outputs : int
             number of output channels the object sends output to
         """
@@ -189,12 +172,12 @@ class OutputObject:
         """
          Returns the default output values for the object.
 
-        Parameters
-        ----------
+        :Parameters:
+
         None
 
-        Returns
-        -------
+        :Returns:
+
         [channels_output, default_output] : [[int], [int]]
             corresponding channels to the default output values for the object
         """
@@ -204,8 +187,8 @@ class OutputObject:
         """
         Maps an input value to its output.
 
-        Parameters
-        ----------
+        :Parameters:
+
         value : float
             value of the input to map to an output value
         input_min : float
@@ -217,8 +200,8 @@ class OutputObject:
         out_max : int
             maximun output value in output range
 
-        Returns
-        -------
+        :Returns:
+
         mapped_output : int
             pulse width to output for the given input value
         """
@@ -228,8 +211,8 @@ class ControlType(Enum):
     """
     The output mode of the input. This determines how output is calculated from the inputs.
 
-    Attributes
-    ----------
+    :Attributes:
+
     DIRECT : auto
         output is mapped directly to the input value
     TOGGLE : auto
@@ -245,8 +228,8 @@ class ToggleState(Enum):
     """
     Used to determine output behavior when the control type is set to toggle mode.
 
-    Attributes
-    ----------
+    :Attributes:
+
     ON : auto
         the output is toggled "on"
     OFF : auto
