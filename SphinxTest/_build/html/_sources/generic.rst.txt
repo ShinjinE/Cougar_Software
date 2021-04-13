@@ -5,17 +5,29 @@ Generic Objects
 Digital Output Object
 =====================
 
-.. automodule:: DigitalOutputObject
+.. module:: DigitalOutputObject
+.. autoclass:: DigitalOutputObject
    :members:
+   :inherited-members:
+
+   .. automethod:: __init__
 
 Analog Output Object
 ====================
 
-.. automodule:: AnalogOutputObject
+.. module:: AnalogOutputObject
+.. autoclass:: AnalogOutputObject
    :members:
+   :inherited-members:
+
+   .. automethod:: __init__
 
 Analog Mixer Output
 ===================
 
-.. automodule:: AnalogMixerOutput
+.. module:: AnalogMixerOutput
+.. autoclass:: AnalogMixerOutput
    :members:
+   :inherited-members:
+
+   .. automethod:: __init__

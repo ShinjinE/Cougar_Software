@@ -7,8 +7,8 @@ class NeckTiltOutput(MultiInputOutputObject):
 
     ...
 
-    Attributes
-    ----------
+    :Attributes:
+
     name : str
         name of the servo group for the output
     num_outputs : int
@@ -46,8 +46,10 @@ class NeckTiltOutput(MultiInputOutputObject):
     raw_output : [int]
         list to store the calculated intermediate values that will be mapped to final output values
 
-    Methods
-    -------
+    ...
+
+    :Methods:
+
     __init_(name, num_outputs, channels_output, names_input):
         Class constructor. Assigns the values passed in and initalizes remaining members to default values.
     set_outputs(channels_output, maximums_output, minimums_output):
@@ -75,8 +77,8 @@ class NeckTiltOutput(MultiInputOutputObject):
         """
         Class constructor. Assigns the values passed in and initalizes remaining members to default values.
 
-        Parameters
-        ----------
+        :Parameters:
+
         name : string
             name of the output group represented by output object
         num_outputs : int
@@ -92,15 +94,15 @@ class NeckTiltOutput(MultiInputOutputObject):
         """
         Calculate and returns the output based on the given input value and current control mode.
 
-        Parameters
-        ----------
+        :Parameters:
+
         input_name : str
             name associated with the input
         input_value : int
             the input value from the PS4 controller
 
-        Returns
-        -------
+        :Returns:
+
         [channels_output, current_output] : [[int], [int]]
             current_output is the pulse widths in quarter microseconds to output, and channels_output
             is which channels those outputs will be sent over. How the ouptut is calculated is based

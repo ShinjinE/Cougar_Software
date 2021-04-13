@@ -7,8 +7,8 @@ class MultiInputOutputObject(OutputObject):
 
     ...
 
-    Attributes
-    ----------
+    :Attributes:
+
     name : str
         name of the servo group for the output
     num_outputs : int
@@ -46,35 +46,18 @@ class MultiInputOutputObject(OutputObject):
     raw_output : [int]
         list to store the calculated intermediate values that will be mapped to final output values
 
-    Methods
-    -------
-    __init_(name, num_outputs, channels_output, names_input):
-        Class constructor. Assigns the values passed in and initalizes remaining members to default values.
-    set_outputs(channels_output, maximums_output, minimums_output):
-        Sets which channels to output to and the minimun, default, and maximum pulse width for each of those channels.
-        Also sets current outputs to the same values as the default.
-    set_inversion(is_inverted):
-        Sets whether to invert the output signal or not.
-    set_control_direct():
-        Sets control mode to direct.
-    set_control_toggle():
-        Sets control mode to toggle.
-    set_control_increment():
-        Sets control mode to increment.
-    get_num_channels():
-        Returns the number of output channels for the object.
-    get_default_outputs():
-        Returns the default output values for the object.
-    map_values(value, input_min, input_max, out_min, out_max):
-        Maps an input value to its output.
+    ...
+
+    :Methods:
+
     """
 
     def __init__(self, name, num_outputs, channels_output, names_input):
         """
         Class constructor. Assigns the values passed in and initalizes remaining members to default values.
 
-        Parameters
-        ----------
+        :Parameters:
+
         name : string
             name of the output group represented by output object
         num_outputs : int
