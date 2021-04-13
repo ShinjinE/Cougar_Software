@@ -8,16 +8,18 @@ Welcome to Cosmotron's documentation!
 
 .. toctree::
    :name: mastertoc
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Contents:
 
    input
    mapping
    output
 
-Indices and tables
-==================
+..
+   Indices and tables
+   ==================
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+..
+   * :ref:`genindex`
+   * :ref:`modindex`
+   * :ref:`search`

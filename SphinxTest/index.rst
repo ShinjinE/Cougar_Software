@@ -8,7 +8,7 @@ Welcome to Cosmotron's documentation!
 
 .. toctree::
    :name: mastertoc
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Contents:
 
    input
