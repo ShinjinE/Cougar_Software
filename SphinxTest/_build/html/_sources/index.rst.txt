@@ -11,9 +11,15 @@ Welcome to Cosmotron's documentation!
    :maxdepth: 3
    :caption: Contents:
 
+   intro
+   technical
    input
    mapping
    output
+
+..
+   These two dots followed by a block of text is a comment.
+   Both these lines of text will be ignored.
 
 ..
    Indices and tables

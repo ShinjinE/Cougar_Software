@@ -2,8 +2,7 @@
 Movement Mapping
 ================
 
-.. module:: MovementMap
-.. autoclass:: MovementMap
-   :members:
+.. toctree::
+   :name: mapping
 
-   .. automethod:: __init__
+   movementmap

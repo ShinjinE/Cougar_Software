@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Input Event Handling &#8212; Cosmotron 2021 documentation</title>
+    <title>Introduction &#8212; Cosmotron 2021 documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -14,8 +14,8 @@
     <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Manual Control" href="manualcontrol.html" />
-    <link rel="prev" title="Changing the Movement Map" href="mapchange.html" />
+    <link rel="next" title="Technical Manual" href="technical.html" />
+    <link rel="prev" title="Welcome to Cosmotron’s documentation!" href="index.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -32,13 +32,42 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="input-event-handling">
-<h1>Input Event Handling<a class="headerlink" href="#input-event-handling" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="manualcontrol.html">Manual Control</a></li>
-</ul>
-</div>
+  <div class="section" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p>This document is meant to be a technical guide for accessing,
+modifying, and expanding Cosmotron’s software. This is not meant
+to be API documentation, but rather a guide for modifying the
+software on Cosmotron to adjust how the motors move, change the
+controller scheme, and possibly adjust the code to match
+modifications made to the physical movement mechanisms.</p>
+<p>The following is a brief summarry of each section.</p>
+<p><strong>Technical Manual</strong></p>
+<blockquote>
+<div><p><strong>Accessing the Raspberry Pi</strong></p>
+<blockquote>
+<div><p>How to access the files on the Raspberry Pi so they can be changed.</p>
+</div></blockquote>
+<p><strong>Changing Movement Range</strong></p>
+<blockquote>
+<div><p>How to change the ranges the motors on Cosmotron move.</p>
+</div></blockquote>
+<p><strong>Changing Movement Map</strong></p>
+<blockquote>
+<div><p>How to change the mapping of inputs to outputs.</p>
+</div></blockquote>
+</div></blockquote>
+<p><strong>Input Event Handling</strong></p>
+<blockquote>
+<div><p>Brief documentation of the code that reads input events from the PS4 controllers.</p>
+</div></blockquote>
+<p><strong>Movement Mapping</strong></p>
+<blockquote>
+<div><p>Brief documentation of the code that maps the PS4 inputs to the Maestro outputs.</p>
+</div></blockquote>
+<p><strong>Outpute Objects</strong></p>
+<blockquote>
+<div><p>Brief documentation for each of the output objects used to calculate the Maestro outputs.</p>
+</div></blockquote>
 </div>
 
 
@@ -60,12 +89,9 @@
 <h3>Navigation</h3>
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="technical.html">Technical Manual</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Input Event Handling</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="manualcontrol.html">Manual Control</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="input.html">Input Event Handling</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mapping.html">Movement Mapping</a></li>
 <li class="toctree-l1"><a class="reference internal" href="output.html">Output Objects</a></li>
 </ul>
@@ -74,8 +100,8 @@
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="mapchange.html" title="previous chapter">Changing the Movement Map</a></li>
-      <li>Next: <a href="manualcontrol.html" title="next chapter">Manual Control</a></li>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to Cosmotron’s documentation!</a></li>
+      <li>Next: <a href="technical.html" title="next chapter">Technical Manual</a></li>
   </ul></li>
 </ul>
 </div>
@@ -109,7 +135,7 @@
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
-      <a href="_sources/input.rst.txt"
+      <a href="_sources/intro.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 

@@ -1,0 +1,166 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Accessing the Raspberry Pi &#8212; Cosmotron 2021 documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Changing Movement Range" href="range.html" />
+    <link rel="prev" title="Technical Manual" href="technical.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="accessing-the-raspberry-pi">
+<h1>Accessing the Raspberry Pi<a class="headerlink" href="#accessing-the-raspberry-pi" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="using-ssh">
+<h2>Using SSH<a class="headerlink" href="#using-ssh" title="Permalink to this headline">¶</a></h2>
+<p>Since the Raspberry Pi computer is used headless (without a monitor) to
+control the animatronic cougar, one of the easier ways to access the files
+on the Pi is to use SSH. There are various client programs that can be
+used to SSH. Using the SSH extension on VS Code is a good option for this
+because it provides the ability to edit files within VS Code instead of
+having to use a terminal text editor such as VIM or nano.</p>
+<p>Using the installed SSH client, the connection can be made with the
+following information: domain, username, and password. How exactly this
+information is used depends on the SSH client.</p>
+<p>The domain is the IP address of the Pi on the network it is on. Most likely,
+this will be the IP address of the Pi on BYU’s public WiFi. This address
+can be found by pressing on the up arrow of the Pi-Top case until the WiFi
+section is reached. This option will display the Pi’s current IP address,
+which takes the form of four numbers separated by periods. Such as:
+“10.37.49.83”.</p>
+<p>The default username on all Raspberry Pis is “pi”. This has not been changed
+on the Pi used for Cosmotron.</p>
+<p>The password for the Raspberry Pi being used for Cosmotron is currently
+“pi-top”.</p>
+<p>Unless the SSH client provides specific fields to enter the needed information
+into, the command to make an SSH connection takes the following form:</p>
+<p><code class="docutils literal notranslate"><span class="pre">ssh</span> <span class="pre">username&#64;ip_address</span></code></p>
+<p>Here is an example of what this command could look like for accessing
+Cosmotron’s Raspberry Pi:</p>
+<p><code class="docutils literal notranslate"><span class="pre">ssh</span> <span class="pre">pi&#64;10.37.49.83</span></code></p>
+<p>The user will be prompted to enter the password following a successful connection.</p>
+</div>
+<div class="section" id="using-a-monitor">
+<h2>Using a Monitor<a class="headerlink" href="#using-a-monitor" title="Permalink to this headline">¶</a></h2>
+<p>An alternative method that is more user friendly, but requires a bit more hardware
+than what is provided (and assumed to be owned by the user), is to connect the
+Raspberry Pi to monitor and use it as a normal computer. This requires an HDMI
+compatible monitor, an HDMI to Micro HDMI to connect the Pi to the monitor, a mouse,
+and a keyboard.</p>
+<p>Ensure the Pi is connected to the monitor before powering it on or else it won’t
+start up the user interface to display on the monitor. The keybaord and mouse can be
+plugged in either before or after the Pi is powered on.</p>
+<p>After the Pi has been turned on, files can be editted using the local programs such
+as the programming IDE’s (Geany and Thonny), the general text editor (Mousepad),
+and command line text editors (nano).</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Cosmotron</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="technical.html">Technical Manual</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Accessing the Raspberry Pi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#using-ssh">Using SSH</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#using-a-monitor">Using a Monitor</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="range.html">Changing Movement Range</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mapchange.html">Changing the Movement Map</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="input.html">Input Event Handling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mapping.html">Movement Mapping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="output.html">Output Objects</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="technical.html">Technical Manual</a><ul>
+      <li>Previous: <a href="technical.html" title="previous chapter">Technical Manual</a></li>
+      <li>Next: <a href="range.html" title="next chapter">Changing Movement Range</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Parker King, Ethan Harris.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/access.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

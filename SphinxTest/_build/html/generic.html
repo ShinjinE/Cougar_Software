@@ -42,10 +42,7 @@
 <dd><p>A class to represent a an output object for a digital controller input.
 It inherits attributes and methods from OutputObject.</p>
 <p>…</p>
-<dl class="field-list simple">
-<dt class="field-odd">Attributes</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Attributes</strong></p>
 <dl class="simple">
 <dt>name<span class="classifier">str</span></dt><dd><p>name of the servo group for the output</p>
 </dd>
@@ -73,18 +70,12 @@ It inherits attributes and methods from OutputObject.</p>
 </dd>
 </dl>
 <p>…</p>
-<dl class="field-list simple">
-<dt class="field-odd">Methods</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Methods</strong></p>
 <dl class="py method">
 <dt id="DigitalOutputObject.DigitalOutputObject.__init__">
 <code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_outputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channels_output</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#DigitalOutputObject.DigitalOutputObject.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class constructor. Assigns the values passed in and initalizes remaining members to default values.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Parameters</strong></p>
 <dl class="simple">
 <dt>name<span class="classifier">string</span></dt><dd><p>name of the output group represented by output object</p>
 </dd>
@@ -101,15 +92,9 @@ It inherits attributes and methods from OutputObject.</p>
 <dd><blockquote>
 <div><p>Returns the default output values for the object.</p>
 </div></blockquote>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Parameters</strong></p>
 <p>None</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Returns</strong></p>
 <dl class="simple">
 <dt>[channels_output, default_output]<span class="classifier">[[int], [int]]</span></dt><dd><p>corresponding channels to the default output values for the object</p>
 </dd>
@@ -120,15 +105,9 @@ It inherits attributes and methods from OutputObject.</p>
 <dt id="DigitalOutputObject.DigitalOutputObject.get_num_channels">
 <code class="sig-name descname"><span class="pre">get_num_channels</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#DigitalOutputObject.DigitalOutputObject.get_num_channels" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the number of output channels for the object.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Parameters</strong></p>
 <p>None</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Returns</strong></p>
 <dl class="simple">
 <dt>num_outputs<span class="classifier">int</span></dt><dd><p>number of output channels the object sends output to</p>
 </dd>
@@ -139,20 +118,14 @@ It inherits attributes and methods from OutputObject.</p>
 <dt id="DigitalOutputObject.DigitalOutputObject.get_output">
 <code class="sig-name descname"><span class="pre">get_output</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#DigitalOutputObject.DigitalOutputObject.get_output" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate and returns the output based on the given input value and current control mode.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Parameters</strong></p>
 <dl class="simple">
 <dt>input_name<span class="classifier">str</span></dt><dd><p>name associated with the input, this object does not use this value</p>
 </dd>
 <dt>input_value<span class="classifier">int</span></dt><dd><p>the input value from the PS4 controller</p>
 </dd>
 </dl>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Returns</strong></p>
 <dl class="simple">
 <dt>[channels_output, current_output]<span class="classifier">[[int], [int]]</span></dt><dd><p>current_output is the pulse widths in quarter microseconds to output, and channels_output
 is which channels those outputs will be sent over. How the ouptut is calculated is based
@@ -168,10 +141,7 @@ released. Increment will increment the output value whenever input is given.</p>
 <dt id="DigitalOutputObject.DigitalOutputObject.map_values">
 <code class="sig-name descname"><span class="pre">map_values</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_min</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_min</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_max</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#DigitalOutputObject.DigitalOutputObject.map_values" title="Permalink to this definition">¶</a></dt>
 <dd><p>Maps an input value to its output.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Parameters</strong></p>
 <dl class="simple">
 <dt>value<span class="classifier">float</span></dt><dd><p>value of the input to map to an output value</p>
 </dd>
@@ -184,10 +154,7 @@ released. Increment will increment the output value whenever input is given.</p>
 <dt>out_max<span class="classifier">int</span></dt><dd><p>maximun output value in output range</p>
 </dd>
 </dl>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Returns</strong></p>
 <dl class="simple">
 <dt>mapped_output<span class="classifier">int</span></dt><dd><p>pulse width to output for the given input value</p>
 </dd>
@@ -198,15 +165,9 @@ released. Increment will increment the output value whenever input is given.</p>
 <dt id="DigitalOutputObject.DigitalOutputObject.set_control_direct">
 <code class="sig-name descname"><span class="pre">set_control_direct</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#DigitalOutputObject.DigitalOutputObject.set_control_direct" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets control mode to direct.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Parameters</strong></p>
 <p>None</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Returns</strong></p>
 <p>None</p>
 </dd></dl>
 
@@ -214,15 +175,9 @@ released. Increment will increment the output value whenever input is given.</p>
 <dt id="DigitalOutputObject.DigitalOutputObject.set_control_increment">
 <code class="sig-name descname"><span class="pre">set_control_increment</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#DigitalOutputObject.DigitalOutputObject.set_control_increment" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets control mode to increment.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Parameters</strong></p>
 <p>None</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Returns</strong></p>
 <p>None</p>
 </dd></dl>
 
@@ -230,15 +185,9 @@ released. Increment will increment the output value whenever input is given.</p>
 <dt id="DigitalOutputObject.DigitalOutputObject.set_control_toggle">
 <code class="sig-name descname"><span class="pre">set_control_toggle</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#DigitalOutputObject.DigitalOutputObject.set_control_toggle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets control mode to toggle.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Parameters</strong></p>
 <p>None</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Returns</strong></p>
 <p>None</p>
 </dd></dl>
 
@@ -246,18 +195,12 @@ released. Increment will increment the output value whenever input is given.</p>
 <dt id="DigitalOutputObject.DigitalOutputObject.set_inversion">
 <code class="sig-name descname"><span class="pre">set_inversion</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">is_inverted</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#DigitalOutputObject.DigitalOutputObject.set_inversion" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets whether to invert the output signal or not.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Parameters</strong></p>
 <dl class="simple">
 <dt>is_inverted<span class="classifier">boolean</span></dt><dd><p>the state to set the attribute is_inverted to</p>
 </dd>
 </dl>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Returns</strong></p>
 <p>None</p>
 </dd></dl>
 
@@ -266,10 +209,7 @@ released. Increment will increment the output value whenever input is given.</p>
 <code class="sig-name descname"><span class="pre">set_outputs</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">minimums_output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maximums_output</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#DigitalOutputObject.DigitalOutputObject.set_outputs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets which channels to output to and the minimun, default, and maximum pulse width for each of those channels.
 Also sets current outputs to the same values as the default.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Parameters</strong></p>
 <dl class="simple">
 <dt>minimums_output<span class="classifier">[int]</span></dt><dd><p>minimum pulse width values for the corresponding servo channel</p>
 </dd>
@@ -278,10 +218,7 @@ Also sets current outputs to the same values as the default.</p>
 <dt>maximums_output<span class="classifier">[int]</span></dt><dd><p>maximum pulse width values for the corresponding servo channel</p>
 </dd>
 </dl>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Returns</strong></p>
 <p>None</p>
 </dd></dl>
 
@@ -296,10 +233,7 @@ Also sets current outputs to the same values as the default.</p>
 <dd><p>A class to represent a an output object for an analog controller input.
 It inherits attributes and methods from OutputObject.</p>
 <p>…</p>
-<dl class="field-list simple">
-<dt class="field-odd">Attributes</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Attributes</strong></p>
 <dl class="simple">
 <dt>name<span class="classifier">str</span></dt><dd><p>name of the servo group for the output</p>
 </dd>
@@ -327,18 +261,12 @@ It inherits attributes and methods from OutputObject.</p>
 </dd>
 </dl>
 <p>…</p>
-<dl class="field-list simple">
-<dt class="field-odd">Methods</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Methods</strong></p>
 <dl class="py method">
 <dt id="AnalogOutputObject.AnalogOutputObject.__init__">
 <code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_outputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channels_output</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#AnalogOutputObject.AnalogOutputObject.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class constructor. Assigns the values passed in and initalizes remaining members to default values.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Parameters</strong></p>
 <dl class="simple">
 <dt>name<span class="classifier">string</span></dt><dd><p>name of the output group represented by output object</p>
 </dd>
@@ -355,15 +283,9 @@ It inherits attributes and methods from OutputObject.</p>
 <dd><blockquote>
 <div><p>Returns the default output values for the object.</p>
 </div></blockquote>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Parameters</strong></p>
 <p>None</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Returns</strong></p>
 <dl class="simple">
 <dt>[channels_output, default_output]<span class="classifier">[[int], [int]]</span></dt><dd><p>corresponding channels to the default output values for the object</p>
 </dd>
@@ -374,15 +296,9 @@ It inherits attributes and methods from OutputObject.</p>
 <dt id="AnalogOutputObject.AnalogOutputObject.get_num_channels">
 <code class="sig-name descname"><span class="pre">get_num_channels</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AnalogOutputObject.AnalogOutputObject.get_num_channels" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the number of output channels for the object.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Parameters</strong></p>
 <p>None</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Returns</strong></p>
 <dl class="simple">
 <dt>num_outputs<span class="classifier">int</span></dt><dd><p>number of output channels the object sends output to</p>
 </dd>
@@ -393,20 +309,14 @@ It inherits attributes and methods from OutputObject.</p>
 <dt id="AnalogOutputObject.AnalogOutputObject.get_output">
 <code class="sig-name descname"><span class="pre">get_output</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#AnalogOutputObject.AnalogOutputObject.get_output" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate and returns the output based on the given input value and current control mode.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Parameters</strong></p>
 <dl class="simple">
 <dt>input_name<span class="classifier">str</span></dt><dd><p>name associated with the input, this object does not use this value</p>
 </dd>
 <dt>input_value<span class="classifier">int</span></dt><dd><p>the input value from the PS4 controller</p>
 </dd>
 </dl>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Returns</strong></p>
 <dl class="simple">
 <dt>[channels_output, current_output]<span class="classifier">[[int], [int]]</span></dt><dd><p>current_output is the pulse widths in quarter microseconds to output, and channels_output
 is which channels those outputs will be sent over. How the ouptut is calculated is based
@@ -422,10 +332,7 @@ released. Increment will increment the output value whenever input is given.</p>
 <dt id="AnalogOutputObject.AnalogOutputObject.map_values">
 <code class="sig-name descname"><span class="pre">map_values</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_min</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_min</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_max</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#AnalogOutputObject.AnalogOutputObject.map_values" title="Permalink to this definition">¶</a></dt>
 <dd><p>Maps an input value to its output.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Parameters</strong></p>
 <dl class="simple">
 <dt>value<span class="classifier">float</span></dt><dd><p>value of the input to map to an output value</p>
 </dd>
@@ -438,10 +345,7 @@ released. Increment will increment the output value whenever input is given.</p>
 <dt>out_max<span class="classifier">int</span></dt><dd><p>maximun output value in output range</p>
 </dd>
 </dl>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Returns</strong></p>
 <dl class="simple">
 <dt>mapped_output<span class="classifier">int</span></dt><dd><p>pulse width to output for the given input value</p>
 </dd>
@@ -452,15 +356,9 @@ released. Increment will increment the output value whenever input is given.</p>
 <dt id="AnalogOutputObject.AnalogOutputObject.set_control_direct">
 <code class="sig-name descname"><span class="pre">set_control_direct</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AnalogOutputObject.AnalogOutputObject.set_control_direct" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets control mode to direct.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Parameters</strong></p>
 <p>None</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Returns</strong></p>
 <p>None</p>
 </dd></dl>
 
@@ -468,15 +366,9 @@ released. Increment will increment the output value whenever input is given.</p>
 <dt id="AnalogOutputObject.AnalogOutputObject.set_control_increment">
 <code class="sig-name descname"><span class="pre">set_control_increment</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AnalogOutputObject.AnalogOutputObject.set_control_increment" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets control mode to increment.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Parameters</strong></p>
 <p>None</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Returns</strong></p>
 <p>None</p>
 </dd></dl>
 
@@ -484,15 +376,9 @@ released. Increment will increment the output value whenever input is given.</p>
 <dt id="AnalogOutputObject.AnalogOutputObject.set_control_toggle">
 <code class="sig-name descname"><span class="pre">set_control_toggle</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AnalogOutputObject.AnalogOutputObject.set_control_toggle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets control mode to toggle.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Parameters</strong></p>
 <p>None</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Returns</strong></p>
 <p>None</p>
 </dd></dl>
 
@@ -500,18 +386,12 @@ released. Increment will increment the output value whenever input is given.</p>
 <dt id="AnalogOutputObject.AnalogOutputObject.set_inversion">
 <code class="sig-name descname"><span class="pre">set_inversion</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">is_inverted</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#AnalogOutputObject.AnalogOutputObject.set_inversion" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets whether to invert the output signal or not.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Parameters</strong></p>
 <dl class="simple">
 <dt>is_inverted<span class="classifier">boolean</span></dt><dd><p>the state to set the attribute is_inverted to</p>
 </dd>
 </dl>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Returns</strong></p>
 <p>None</p>
 </dd></dl>
 
@@ -520,10 +400,7 @@ released. Increment will increment the output value whenever input is given.</p>
 <code class="sig-name descname"><span class="pre">set_outputs</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">minimums_output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maximums_output</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#AnalogOutputObject.AnalogOutputObject.set_outputs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets which channels to output to and the minimun, default, and maximum pulse width for each of those channels.
 Also sets current outputs to the same values as the default.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Parameters</strong></p>
 <dl class="simple">
 <dt>minimums_output<span class="classifier">[int]</span></dt><dd><p>minimum pulse width values for the corresponding servo channel</p>
 </dd>
@@ -532,10 +409,7 @@ Also sets current outputs to the same values as the default.</p>
 <dt>maximums_output<span class="classifier">[int]</span></dt><dd><p>maximum pulse width values for the corresponding servo channel</p>
 </dd>
 </dl>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Returns</strong></p>
 <p>None</p>
 </dd></dl>
 
@@ -550,10 +424,7 @@ Also sets current outputs to the same values as the default.</p>
 <dd><p>A class to represent an output object that mixes two analog inputs.
 It inherits attributes and methods from MultiInputOutputObject.</p>
 <p>…</p>
-<dl class="field-list simple">
-<dt class="field-odd">Attributes</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Attributes</strong></p>
 <dl class="simple">
 <dt>name<span class="classifier">str</span></dt><dd><p>name of the servo group for the output</p>
 </dd>
@@ -593,18 +464,12 @@ It inherits attributes and methods from MultiInputOutputObject.</p>
 </dd>
 </dl>
 <p>…</p>
-<dl class="field-list simple">
-<dt class="field-odd">Methods</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Methods</strong></p>
 <dl class="py method">
 <dt id="AnalogMixerOutput.AnalogMixerOutput.__init__">
 <code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_outputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channels_output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names_input</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#AnalogMixerOutput.AnalogMixerOutput.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class constructor. Assigns the values passed in and initalizes remaining members to default values.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Parameters</strong></p>
 <dl class="simple">
 <dt>name<span class="classifier">string</span></dt><dd><p>name of the output group represented by output object</p>
 </dd>
@@ -623,15 +488,9 @@ It inherits attributes and methods from MultiInputOutputObject.</p>
 <dd><blockquote>
 <div><p>Returns the default output values for the object.</p>
 </div></blockquote>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Parameters</strong></p>
 <p>None</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Returns</strong></p>
 <dl class="simple">
 <dt>[channels_output, default_output]<span class="classifier">[[int], [int]]</span></dt><dd><p>corresponding channels to the default output values for the object</p>
 </dd>
@@ -642,15 +501,9 @@ It inherits attributes and methods from MultiInputOutputObject.</p>
 <dt id="AnalogMixerOutput.AnalogMixerOutput.get_num_channels">
 <code class="sig-name descname"><span class="pre">get_num_channels</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AnalogMixerOutput.AnalogMixerOutput.get_num_channels" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the number of output channels for the object.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Parameters</strong></p>
 <p>None</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Returns</strong></p>
 <dl class="simple">
 <dt>num_outputs<span class="classifier">int</span></dt><dd><p>number of output channels the object sends output to</p>
 </dd>
@@ -661,20 +514,14 @@ It inherits attributes and methods from MultiInputOutputObject.</p>
 <dt id="AnalogMixerOutput.AnalogMixerOutput.get_output">
 <code class="sig-name descname"><span class="pre">get_output</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#AnalogMixerOutput.AnalogMixerOutput.get_output" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate and returns the output based on the given input value and current control mode.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Parameters</strong></p>
 <dl class="simple">
 <dt>input_name<span class="classifier">str</span></dt><dd><p>name associated with the input</p>
 </dd>
 <dt>input_value<span class="classifier">int</span></dt><dd><p>the input value from the PS4 controller</p>
 </dd>
 </dl>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Returns</strong></p>
 <dl class="simple">
 <dt>[channels_output, current_output]<span class="classifier">[[int], [int]]</span></dt><dd><p>current_output is the pulse widths in quarter microseconds to output, and channels_output
 is which channels those outputs will be sent over. How the ouptut is calculated is based
@@ -690,10 +537,7 @@ released. Increment will increment the output value whenever input is given.</p>
 <dt id="AnalogMixerOutput.AnalogMixerOutput.map_values">
 <code class="sig-name descname"><span class="pre">map_values</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_min</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_min</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_max</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#AnalogMixerOutput.AnalogMixerOutput.map_values" title="Permalink to this definition">¶</a></dt>
 <dd><p>Maps an input value to its output.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Parameters</strong></p>
 <dl class="simple">
 <dt>value<span class="classifier">float</span></dt><dd><p>value of the input to map to an output value</p>
 </dd>
@@ -706,10 +550,7 @@ released. Increment will increment the output value whenever input is given.</p>
 <dt>out_max<span class="classifier">int</span></dt><dd><p>maximun output value in output range</p>
 </dd>
 </dl>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Returns</strong></p>
 <dl class="simple">
 <dt>mapped_output<span class="classifier">int</span></dt><dd><p>pulse width to output for the given input value</p>
 </dd>
@@ -720,15 +561,9 @@ released. Increment will increment the output value whenever input is given.</p>
 <dt id="AnalogMixerOutput.AnalogMixerOutput.set_control_direct">
 <code class="sig-name descname"><span class="pre">set_control_direct</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AnalogMixerOutput.AnalogMixerOutput.set_control_direct" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets control mode to direct.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Parameters</strong></p>
 <p>None</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Returns</strong></p>
 <p>None</p>
 </dd></dl>
 
@@ -736,15 +571,9 @@ released. Increment will increment the output value whenever input is given.</p>
 <dt id="AnalogMixerOutput.AnalogMixerOutput.set_control_increment">
 <code class="sig-name descname"><span class="pre">set_control_increment</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AnalogMixerOutput.AnalogMixerOutput.set_control_increment" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets control mode to increment.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Parameters</strong></p>
 <p>None</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Returns</strong></p>
 <p>None</p>
 </dd></dl>
 
@@ -752,15 +581,9 @@ released. Increment will increment the output value whenever input is given.</p>
 <dt id="AnalogMixerOutput.AnalogMixerOutput.set_control_toggle">
 <code class="sig-name descname"><span class="pre">set_control_toggle</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AnalogMixerOutput.AnalogMixerOutput.set_control_toggle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets control mode to toggle.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Parameters</strong></p>
 <p>None</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Returns</strong></p>
 <p>None</p>
 </dd></dl>
 
@@ -768,18 +591,12 @@ released. Increment will increment the output value whenever input is given.</p>
 <dt id="AnalogMixerOutput.AnalogMixerOutput.set_inversion">
 <code class="sig-name descname"><span class="pre">set_inversion</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">is_inverted</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#AnalogMixerOutput.AnalogMixerOutput.set_inversion" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets whether to invert the output signal or not.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Parameters</strong></p>
 <dl class="simple">
 <dt>is_inverted<span class="classifier">boolean</span></dt><dd><p>the state to set the attribute is_inverted to</p>
 </dd>
 </dl>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Returns</strong></p>
 <p>None</p>
 </dd></dl>
 
@@ -788,10 +605,7 @@ released. Increment will increment the output value whenever input is given.</p>
 <code class="sig-name descname"><span class="pre">set_outputs</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">minimums_output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maximums_output</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#AnalogMixerOutput.AnalogMixerOutput.set_outputs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets which channels to output to and the minimun, default, and maximum pulse width for each of those channels.
 Also sets current outputs to the same values as the default.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Parameters</strong></p>
 <dl class="simple">
 <dt>minimums_output<span class="classifier">[int]</span></dt><dd><p>minimum pulse width values for the corresponding servo channel</p>
 </dd>
@@ -800,10 +614,7 @@ Also sets current outputs to the same values as the default.</p>
 <dt>maximums_output<span class="classifier">[int]</span></dt><dd><p>maximum pulse width values for the corresponding servo channel</p>
 </dd>
 </dl>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
+<p><strong>Returns</strong></p>
 <p>None</p>
 </dd></dl>
 
@@ -831,11 +642,18 @@ Also sets current outputs to the same values as the default.</p>
 <h3>Navigation</h3>
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="technical.html">Technical Manual</a></li>
 <li class="toctree-l1"><a class="reference internal" href="input.html">Input Event Handling</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mapping.html">Movement Mapping</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="output.html">Output Objects</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="base.html">Base Objects</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Generic Objects</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Generic Objects</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-DigitalOutputObject">Digital Output Object</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-AnalogOutputObject">Analog Output Object</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-AnalogMixerOutput">Analog Mixer Output</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="specific.html">Specific Objects</a></li>
 </ul>
 </li>

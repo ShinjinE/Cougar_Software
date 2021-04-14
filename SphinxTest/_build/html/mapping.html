@@ -14,8 +14,8 @@
     <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Output Objects" href="output.html" />
-    <link rel="prev" title="Input Event Handling" href="input.html" />
+    <link rel="next" title="Movement Map" href="movementmap.html" />
+    <link rel="prev" title="Manual Control" href="manualcontrol.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -32,127 +32,13 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="module-MovementMap">
-<span id="movement-mapping"></span><h1>Movement Mapping<a class="headerlink" href="#module-MovementMap" title="Permalink to this headline">¶</a></h1>
-<dl class="py class">
-<dt id="MovementMap.MovementMap">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">MovementMap.</span></code><code class="sig-name descname"><span class="pre">MovementMap</span></code><a class="headerlink" href="#MovementMap.MovementMap" title="Permalink to this definition">¶</a></dt>
-<dd><p>A class that handles controller inputs. Contains a mapping of input objects to output objects.</p>
-<p>…</p>
-<dl class="field-list simple">
-<dt class="field-odd">Attributes</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
-<dl class="simple">
-<dt>servoBoard<span class="classifier">maestro.Controller</span></dt><dd><p>object that establishes serial conection to the Maestro and has functions to send commands to the board</p>
-</dd>
-<dt>output_objects<span class="classifier">[OutputObject]</span></dt><dd><p>list of all the output objects, used to activate each output on the Maestro board on startup</p>
-</dd>
-<dt>right_ear<span class="classifier">AnalogOutputObject</span></dt><dd><p>object to map inputs to output for the right ear movements</p>
-</dd>
-<dt>left_ear<span class="classifier">AnalogOutputObject</span></dt><dd><p>object to map inputs to output for the left ear movements</p>
-</dd>
-<dt>eyelids<span class="classifier">AnalogOutputObject</span></dt><dd><p>object to map input to outputs for the top and bottom eyelid movements</p>
-</dd>
-<dt>eyes_horizontal<span class="classifier">AnalogOutputObject</span></dt><dd><p>object to map input to outputs for the left and right eye horizontal movements</p>
-</dd>
-<dt>eyes_vertical<span class="classifier">AnalogOutputObject</span></dt><dd><p>object to map input to outputs for the left and right eye vertical movements</p>
-</dd>
-<dt>eyebrows<span class="classifier">EybrowsOutput</span></dt><dd><p>object to map inputs to outputs for the eyebrow movements</p>
-</dd>
-<dt>nose<span class="classifier">DigitalOutputObject</span></dt><dd><p>object to map input to output for the nose movements</p>
-</dd>
-<dt>top_lip<span class="classifier">DigitalOutputObject</span></dt><dd><p>object to map input to output for the top lip movements</p>
-</dd>
-<dt>right_lip<span class="classifier">SideLipOutput</span></dt><dd><p>object to map inputs to outputs for the right lip movements</p>
-</dd>
-<dt>left_lip<span class="classifier">SideLipOutput</span></dt><dd><p>object to map inputs to outputs for the left lip movements</p>
-</dd>
-<dt>jaw<span class="classifier">AnalogOutputObject</span></dt><dd><p>object to map input to outputs for the jaw movements</p>
-</dd>
-<dt>neck_twist<span class="classifier">AnalogOutputObject</span></dt><dd><p>object to map input to output for the neck twist movements</p>
-</dd>
-<dt>neck_tilt<span class="classifier">NeckTiltOutput</span></dt><dd><p>object to map inputs to outpus for the neck tilt movements</p>
-</dd>
-<dt>input_map<span class="classifier">dictionary [input_name (string): output_object (OutputObject)]</span></dt><dd><p>mapping of the controller inputs to movement outputs</p>
-</dd>
-</dl>
-<p>…</p>
-<dl class="field-list simple">
-<dt class="field-odd">Methods</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
-<dl class="py method">
-<dt id="MovementMap.MovementMap.__init__">
-<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MovementMap.MovementMap.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Class constructor. Creates needed output objects and sets their parameters. Also creates the input map.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
-<p>None</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="MovementMap.MovementMap.process_input">
-<code class="sig-name descname"><span class="pre">process_input</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MovementMap.MovementMap.process_input" title="Permalink to this definition">¶</a></dt>
-<dd><p>Using the input map, determines the correct output object to send the input value to. The returned outputs are passed to the maestro board.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
-<dl class="simple">
-<dt>input_object<span class="classifier">ControllerEvent</span></dt><dd><p>object containing the name of the input and its associated value to be processed</p>
-</dd>
-</dl>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
-<p>None</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="MovementMap.MovementMap.send_outputs">
-<code class="sig-name descname"><span class="pre">send_outputs</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_outputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#MovementMap.MovementMap.send_outputs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sends the output to the corresponding channel from the given lists of channels and outputs.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
-<dl class="simple">
-<dt>num_outputs<span class="classifier">int</span></dt><dd><p>number of channels and outputs to loop through</p>
-</dd>
-<dt>channel<span class="classifier">[int]</span></dt><dd><p>channel numbers on the Maestro board to send outputs to</p>
-</dd>
-<dt>output<span class="classifier">[double]</span></dt><dd><p>values to output on the Maestro board, cast to int to ensure proper typing</p>
-</dd>
-</dl>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
-<p>None</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="MovementMap.MovementMap.start_outputs">
-<code class="sig-name descname"><span class="pre">start_outputs</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#MovementMap.MovementMap.start_outputs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sends the starting outputs for each motor to the Maestro board to activate each channel in default positions.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
-<p>None</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p></dd>
-</dl>
-<p>None</p>
-</dd></dl>
-
-</dd></dl>
-
+  <div class="section" id="movement-mapping">
+<h1>Movement Mapping<a class="headerlink" href="#movement-mapping" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound" id="mapping">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="movementmap.html">Movement Map</a></li>
+</ul>
+</div>
 </div>
 
 
@@ -174,8 +60,13 @@
 <h3>Navigation</h3>
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="technical.html">Technical Manual</a></li>
 <li class="toctree-l1"><a class="reference internal" href="input.html">Input Event Handling</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Movement Mapping</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Movement Mapping</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="movementmap.html">Movement Map</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="output.html">Output Objects</a></li>
 </ul>
 
@@ -183,8 +74,8 @@
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="input.html" title="previous chapter">Input Event Handling</a></li>
-      <li>Next: <a href="output.html" title="next chapter">Output Objects</a></li>
+      <li>Previous: <a href="manualcontrol.html" title="previous chapter">Manual Control</a></li>
+      <li>Next: <a href="movementmap.html" title="next chapter">Movement Map</a></li>
   </ul></li>
 </ul>
 </div>

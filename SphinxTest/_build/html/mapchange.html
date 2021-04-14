@@ -1,0 +1,240 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Changing the Movement Map &#8212; Cosmotron 2021 documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Input Event Handling" href="input.html" />
+    <link rel="prev" title="Changing Movement Range" href="range.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="changing-the-movement-map">
+<h1>Changing the Movement Map<a class="headerlink" href="#changing-the-movement-map" title="Permalink to this headline">¶</a></h1>
+<p>The movement mapping code is constructed in a way to be easily adaptable.
+For example, if the number of servos used in a movement group change, this
+can be adjusted using the concepts discussed in <a class="reference internal" href="range.html#pyrange"><span class="std std-ref">Defining Output Ranges in Python Code</span></a>. The two
+main areas of interest that could be changed are if a movement group is
+added, changed, or removed, and the way inputs are mapped to outputs need
+to be changed.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This section assumes familiarity with Python classes and objects.</p>
+</div>
+<div class="section" id="movement-groups">
+<h2>Movement Groups<a class="headerlink" href="#movement-groups" title="Permalink to this headline">¶</a></h2>
+<p>The output objects are designed to easily have the following attributes
+changed:</p>
+<ol class="arabic simple">
+<li><p>Number of output channels</p></li>
+<li><p>Which output channels to use</p></li>
+<li><p>Min, default, and max output values</p></li>
+<li><p>Correlated PS4 input(s)</p></li>
+</ol>
+<p><strong>Attributes 1 and 2</strong></p>
+<p>These attributes are always set using the constructor of the object.
+The following example has the “jaw” movement sending outputs on two
+channels. These channels are 18 and 19.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">jaw</span> <span class="o">=</span> <span class="n">AnalogOutputObject</span><span class="p">(</span><span class="s2">&quot;jaw&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="p">[</span><span class="mi">18</span><span class="p">,</span> <span class="mi">19</span><span class="p">])</span>
+</pre></div>
+</div>
+<p><strong>Attribute 3</strong></p>
+<p>This attribute is always dependant on the <em>set_outputs</em> method that each
+output object class inherits. This was already discussed in the section,
+<a class="reference internal" href="range.html#pyrange"><span class="std std-ref">Defining Output Ranges in Python Code</span></a>. However, here is an example of the method being used.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">jaw</span><span class="o">.</span><span class="n">set_outputs</span><span class="p">([</span><span class="mi">6000</span><span class="p">,</span> <span class="mi">6000</span><span class="p">],</span> <span class="p">[</span><span class="mi">6000</span><span class="p">,</span> <span class="mi">6000</span><span class="p">],</span> <span class="p">[</span><span class="mi">7000</span><span class="p">,</span> <span class="mi">5000</span><span class="p">])</span>
+</pre></div>
+</div>
+<p><strong>Attribute 4</strong></p>
+<p>This attribute is mostly determined by an attribute of the MovementMap
+class called <em>input_map</em>. This MovementMap attribute is a python
+dictionary that links input names from the two PS4 controllers to the
+movement groups they control. This enables the MovementMap class to pass
+the inputs to the correct output objects quickly based on the input name.</p>
+<p>The following is the mapping for the first controller:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;x_button_1&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">right_ear</span><span class="p">,</span>
+<span class="s2">&quot;circle_button_1&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">right_ear</span><span class="p">,</span>
+<span class="s2">&quot;triangle_button_1&quot;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+<span class="s2">&quot;square_button_1&quot;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+<span class="s2">&quot;down_button_1&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">left_ear</span><span class="p">,</span>
+<span class="s2">&quot;up_button_1&quot;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+<span class="s2">&quot;right_button_1&quot;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+<span class="s2">&quot;left_button_1&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">left_ear</span><span class="p">,</span>
+<span class="s2">&quot;r1_button_1&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">nose</span><span class="p">,</span>
+<span class="s2">&quot;l1_button_1&quot;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+<span class="s2">&quot;r2_analog_1&quot;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+<span class="s2">&quot;l2_analog_1&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">eyelids</span><span class="p">,</span>
+<span class="s2">&quot;r3_button_1&quot;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+<span class="s2">&quot;l3_button_1&quot;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+<span class="s2">&quot;r_joystick_x_analog_1&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">eyebrows</span><span class="p">,</span>
+<span class="s2">&quot;r_joystick_y_analog_1&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">eyebrows</span><span class="p">,</span>
+<span class="s2">&quot;l_joystick_x_analog_1&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">eyes_horizontal</span><span class="p">,</span>
+<span class="s2">&quot;l_joystick_y_analog_1&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">eyes_vertical</span><span class="p">,</span>
+<span class="s2">&quot;share_button_1&quot;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+<span class="s2">&quot;options_button_1&quot;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+<span class="s2">&quot;ps_symbol_button_1&quot;</span><span class="p">:</span> <span class="bp">None</span>
+</pre></div>
+</div>
+<p>For the dictionary keys that have a value of <em>None</em>, those inputs
+don’t control anything on Cosmotron and will be ignored by the
+MovementMap class. To make a new mapping between a PS4 input and an
+movement group, replace <em>None</em> with the corresponding output object.
+To remove a mapping, change the value for the input key to <em>None</em>.
+To change a currently used mapping, change the output object in the
+value to the output object for the desired movement group.</p>
+<p>There is a secondary place where attribute 4 is set. This is in the
+constructor for some of the more complex output objects, like the
+eyebrows. These output object determine their output based off of
+two PS4 inputs. These output objects take an additional parameter in
+their constructor. This parameter is a list of the input names. The
+order of this list matters. To see how to order the list, look at
+the code for the corresponding output object.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>These complex objects that use multiple PS4 inputs need to
+have the input names passed into their constructor be the same
+as the key-value pairs set be the <em>input_map</em> attribute.</p>
+</div>
+<p>Here is the constructor being called for the eyebrow output object
+as an example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">eyebrows</span> <span class="o">=</span> <span class="n">EyebrowsOutput</span><span class="p">(</span><span class="s2">&quot;eyebrows&quot;</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;r_joystick_y_analog_1&quot;</span><span class="p">,</span> <span class="s2">&quot;r_joystick_x_analog_1&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Notice how in the section of the <em>input_map</em> attribute shown above,
+the object, <em>eyebrows</em>, is associated with “r_joystick_y_analog_1”
+and “r_joystick_x_analog_1”, which are the same input names passed
+into the constructor for the eyebrows movement group.</p>
+</div>
+<div class="section" id="output-mapping">
+<h2>Output Mapping<a class="headerlink" href="#output-mapping" title="Permalink to this headline">¶</a></h2>
+<p>Currently each output object class has a linear mapping of inputs
+to outputs. The following is the default mapping equation:</p>
+<p><code class="docutils literal notranslate"><span class="pre">output_value</span> <span class="pre">=</span> <span class="pre">(input_value</span> <span class="pre">-</span> <span class="pre">input_min)</span> <span class="pre">*</span> <span class="pre">(out_max</span> <span class="pre">-</span> <span class="pre">out_min)</span> <span class="pre">/</span> <span class="pre">(input_max</span> <span class="pre">-</span> <span class="pre">input_min)</span> <span class="pre">+</span> <span class="pre">out_min</span></code></p>
+<p>Out max and min are set by the <em>set_outputs</em> method for the output
+object. Input max and min are dependant on whether the output object
+accepts a digital or analog input. For digital, the max is 1 and the
+min is 0. For analog, the max is 255 and the min is 0. Input value is
+the value associated with the corresponding PS4 input being processed.
+The output value is what is sent to the Maestro board.</p>
+<p>For the output objects that take multiple PS4 inputs, this linear
+mapping is not changed. However, the mixing of inputs is done before
+the input value is sent to the mapping equation.</p>
+<p>To change this mapping to follow an exponential growth or decay, or
+any other behavior, it is recommended to create a new output object
+for the desired movement group which inherits from the object that
+movement group was previously set to. Then overide the <em>map_values</em>
+method which contains the mapping equation. In the overidden method,
+create the new desired mapping equation. This will enable custom
+mappings to be set without changing the behavior of the other
+movement groups.</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Cosmotron</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="technical.html">Technical Manual</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="access.html">Accessing the Raspberry Pi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="range.html">Changing Movement Range</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Changing the Movement Map</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#movement-groups">Movement Groups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#output-mapping">Output Mapping</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="input.html">Input Event Handling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mapping.html">Movement Mapping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="output.html">Output Objects</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="technical.html">Technical Manual</a><ul>
+      <li>Previous: <a href="range.html" title="previous chapter">Changing Movement Range</a></li>
+      <li>Next: <a href="input.html" title="next chapter">Input Event Handling</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Parker King, Ethan Harris.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/mapchange.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
