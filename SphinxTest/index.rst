@@ -11,13 +11,21 @@ Welcome to Cosmotron's documentation!
    :maxdepth: 3
    :caption: Contents:
 
+   intro
+   technical
    input
    mapping
    output
 
-Indices and tables
-==================
+..
+   These two dots followed by a block of text is a comment.
+   Both these lines of text will be ignored.
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+..
+   Indices and tables
+   ==================
+
+..
+   * :ref:`genindex`
+   * :ref:`modindex`
+   * :ref:`search`

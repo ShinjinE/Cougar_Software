@@ -2,5 +2,6 @@
 Input Event Handling
 ====================
 
-.. automodule:: manualControl
-   :members:
+.. toctree::
+   
+   manualcontrol
