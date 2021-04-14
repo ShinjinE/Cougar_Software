@@ -91,8 +91,533 @@
 
 
 
+\chapter{Introduction}
+\label{\detokenize{intro:introduction}}\label{\detokenize{intro::doc}}
+\sphinxAtStartPar
+This document is meant to be a technical guide for accessing,
+modifying, and expanding Cosmotron’s software. This is not meant
+to be API documentation, but rather a guide for modifying the
+software on Cosmotron to adjust how the motors move, change the
+controller scheme, and possibly adjust the code to match
+modifications made to the physical movement mechanisms.
+
+\sphinxAtStartPar
+The following is a brief summarry of each section.
+
+\sphinxAtStartPar
+\sphinxstylestrong{Technical Manual}
+\begin{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Accessing the Raspberry Pi}
+\begin{quote}
+
+\sphinxAtStartPar
+How to access the files on the Raspberry Pi so they can be changed.
+\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Changing Movement Range}
+\begin{quote}
+
+\sphinxAtStartPar
+How to change the ranges the motors on Cosmotron move.
+\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Changing Movement Map}
+\begin{quote}
+
+\sphinxAtStartPar
+How to change the mapping of inputs to outputs.
+\end{quote}
+\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Input Event Handling}
+\begin{quote}
+
+\sphinxAtStartPar
+Brief documentation of the code that reads input events from the PS4 controllers.
+\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Movement Mapping}
+\begin{quote}
+
+\sphinxAtStartPar
+Brief documentation of the code that maps the PS4 inputs to the Maestro outputs.
+\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Outpute Objects}
+\begin{quote}
+
+\sphinxAtStartPar
+Brief documentation for each of the output objects used to calculate the Maestro outputs.
+\end{quote}
+
+
+\chapter{Technical Manual}
+\label{\detokenize{technical:technical-manual}}\label{\detokenize{technical::doc}}
+
+\section{Accessing the Raspberry Pi}
+\label{\detokenize{access:accessing-the-raspberry-pi}}\label{\detokenize{access::doc}}
+
+\subsection{Using SSH}
+\label{\detokenize{access:using-ssh}}
+\sphinxAtStartPar
+Since the Raspberry Pi computer is used headless (without a monitor) to
+control the animatronic cougar, one of the easier ways to access the files
+on the Pi is to use SSH. There are various client programs that can be
+used to SSH. Using the SSH extension on VS Code is a good option for this
+because it provides the ability to edit files within VS Code instead of
+having to use a terminal text editor such as VIM or nano.
+
+\sphinxAtStartPar
+Using the installed SSH client, the connection can be made with the
+following information: domain, username, and password. How exactly this
+information is used depends on the SSH client.
+
+\sphinxAtStartPar
+The domain is the IP address of the Pi on the network it is on. Most likely,
+this will be the IP address of the Pi on BYU’s public WiFi. This address
+can be found by pressing on the up arrow of the Pi\sphinxhyphen{}Top case until the WiFi
+section is reached. This option will display the Pi’s current IP address,
+which takes the form of four numbers separated by periods. Such as:
+“10.37.49.83”.
+
+\sphinxAtStartPar
+The default username on all Raspberry Pis is “pi”. This has not been changed
+on the Pi used for Cosmotron.
+
+\sphinxAtStartPar
+The password for the Raspberry Pi being used for Cosmotron is currently
+“pi\sphinxhyphen{}top”.
+
+\sphinxAtStartPar
+Unless the SSH client provides specific fields to enter the needed information
+into, the command to make an SSH connection takes the following form:
+
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{ssh username@ip\_address}}
+
+\sphinxAtStartPar
+Here is an example of what this command could look like for accessing
+Cosmotron’s Raspberry Pi:
+
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{ssh pi@10.37.49.83}}
+
+\sphinxAtStartPar
+The user will be prompted to enter the password following a successful connection.
+
+
+\subsection{Using a Monitor}
+\label{\detokenize{access:using-a-monitor}}
+\sphinxAtStartPar
+An alternative method that is more user friendly, but requires a bit more hardware
+than what is provided (and assumed to be owned by the user), is to connect the
+Raspberry Pi to monitor and use it as a normal computer. This requires an HDMI
+compatible monitor, an HDMI to Micro HDMI to connect the Pi to the monitor, a mouse,
+and a keyboard.
+
+\sphinxAtStartPar
+Ensure the Pi is connected to the monitor before powering it on or else it won’t
+start up the user interface to display on the monitor. The keybaord and mouse can be
+plugged in either before or after the Pi is powered on.
+
+\sphinxAtStartPar
+After the Pi has been turned on, files can be editted using the local programs such
+as the programming IDE’s (Geany and Thonny), the general text editor (Mousepad),
+and command line text editors (nano).
+
+
+\section{Changing Movement Range}
+\label{\detokenize{range:changing-movement-range}}\label{\detokenize{range::doc}}
+\sphinxAtStartPar
+There are two loactions that the range of the outputs can be adjusted. The first is
+in Python code and the second is in the settings of the Pololu Maestro Board. These
+two sources do not change the range in the same way. The Python code determines the
+output value used in order to move the motors. The Maestro board provides a limit to
+the allowable range for each output channel. If the Maestro board receives an output
+that is outside its defined range, it will limit the value to the edge of its range.
+So the settings on the Maestro functions more like a safety in how the Maestro board
+is being utilized for Cosmotron and the Python code defines the range which impacts
+how the input values from the PlayStation 4 (PS4) Dual Shock controllers are mapped
+to the output values. How to change both are outlined in the following sections.
+
+
+\subsection{Defining Output Ranges in Python Code}
+\label{\detokenize{range:defining-output-ranges-in-python-code}}\label{\detokenize{range:pyrange}}
+\sphinxAtStartPar
+The class, MovementMap, contained in the file MovementMap.py, is were the ranges for
+each output is defined. Thes values are defined in the beginning of the class’
+constructor. Output objects are created for each movement group. After each object is
+created, it has it’s minimum, default, and maximum output values defined by using the
+set\_outputs method of the output object. The object is then added to a list used for
+a sequential startup of the Maestro channels, but this is irrelavant to the output
+ranges. The following code block is an excerpty from MovementMap.py:
+
+\begin{sphinxVerbatim}[commandchars=\\\{\},numbers=left,firstnumber=78,stepnumber=1]
+\PYG{c+c1}{\PYGZsh{} Left Ear}
+\PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{left\PYGZus{}ear} \PYG{o}{=} \PYG{n}{EarOutput}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{left ear}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{p}{,} \PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{down\PYGZus{}button\PYGZus{}1}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{left\PYGZus{}button\PYGZus{}1}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{]}\PYG{p}{)}
+\PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{left\PYGZus{}ear}\PYG{o}{.}\PYG{n}{set\PYGZus{}outputs}\PYG{p}{(}\PYG{p}{[}\PYG{l+m+mi}{4000}\PYG{p}{]}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mi}{4000}\PYG{p}{]}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mi}{8000}\PYG{p}{]}\PYG{p}{)}
+\PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{output\PYGZus{}objects}\PYG{o}{.}\PYG{n}{append}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{left\PYGZus{}ear}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} Eyelids}
+\PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{eyelids} \PYG{o}{=} \PYG{n}{AnalogOutputObject}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{eylids}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{l+m+mi}{2}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mi}{2}\PYG{p}{,} \PYG{l+m+mi}{3}\PYG{p}{]}\PYG{p}{)}
+\PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{eyelids}\PYG{o}{.}\PYG{n}{set\PYGZus{}outputs}\PYG{p}{(}\PYG{p}{[}\PYG{l+m+mi}{6800}\PYG{p}{,} \PYG{l+m+mi}{5300}\PYG{p}{]}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mi}{6800}\PYG{p}{,} \PYG{l+m+mi}{5300}\PYG{p}{]}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mi}{6050}\PYG{p}{,} \PYG{l+m+mi}{6550}\PYG{p}{]}\PYG{p}{)}
+\PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{output\PYGZus{}objects}\PYG{o}{.}\PYG{n}{append}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{eyelids}\PYG{p}{)}
+\end{sphinxVerbatim}
+
+\sphinxAtStartPar
+This format is used for each movement group contained in the MovementMap class. To
+accomodate the varying circumstances of each movement group and how many motors it
+will output to, the inputs to the set\_outputs method takes three lists. The first
+list contains the minimum output values. The second list contains the default output
+values which are used on startup to match the motors with the default inputs from
+PS4 controllers and for some complicated movement groups. The third list contains
+the maximum output values.
+
+\sphinxAtStartPar
+The code above provides two examples of setting the range. One with only one output
+channel and one with two output channels. The number of output channels, as well as
+which channels to output to, are determined by the inputs passed to the constructor
+of the output object. The exact inputs differ depending on the output object, but
+each output object constructor takes the same first three inputs. These are, in
+order, movement group name, number of output channels, and which channels to output
+to.
+
+\begin{sphinxadmonition}{note}{Note:}
+\sphinxAtStartPar
+Order of the elements in the list matters.
+\end{sphinxadmonition}
+
+\sphinxAtStartPar
+The number of elements in each list passed to the set\_outputs method needs to match
+the number output channels for that object. So for the left ear, which only has one
+output, each list has one value which correspond directly to the max, default, and min
+output values. The eyelids have two outputs, so each list in the set\_outputs method has
+two values. For these situations with more than one output for the movement group, the
+order of the values in each list matters. The first value in the min, default, and max
+lists corresponds to the first value in the list defining the output channels. The
+second value in the min, default, and max lists corresponds to the second value in the
+list defining the output channels and so on.
+
+\sphinxAtStartPar
+This means that for the left ear, it only sends outputs to channel one on the Maestro
+board. The minimum value that is output is 4000 and the maximum is 8000. By default,
+the value 4000 is sent to this channel.
+
+\sphinxAtStartPar
+Looking at the eyelids, this movement group outputs to channels 2 and 3 on the
+Maestro. For channel 2, the minimum value is 6800 and the max is 6050. For channel
+3, the minimum value is 5300 and the max is 6550. The defaults for channels 2 and 3
+are 6800 and 5300 respectively.
+
+\begin{sphinxVerbatim}[commandchars=\\\{\},numbers=left,firstnumber=117,stepnumber=1]
+\PYG{c+c1}{\PYGZsh{} Right Lip}
+\PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{right\PYGZus{}lip} \PYG{o}{=} \PYG{n}{SideLipOutput}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{right lip}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{l+m+mi}{2}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mi}{14}\PYG{p}{,} \PYG{l+m+mi}{15}\PYG{p}{]}\PYG{p}{,} \PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{circle\PYGZus{}button\PYGZus{}2}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{x\PYGZus{}button\PYGZus{}2}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{]}\PYG{p}{)}
+\PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{right\PYGZus{}lip}\PYG{o}{.}\PYG{n}{set\PYGZus{}outputs}\PYG{p}{(}\PYG{p}{[}\PYG{l+m+mi}{6500}\PYG{p}{,} \PYG{l+m+mi}{5000}\PYG{p}{]}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mi}{6000}\PYG{p}{,} \PYG{l+m+mi}{6000}\PYG{p}{]}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mi}{5500}\PYG{p}{,} \PYG{l+m+mi}{7000}\PYG{p}{]}\PYG{p}{)}
+\PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{output\PYGZus{}objects}\PYG{o}{.}\PYG{n}{append}\PYG{p}{(}\PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{right\PYGZus{}lip}\PYG{p}{)}
+\end{sphinxVerbatim}
+
+\sphinxAtStartPar
+Here is another example to illustrate that sometimes the minimum value is set higher
+than the maximum value. Doing this “inverts” the output. More specifially, a minimum
+input value maps to the value set as the minimum for the output value. The same goes
+for the maximums. Maximum input value maps to the value set for the maximum output
+value. So the right lip outputs to channels 14 and 15 (set by the list {[}14, 15{]}
+passed to the constructor). Channel 14 has its minimum output set to 6050 and its
+maximum output set to 5500. Channel 15 has its minimum output set to 5000 and its
+maximum output set to 7000. The defaults for channels 14 and 15 are both 6000.
+
+
+\subsection{Defining Output Limits in Maestro Settings}
+\label{\detokenize{range:defining-output-limits-in-maestro-settings}}
+\sphinxAtStartPar
+\sphinxstylestrong{Maestro Servo Controller}
+
+\sphinxAtStartPar
+There are two main ways to change the range limits for the Maestro board. One is
+to use the Maestro Control Center software. The other is to use UscCmd command
+line software that comes with the linux\sphinxhyphen{}maestro files. Ultimately, both depend on
+loading or modifying a settings file. The control center software is a GUI that
+lets you change the settings interactively and thus is more user friendly.
+
+\sphinxAtStartPar
+As mentioned, the most user friendly option to change the channel range limits is
+through the control center software. This can be download for the needed operating
+system from the \sphinxhref{https://www.pololu.com/docs/0J40/all\#3}{Maestro user manual on Pololu’s website}. Any questions on how to use the
+control center properly that is not answered by this document for Cosmotron can be
+found in the user manual for the Maestro board from Pololu.
+
+\begin{figure}[htbp]
+\centering
+\capstart
+
+\noindent\sphinxincludegraphics{{MaestroControlCenter}.png}
+\caption{The status tab of the Maestro Control Center GUI}\label{\detokenize{range:id1}}\end{figure}
+
+\sphinxAtStartPar
+The two main tabs on the control center that are important for configuring settings
+are the following:
+\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+Channel Settings
+
+\item {} 
+\sphinxAtStartPar
+Serial Settings
+
+\end{itemize}
+
+\sphinxAtStartPar
+In the \sphinxstyleemphasis{Channel Settings} tab you are able to set the min and max allowable pulse
+range, in microseconds, of each output channel. In the \sphinxstyleemphasis{Serial Settings} tab, the
+serial mode must be set to \sphinxstyleemphasis{USB Dual Port} in order for the commands to be properly
+sent from the Raspberry Pi.
+
+\sphinxAtStartPar
+The changes to the settings are applied to the Maestro board by clicking on the
+\sphinxstyleemphasis{Apply Settings} button on the bottom right part of the control center window.
+These settings persist on the board until they are changed again in the control
+center or by loading a settings file. The settings file is generated by selecting
+the \sphinxstyleemphasis{Save settings file…} option in the File drop down menu at the top of the
+control center. To load a settings file, use the \sphinxstyleemphasis{Open settings file…} option
+from the same menu. It is recommended to keep a file of the desired settings on
+the Maestro used for Cosmotron in case the Maestro board needs to be changed.
+
+\sphinxAtStartPar
+The settings file is a simple text file that can easily be edited using any text
+editor. It uses tags like HTML to specify the different settings and their values.
+
+\sphinxAtStartPar
+\sphinxstylestrong{Tic Stepper Driver Boards}
+
+\sphinxAtStartPar
+It is important to mention the Tic Stepper Motor Driver boards in this section
+since they also have settings that impact the motor movement of the few stepper
+motors being used. The Tic boards also use settings files that can be saved and
+loaded like the Maestro boards do. There is also control center software that is
+used to set the settings on the Tic board. The software can be found for various
+operating systems in the \sphinxhref{https://www.pololu.com/docs/0J71/all\#3}{Tic user manual on Pololu’s website}.
+
+\sphinxAtStartPar
+Currently, the Tic boards have their \sphinxstyleemphasis{Control Mode} set to \sphinxstyleemphasis{RC Position Control}
+so the steppers are moved to specific positions based off of the output the Tic
+board receives from the Maestro board. The settings for this mode are set in the
+\sphinxstyleemphasis{RC and analog scaling} section of the \sphinxstyleemphasis{Input and motor settings} tab. Using the
+learn button, the min, neutral, and max values can be set for what the Maestro
+board is set to output. However, the important setting that really determines the
+range of outputs for the steppers is the target values for the min and max inputs.
+These targets correlate to the position of the motor. If the target for minimum
+input is set to \sphinxhyphen{}200 and the target for maximum input is set to 200, the motor will
+travel 400 steps to go between the minimum and maximum positions.
+
+\begin{figure}[htbp]
+\centering
+\capstart
+
+\noindent\sphinxincludegraphics{{TicControlCenter}.png}
+\caption{The Input and motor settings tab of the Tic Control Center}\label{\detokenize{range:id2}}\end{figure}
+
+\begin{sphinxadmonition}{note}{Note:}
+\sphinxAtStartPar
+To connect Cosmotron’s Maestro to a computer, the USB port in Cosmotron’s
+access panel can be used. However, to connect to the Tic boards in order to
+change their settings, the boards must currently be removed from inside
+Cosmotron.
+
+\sphinxAtStartPar
+The Maestro has a USB\sphinxhyphen{}B Mini port, but the access panel it is connected to
+has a USB\sphinxhyphen{}A port. The Tic boards have a USB\sphinxhyphen{}Micro port. Before trying to change
+settings on either board make sure you have the proper USB cable.
+\end{sphinxadmonition}
+
+
+\section{Changing the Movement Map}
+\label{\detokenize{mapchange:changing-the-movement-map}}\label{\detokenize{mapchange::doc}}
+\sphinxAtStartPar
+The movement mapping code is constructed in a way to be easily adaptable.
+For example, if the number of servos used in a movement group change, this
+can be adjusted using the concepts discussed in {\hyperref[\detokenize{range:pyrange}]{\sphinxcrossref{\DUrole{std,std-ref}{Defining Output Ranges in Python Code}}}}. The two
+main areas of interest that could be changed are if a movement group is
+added, changed, or removed, and the way inputs are mapped to outputs need
+to be changed.
+
+\begin{sphinxadmonition}{note}{Note:}
+\sphinxAtStartPar
+This section assumes familiarity with Python classes and objects.
+\end{sphinxadmonition}
+
+
+\subsection{Movement Groups}
+\label{\detokenize{mapchange:movement-groups}}
+\sphinxAtStartPar
+The output objects are designed to easily have the following attributes
+changed:
+\begin{enumerate}
+\sphinxsetlistlabels{\arabic}{enumi}{enumii}{}{.}%
+\item {} 
+\sphinxAtStartPar
+Number of output channels
+
+\item {} 
+\sphinxAtStartPar
+Which output channels to use
+
+\item {} 
+\sphinxAtStartPar
+Min, default, and max output values
+
+\item {} 
+\sphinxAtStartPar
+Correlated PS4 input(s)
+
+\end{enumerate}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Attributes 1 and 2}
+
+\sphinxAtStartPar
+These attributes are always set using the constructor of the object.
+The following example has the “jaw” movement sending outputs on two
+channels. These channels are 18 and 19.
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{jaw} \PYG{o}{=} \PYG{n}{AnalogOutputObject}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{jaw}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{l+m+mi}{2}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mi}{18}\PYG{p}{,} \PYG{l+m+mi}{19}\PYG{p}{]}\PYG{p}{)}
+\end{sphinxVerbatim}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Attribute 3}
+
+\sphinxAtStartPar
+This attribute is always dependant on the \sphinxstyleemphasis{set\_outputs} method that each
+output object class inherits. This was already discussed in the section,
+{\hyperref[\detokenize{range:pyrange}]{\sphinxcrossref{\DUrole{std,std-ref}{Defining Output Ranges in Python Code}}}}. However, here is an example of the method being used.
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{jaw}\PYG{o}{.}\PYG{n}{set\PYGZus{}outputs}\PYG{p}{(}\PYG{p}{[}\PYG{l+m+mi}{6000}\PYG{p}{,} \PYG{l+m+mi}{6000}\PYG{p}{]}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mi}{6000}\PYG{p}{,} \PYG{l+m+mi}{6000}\PYG{p}{]}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mi}{7000}\PYG{p}{,} \PYG{l+m+mi}{5000}\PYG{p}{]}\PYG{p}{)}
+\end{sphinxVerbatim}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Attribute 4}
+
+\sphinxAtStartPar
+This attribute is mostly determined by an attribute of the MovementMap
+class called \sphinxstyleemphasis{input\_map}. This MovementMap attribute is a python
+dictionary that links input names from the two PS4 controllers to the
+movement groups they control. This enables the MovementMap class to pass
+the inputs to the correct output objects quickly based on the input name.
+
+\sphinxAtStartPar
+The following is the mapping for the first controller:
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{x\PYGZus{}button\PYGZus{}1}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{:} \PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{right\PYGZus{}ear}\PYG{p}{,}
+\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{circle\PYGZus{}button\PYGZus{}1}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{:} \PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{right\PYGZus{}ear}\PYG{p}{,}
+\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{triangle\PYGZus{}button\PYGZus{}1}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{:} \PYG{n+nb+bp}{None}\PYG{p}{,}
+\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{square\PYGZus{}button\PYGZus{}1}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{:} \PYG{n+nb+bp}{None}\PYG{p}{,}
+\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{down\PYGZus{}button\PYGZus{}1}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{:} \PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{left\PYGZus{}ear}\PYG{p}{,}
+\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{up\PYGZus{}button\PYGZus{}1}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{:} \PYG{n+nb+bp}{None}\PYG{p}{,}
+\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{right\PYGZus{}button\PYGZus{}1}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{:} \PYG{n+nb+bp}{None}\PYG{p}{,}
+\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{left\PYGZus{}button\PYGZus{}1}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{:} \PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{left\PYGZus{}ear}\PYG{p}{,}
+\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{r1\PYGZus{}button\PYGZus{}1}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{:} \PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{nose}\PYG{p}{,}
+\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{l1\PYGZus{}button\PYGZus{}1}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{:} \PYG{n+nb+bp}{None}\PYG{p}{,}
+\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{r2\PYGZus{}analog\PYGZus{}1}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{:} \PYG{n+nb+bp}{None}\PYG{p}{,}
+\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{l2\PYGZus{}analog\PYGZus{}1}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{:} \PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{eyelids}\PYG{p}{,}
+\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{r3\PYGZus{}button\PYGZus{}1}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{:} \PYG{n+nb+bp}{None}\PYG{p}{,}
+\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{l3\PYGZus{}button\PYGZus{}1}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{:} \PYG{n+nb+bp}{None}\PYG{p}{,}
+\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{r\PYGZus{}joystick\PYGZus{}x\PYGZus{}analog\PYGZus{}1}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{:} \PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{eyebrows}\PYG{p}{,}
+\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{r\PYGZus{}joystick\PYGZus{}y\PYGZus{}analog\PYGZus{}1}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{:} \PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{eyebrows}\PYG{p}{,}
+\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{l\PYGZus{}joystick\PYGZus{}x\PYGZus{}analog\PYGZus{}1}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{:} \PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{eyes\PYGZus{}horizontal}\PYG{p}{,}
+\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{l\PYGZus{}joystick\PYGZus{}y\PYGZus{}analog\PYGZus{}1}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{:} \PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{eyes\PYGZus{}vertical}\PYG{p}{,}
+\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{share\PYGZus{}button\PYGZus{}1}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{:} \PYG{n+nb+bp}{None}\PYG{p}{,}
+\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{options\PYGZus{}button\PYGZus{}1}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{:} \PYG{n+nb+bp}{None}\PYG{p}{,}
+\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{ps\PYGZus{}symbol\PYGZus{}button\PYGZus{}1}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{:} \PYG{n+nb+bp}{None}
+\end{sphinxVerbatim}
+
+\sphinxAtStartPar
+For the dictionary keys that have a value of \sphinxstyleemphasis{None}, those inputs
+don’t control anything on Cosmotron and will be ignored by the
+MovementMap class. To make a new mapping between a PS4 input and an
+movement group, replace \sphinxstyleemphasis{None} with the corresponding output object.
+To remove a mapping, change the value for the input key to \sphinxstyleemphasis{None}.
+To change a currently used mapping, change the output object in the
+value to the output object for the desired movement group.
+
+\sphinxAtStartPar
+There is a secondary place where attribute 4 is set. This is in the
+constructor for some of the more complex output objects, like the
+eyebrows. These output object determine their output based off of
+two PS4 inputs. These output objects take an additional parameter in
+their constructor. This parameter is a list of the input names. The
+order of this list matters. To see how to order the list, look at
+the code for the corresponding output object.
+
+\begin{sphinxadmonition}{note}{Note:}
+\sphinxAtStartPar
+These complex objects that use multiple PS4 inputs need to
+have the input names passed into their constructor be the same
+as the key\sphinxhyphen{}value pairs set be the \sphinxstyleemphasis{input\_map} attribute.
+\end{sphinxadmonition}
+
+\sphinxAtStartPar
+Here is the constructor being called for the eyebrow output object
+as an example:
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{n+nb+bp}{self}\PYG{o}{.}\PYG{n}{eyebrows} \PYG{o}{=} \PYG{n}{EyebrowsOutput}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{eyebrows}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{l+m+mi}{4}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mi}{8}\PYG{p}{,} \PYG{l+m+mi}{9}\PYG{p}{,} \PYG{l+m+mi}{10}\PYG{p}{,} \PYG{l+m+mi}{11}\PYG{p}{]}\PYG{p}{,} \PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{r\PYGZus{}joystick\PYGZus{}y\PYGZus{}analog\PYGZus{}1}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{r\PYGZus{}joystick\PYGZus{}x\PYGZus{}analog\PYGZus{}1}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{]}\PYG{p}{)}
+\end{sphinxVerbatim}
+
+\sphinxAtStartPar
+Notice how in the section of the \sphinxstyleemphasis{input\_map} attribute shown above,
+the object, \sphinxstyleemphasis{eyebrows}, is associated with “r\_joystick\_y\_analog\_1”
+and “r\_joystick\_x\_analog\_1”, which are the same input names passed
+into the constructor for the eyebrows movement group.
+
+
+\subsection{Output Mapping}
+\label{\detokenize{mapchange:output-mapping}}
+\sphinxAtStartPar
+Currently each output object class has a linear mapping of inputs
+to outputs. The following is the default mapping equation:
+
+\sphinxAtStartPar
+\sphinxcode{\sphinxupquote{output\_value = (input\_value \sphinxhyphen{} input\_min) * (out\_max \sphinxhyphen{} out\_min) / (input\_max \sphinxhyphen{} input\_min) + out\_min}}
+
+\sphinxAtStartPar
+Out max and min are set by the \sphinxstyleemphasis{set\_outputs} method for the output
+object. Input max and min are dependant on whether the output object
+accepts a digital or analog input. For digital, the max is 1 and the
+min is 0. For analog, the max is 255 and the min is 0. Input value is
+the value associated with the corresponding PS4 input being processed.
+The output value is what is sent to the Maestro board.
+
+\sphinxAtStartPar
+For the output objects that take multiple PS4 inputs, this linear
+mapping is not changed. However, the mixing of inputs is done before
+the input value is sent to the mapping equation.
+
+\sphinxAtStartPar
+To change this mapping to follow an exponential growth or decay, or
+any other behavior, it is recommended to create a new output object
+for the desired movement group which inherits from the object that
+movement group was previously set to. Then overide the \sphinxstyleemphasis{map\_values}
+method which contains the mapping equation. In the overidden method,
+create the new desired mapping equation. This will enable custom
+mappings to be set without changing the behavior of the other
+movement groups.
+
+
 \chapter{Input Event Handling}
-\label{\detokenize{input:module-manualControl}}\label{\detokenize{input:input-event-handling}}\label{\detokenize{input::doc}}\index{module@\spxentry{module}!manualControl@\spxentry{manualControl}}\index{manualControl@\spxentry{manualControl}!module@\spxentry{module}}
+\label{\detokenize{input:input-event-handling}}\label{\detokenize{input::doc}}
+
+\section{Manual Control}
+\label{\detokenize{manualcontrol:module-manualControl}}\label{\detokenize{manualcontrol:manual-control}}\label{\detokenize{manualcontrol::doc}}\index{module@\spxentry{module}!manualControl@\spxentry{manualControl}}\index{manualControl@\spxentry{manualControl}!module@\spxentry{module}}
 \sphinxAtStartPar
 This module will handle all input from the Bluetooth connected PS4 controllers in an asynchronous manner. It expects two controllers to be connected 
 and will not run until then. If either controller is disconnected the program will need to be restarted in order to reconnect.
@@ -100,7 +625,7 @@ Sends modified controller input to the MovementMap.
 \index{ControllerEvent (class in manualControl)@\spxentry{ControllerEvent}\spxextra{class in manualControl}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{input:manualControl.ControllerEvent}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{manualControl.}}\sphinxbfcode{\sphinxupquote{ControllerEvent}}}{\emph{\DUrole{n}{name}}, \emph{\DUrole{n}{value}}}{}
+\phantomsection\label{\detokenize{manualcontrol:manualControl.ControllerEvent}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{manualControl.}}\sphinxbfcode{\sphinxupquote{ControllerEvent}}}{\emph{\DUrole{n}{name}}, \emph{\DUrole{n}{value}}}{}
 \sphinxAtStartPar
 Controller event object. To be sent to the servo handler to convert a button press to movement, for example. 
 Contains a predetermined name and the current event’s value. 
@@ -111,7 +636,7 @@ For buttons the value is 1 or 0. For analog axes it is 0\sphinxhyphen{}255. For 
 \index{process\_events() (in module manualControl)@\spxentry{process\_events()}\spxextra{in module manualControl}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{input:manualControl.process_events}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{async }}\sphinxcode{\sphinxupquote{manualControl.}}\sphinxbfcode{\sphinxupquote{process\_events}}}{\emph{\DUrole{n}{device}}}{}
+\phantomsection\label{\detokenize{manualcontrol:manualControl.process_events}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{async }}\sphinxcode{\sphinxupquote{manualControl.}}\sphinxbfcode{\sphinxupquote{process\_events}}}{\emph{\DUrole{n}{device}}}{}
 \sphinxAtStartPar
 Async helper function. Process PS4 events and create ControllerEvent objects to be passed to the movementMap
 
@@ -120,179 +645,157 @@ Async helper function. Process PS4 events and create ControllerEvent objects to 
 
 
 \chapter{Movement Mapping}
-\label{\detokenize{mapping:module-MovementMap}}\label{\detokenize{mapping:movement-mapping}}\label{\detokenize{mapping::doc}}\index{module@\spxentry{module}!MovementMap@\spxentry{MovementMap}}\index{MovementMap@\spxentry{MovementMap}!module@\spxentry{module}}\index{MovementMap (class in MovementMap)@\spxentry{MovementMap}\spxextra{class in MovementMap}}
+\label{\detokenize{mapping:movement-mapping}}\label{\detokenize{mapping::doc}}
+
+\section{Movement Map}
+\label{\detokenize{movementmap:module-MovementMap}}\label{\detokenize{movementmap:movement-map}}\label{\detokenize{movementmap::doc}}\index{module@\spxentry{module}!MovementMap@\spxentry{MovementMap}}\index{MovementMap@\spxentry{MovementMap}!module@\spxentry{module}}\index{MovementMap (class in MovementMap)@\spxentry{MovementMap}\spxextra{class in MovementMap}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{mapping:MovementMap.MovementMap}}\pysigline{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{MovementMap.}}\sphinxbfcode{\sphinxupquote{MovementMap}}}
+\phantomsection\label{\detokenize{movementmap:MovementMap.MovementMap}}\pysigline{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{MovementMap.}}\sphinxbfcode{\sphinxupquote{MovementMap}}}
 \sphinxAtStartPar
 A class that handles controller inputs. Contains a mapping of input objects to output objects.
 
 \sphinxAtStartPar
 …
 \begin{quote}\begin{description}
-\item[{Attributes}] \leavevmode
+\item[{Attributes}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstylestrong{servoBoard}(\sphinxstyleemphasis{maestro.Controller}) \textendash{} object that establishes serial conection to the Maestro and has functions to send commands to the board
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstylestrong{output\_objects}(\sphinxstyleemphasis{{[}OutputObject{]}}) \textendash{} list of all the output objects, used to activate each output on the Maestro board on startup
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstylestrong{right\_ear}(\sphinxstyleemphasis{AnalogOutputObject}) \textendash{} object to map inputs to output for the right ear movements
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstylestrong{left\_ear}(\sphinxstyleemphasis{AnalogOutputObject}) \textendash{} object to map inputs to output for the left ear movements
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstylestrong{eyelids}(\sphinxstyleemphasis{AnalogOutputObject}) \textendash{} object to map input to outputs for the top and bottom eyelid movements
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstylestrong{eyes\_horizontal}(\sphinxstyleemphasis{AnalogOutputObject}) \textendash{} object to map input to outputs for the left and right eye horizontal movements
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstylestrong{eyes\_vertical}(\sphinxstyleemphasis{AnalogOutputObject}) \textendash{} object to map input to outputs for the left and right eye vertical movements
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstylestrong{eyebrows}(\sphinxstyleemphasis{EybrowsOutput}) \textendash{} object to map inputs to outputs for the eyebrow movements
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstylestrong{nose}(\sphinxstyleemphasis{DigitalOutputObject}) \textendash{} object to map input to output for the nose movements
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstylestrong{top\_lip}(\sphinxstyleemphasis{DigitalOutputObject}) \textendash{} object to map input to output for the top lip movements
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstylestrong{right\_lip}(\sphinxstyleemphasis{SideLipOutput}) \textendash{} object to map inputs to outputs for the right lip movements
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstylestrong{left\_lip}(\sphinxstyleemphasis{SideLipOutput}) \textendash{} object to map inputs to outputs for the left lip movements
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstylestrong{jaw}(\sphinxstyleemphasis{AnalogOutputObject}) \textendash{} object to map input to outputs for the jaw movements
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstylestrong{neck\_twist}(\sphinxstyleemphasis{AnalogOutputObject}) \textendash{} object to map input to output for the neck twist movements
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstylestrong{neck\_tilt}(\sphinxstyleemphasis{NeckTiltOutput}) \textendash{} object to map inputs to outpus for the neck tilt movements
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstylestrong{input\_map}(\sphinxstyleemphasis{dictionary {[}input\_name (string): output\_object (OutputObject){]}}) \textendash{} mapping of the controller inputs to movement outputs
+
+\end{itemize}
+
 \end{description}\end{quote}
-\begin{description}
-\item[{servoBoard}] \leavevmode{[}maestro.Controller{]}
-\sphinxAtStartPar
-object that establishes serial conection to the Maestro and has functions to send commands to the board
-
-\item[{output\_objects}] \leavevmode{[}{[}OutputObject{]}{]}
-\sphinxAtStartPar
-list of all the output objects, used to activate each output on the Maestro board on startup
-
-\item[{right\_ear}] \leavevmode{[}AnalogOutputObject{]}
-\sphinxAtStartPar
-object to map inputs to output for the right ear movements
-
-\item[{left\_ear}] \leavevmode{[}AnalogOutputObject{]}
-\sphinxAtStartPar
-object to map inputs to output for the left ear movements
-
-\item[{eyelids}] \leavevmode{[}AnalogOutputObject{]}
-\sphinxAtStartPar
-object to map input to outputs for the top and bottom eyelid movements
-
-\item[{eyes\_horizontal}] \leavevmode{[}AnalogOutputObject{]}
-\sphinxAtStartPar
-object to map input to outputs for the left and right eye horizontal movements
-
-\item[{eyes\_vertical}] \leavevmode{[}AnalogOutputObject{]}
-\sphinxAtStartPar
-object to map input to outputs for the left and right eye vertical movements
-
-\item[{eyebrows}] \leavevmode{[}EybrowsOutput{]}
-\sphinxAtStartPar
-object to map inputs to outputs for the eyebrow movements
-
-\item[{nose}] \leavevmode{[}DigitalOutputObject{]}
-\sphinxAtStartPar
-object to map input to output for the nose movements
-
-\item[{top\_lip}] \leavevmode{[}DigitalOutputObject{]}
-\sphinxAtStartPar
-object to map input to output for the top lip movements
-
-\item[{right\_lip}] \leavevmode{[}SideLipOutput{]}
-\sphinxAtStartPar
-object to map inputs to outputs for the right lip movements
-
-\item[{left\_lip}] \leavevmode{[}SideLipOutput{]}
-\sphinxAtStartPar
-object to map inputs to outputs for the left lip movements
-
-\item[{jaw}] \leavevmode{[}AnalogOutputObject{]}
-\sphinxAtStartPar
-object to map input to outputs for the jaw movements
-
-\item[{neck\_twist}] \leavevmode{[}AnalogOutputObject{]}
-\sphinxAtStartPar
-object to map input to output for the neck twist movements
-
-\item[{neck\_tilt}] \leavevmode{[}NeckTiltOutput{]}
-\sphinxAtStartPar
-object to map inputs to outpus for the neck tilt movements
-
-\item[{input\_map}] \leavevmode{[}dictionary {[}input\_name (string): output\_object (OutputObject){]}{]}
-\sphinxAtStartPar
-mapping of the controller inputs to movement outputs
-
-\end{description}
 
 \sphinxAtStartPar
 …
-\begin{quote}\begin{description}
-\item[{Methods}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Methods}
 \index{\_\_init\_\_() (MovementMap.MovementMap method)@\spxentry{\_\_init\_\_()}\spxextra{MovementMap.MovementMap method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{mapping:MovementMap.MovementMap.__init__}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{\_\_init\_\_}}}{}{}
+\phantomsection\label{\detokenize{movementmap:MovementMap.MovementMap.__init__}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{\_\_init\_\_}}}{}{}
 \sphinxAtStartPar
-Class constructor. Creates needed output objects and sets their parameters. Also creates the input map.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
-
-\sphinxAtStartPar
-None
+Class constructor. Creates needed output objects and sets their parameters. Also 
+creates the input map.
 
 \end{fulllineitems}
 
 \index{process\_input() (MovementMap.MovementMap method)@\spxentry{process\_input()}\spxextra{MovementMap.MovementMap method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{mapping:MovementMap.MovementMap.process_input}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{process\_input}}}{\emph{\DUrole{n}{input\_object}}}{}
+\phantomsection\label{\detokenize{movementmap:MovementMap.MovementMap.process_input}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{process\_input}}}{\emph{\DUrole{n}{input\_object}}}{}
 \sphinxAtStartPar
-Using the input map, determines the correct output object to send the input value to. The returned outputs are passed to the maestro board.
+Using the input map, determines the correct output object to send the input value to. 
+The returned outputs are passed to the maestro board.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode
-\end{description}\end{quote}
-\begin{description}
-\item[{input\_object}] \leavevmode{[}ControllerEvent{]}
 \sphinxAtStartPar
-object containing the name of the input and its associated value to be processed
+\sphinxstyleliteralstrong{\sphinxupquote{input\_object}} ({\hyperref[\detokenize{manualcontrol:manualControl.ControllerEvent}]{\sphinxcrossref{\sphinxstyleliteralemphasis{\sphinxupquote{ControllerEvent}}}}}) \textendash{} object containing the name of the input and its associated value 
+to be processed
 
-\end{description}
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
 \end{description}\end{quote}
-
-\sphinxAtStartPar
-None
 
 \end{fulllineitems}
 
 \index{send\_outputs() (MovementMap.MovementMap method)@\spxentry{send\_outputs()}\spxextra{MovementMap.MovementMap method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{mapping:MovementMap.MovementMap.send_outputs}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{send\_outputs}}}{\emph{\DUrole{n}{num\_outputs}}, \emph{\DUrole{n}{channel}}, \emph{\DUrole{n}{output}}}{}
+\phantomsection\label{\detokenize{movementmap:MovementMap.MovementMap.send_outputs}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{send\_outputs}}}{\emph{\DUrole{n}{num\_outputs}}, \emph{\DUrole{n}{channel}}, \emph{\DUrole{n}{output}}}{}
 \sphinxAtStartPar
-Sends the output to the corresponding channel from the given lists of channels and outputs.
+Sends the output to the corresponding channel from the given lists of channels and
+outputs.
 \begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{num\_outputs}} (\sphinxstyleliteralemphasis{\sphinxupquote{int}}) \textendash{} number of channels and outputs to loop through
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{channel}} (\sphinxstyleliteralemphasis{\sphinxupquote{{[}}}\sphinxstyleliteralemphasis{\sphinxupquote{int}}\sphinxstyleliteralemphasis{\sphinxupquote{{]}}}) \textendash{} channel numbers on the Maestro board to send outputs to
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{output}} (\sphinxstyleliteralemphasis{\sphinxupquote{{[}}}\sphinxstyleliteralemphasis{\sphinxupquote{double}}\sphinxstyleliteralemphasis{\sphinxupquote{{]}}}) \textendash{} values to output on the Maestro board, cast to int to ensure proper
+typing
+
+\end{itemize}
+
 \end{description}\end{quote}
-\begin{description}
-\item[{num\_outputs}] \leavevmode{[}int{]}
-\sphinxAtStartPar
-number of channels and outputs to loop through
-
-\item[{channel}] \leavevmode{[}{[}int{]}{]}
-\sphinxAtStartPar
-channel numbers on the Maestro board to send outputs to
-
-\item[{output}] \leavevmode{[}{[}double{]}{]}
-\sphinxAtStartPar
-values to output on the Maestro board, cast to int to ensure proper typing
-
-\end{description}
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
-
-\sphinxAtStartPar
-None
 
 \end{fulllineitems}
 
 \index{start\_outputs() (MovementMap.MovementMap method)@\spxentry{start\_outputs()}\spxextra{MovementMap.MovementMap method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{mapping:MovementMap.MovementMap.start_outputs}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{start\_outputs}}}{}{}
+\phantomsection\label{\detokenize{movementmap:MovementMap.MovementMap.start_outputs}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{start\_outputs}}}{}{}~\begin{description}
+\item[{Sends the starting outputs for each motor to the Maestro board to activate each channel}] \leavevmode
 \sphinxAtStartPar
-Sends the starting outputs for each motor to the Maestro board to activate each channel in default positions.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+in default positions.
 
-\sphinxAtStartPar
-None
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
-
-\sphinxAtStartPar
-None
+\end{description}
 
 \end{fulllineitems}
 
@@ -317,9 +820,9 @@ A base class to represent a an output object for a controller input.
 
 \sphinxAtStartPar
 …
-\begin{quote}\begin{description}
-\item[{Attributes}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Attributes}
 \begin{description}
 \item[{name}] \leavevmode{[}str{]}
 \sphinxAtStartPar
@@ -373,18 +876,18 @@ used when control mode is set to TOGGLE to determine the current output state
 
 \sphinxAtStartPar
 …
-\begin{quote}\begin{description}
-\item[{Methods}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Methods}
 \index{\_\_init\_\_() (OutputObject.OutputObject method)@\spxentry{\_\_init\_\_()}\spxextra{OutputObject.OutputObject method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{base:OutputObject.OutputObject.__init__}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{\_\_init\_\_}}}{\emph{\DUrole{n}{name}}, \emph{\DUrole{n}{num\_outputs}}, \emph{\DUrole{n}{channels\_output}}}{}
 \sphinxAtStartPar
 Class constructor. Assigns the values passed in and initalizes remaining members to default values.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 \begin{description}
 \item[{name}] \leavevmode{[}string{]}
 \sphinxAtStartPar
@@ -410,15 +913,15 @@ list of the output channels used by the object
 \sphinxAtStartPar
 Returns the default output values for the object.
 \end{quote}
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 
 \sphinxAtStartPar
 None
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 \begin{description}
 \item[{{[}channels\_output, default\_output{]}}] \leavevmode{[}{[}{[}int{]}, {[}int{]}{]}{]}
 \sphinxAtStartPar
@@ -434,15 +937,15 @@ corresponding channels to the default output values for the object
 \phantomsection\label{\detokenize{base:OutputObject.OutputObject.get_num_channels}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_num\_channels}}}{}{}
 \sphinxAtStartPar
 Returns the number of output channels for the object.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 
 \sphinxAtStartPar
 None
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 \begin{description}
 \item[{num\_outputs}] \leavevmode{[}int{]}
 \sphinxAtStartPar
@@ -458,9 +961,9 @@ number of output channels the object sends output to
 \phantomsection\label{\detokenize{base:OutputObject.OutputObject.map_values}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{map\_values}}}{\emph{\DUrole{n}{value}}, \emph{\DUrole{n}{input\_min}}, \emph{\DUrole{n}{input\_max}}, \emph{\DUrole{n}{out\_min}}, \emph{\DUrole{n}{out\_max}}}{}
 \sphinxAtStartPar
 Maps an input value to its output.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 \begin{description}
 \item[{value}] \leavevmode{[}float{]}
 \sphinxAtStartPar
@@ -483,9 +986,9 @@ minimun output value in output range
 maximun output value in output range
 
 \end{description}
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 \begin{description}
 \item[{mapped\_output}] \leavevmode{[}int{]}
 \sphinxAtStartPar
@@ -501,15 +1004,15 @@ pulse width to output for the given input value
 \phantomsection\label{\detokenize{base:OutputObject.OutputObject.set_control_direct}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_control\_direct}}}{}{}
 \sphinxAtStartPar
 Sets control mode to direct.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 
 \sphinxAtStartPar
 None
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 
 \sphinxAtStartPar
 None
@@ -522,15 +1025,15 @@ None
 \phantomsection\label{\detokenize{base:OutputObject.OutputObject.set_control_increment}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_control\_increment}}}{}{}
 \sphinxAtStartPar
 Sets control mode to increment.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 
 \sphinxAtStartPar
 None
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 
 \sphinxAtStartPar
 None
@@ -543,15 +1046,15 @@ None
 \phantomsection\label{\detokenize{base:OutputObject.OutputObject.set_control_toggle}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_control\_toggle}}}{}{}
 \sphinxAtStartPar
 Sets control mode to toggle.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 
 \sphinxAtStartPar
 None
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 
 \sphinxAtStartPar
 None
@@ -564,18 +1067,18 @@ None
 \phantomsection\label{\detokenize{base:OutputObject.OutputObject.set_inversion}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_inversion}}}{\emph{\DUrole{n}{is\_inverted}}}{}
 \sphinxAtStartPar
 Sets whether to invert the output signal or not.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 \begin{description}
 \item[{is\_inverted}] \leavevmode{[}boolean{]}
 \sphinxAtStartPar
 the state to set the attribute is\_inverted to
 
 \end{description}
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 
 \sphinxAtStartPar
 None
@@ -589,9 +1092,9 @@ None
 \sphinxAtStartPar
 Sets which channels to output to and the minimun, default, and maximum pulse width for each of those channels.
 Also sets current outputs to the same values as the default.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 \begin{description}
 \item[{minimums\_output}] \leavevmode{[}{[}int{]}{]}
 \sphinxAtStartPar
@@ -606,9 +1109,9 @@ neutral pulse width values for the corresponding servo channel, also determines 
 maximum pulse width values for the corresponding servo channel
 
 \end{description}
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 
 \sphinxAtStartPar
 None
@@ -624,9 +1127,9 @@ None
 \phantomsection\label{\detokenize{base:OutputObject.ControlType}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{OutputObject.}}\sphinxbfcode{\sphinxupquote{ControlType}}}{\emph{\DUrole{n}{value}}}{}
 \sphinxAtStartPar
 The output mode of the input. This determines how output is calculated from the inputs.
-\begin{quote}\begin{description}
-\item[{Attributes}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Attributes}
 \begin{description}
 \item[{DIRECT}] \leavevmode{[}auto{]}
 \sphinxAtStartPar
@@ -650,9 +1153,9 @@ output is incremented by the input
 \phantomsection\label{\detokenize{base:OutputObject.ToggleState}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{OutputObject.}}\sphinxbfcode{\sphinxupquote{ToggleState}}}{\emph{\DUrole{n}{value}}}{}
 \sphinxAtStartPar
 Used to determine output behavior when the control type is set to toggle mode.
-\begin{quote}\begin{description}
-\item[{Attributes}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Attributes}
 \begin{description}
 \item[{ON}] \leavevmode{[}auto{]}
 \sphinxAtStartPar
@@ -679,9 +1182,9 @@ It inherits attributes and methods from OutputObject.
 
 \sphinxAtStartPar
 …
-\begin{quote}\begin{description}
-\item[{Attributes}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Attributes}
 \begin{description}
 \item[{name}] \leavevmode{[}str{]}
 \sphinxAtStartPar
@@ -759,18 +1262,18 @@ list to store the calculated intermediate values that will be mapped to final ou
 
 \sphinxAtStartPar
 …
-\begin{quote}\begin{description}
-\item[{Methods}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Methods}
 \index{\_\_init\_\_() (MultiInputOutputObject.MultiInputOutputObject method)@\spxentry{\_\_init\_\_()}\spxextra{MultiInputOutputObject.MultiInputOutputObject method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{base:MultiInputOutputObject.MultiInputOutputObject.__init__}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{\_\_init\_\_}}}{\emph{\DUrole{n}{name}}, \emph{\DUrole{n}{num\_outputs}}, \emph{\DUrole{n}{channels\_output}}, \emph{\DUrole{n}{names\_input}}}{}
 \sphinxAtStartPar
 Class constructor. Assigns the values passed in and initalizes remaining members to default values.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 \begin{description}
 \item[{name}] \leavevmode{[}string{]}
 \sphinxAtStartPar
@@ -800,15 +1303,15 @@ the names of the associated controller inputs with the object
 \sphinxAtStartPar
 Returns the default output values for the object.
 \end{quote}
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 
 \sphinxAtStartPar
 None
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 \begin{description}
 \item[{{[}channels\_output, default\_output{]}}] \leavevmode{[}{[}{[}int{]}, {[}int{]}{]}{]}
 \sphinxAtStartPar
@@ -824,15 +1327,15 @@ corresponding channels to the default output values for the object
 \phantomsection\label{\detokenize{base:MultiInputOutputObject.MultiInputOutputObject.get_num_channels}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_num\_channels}}}{}{}
 \sphinxAtStartPar
 Returns the number of output channels for the object.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 
 \sphinxAtStartPar
 None
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 \begin{description}
 \item[{num\_outputs}] \leavevmode{[}int{]}
 \sphinxAtStartPar
@@ -848,9 +1351,9 @@ number of output channels the object sends output to
 \phantomsection\label{\detokenize{base:MultiInputOutputObject.MultiInputOutputObject.map_values}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{map\_values}}}{\emph{\DUrole{n}{value}}, \emph{\DUrole{n}{input\_min}}, \emph{\DUrole{n}{input\_max}}, \emph{\DUrole{n}{out\_min}}, \emph{\DUrole{n}{out\_max}}}{}
 \sphinxAtStartPar
 Maps an input value to its output.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 \begin{description}
 \item[{value}] \leavevmode{[}float{]}
 \sphinxAtStartPar
@@ -873,9 +1376,9 @@ minimun output value in output range
 maximun output value in output range
 
 \end{description}
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 \begin{description}
 \item[{mapped\_output}] \leavevmode{[}int{]}
 \sphinxAtStartPar
@@ -891,15 +1394,15 @@ pulse width to output for the given input value
 \phantomsection\label{\detokenize{base:MultiInputOutputObject.MultiInputOutputObject.set_control_direct}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_control\_direct}}}{}{}
 \sphinxAtStartPar
 Sets control mode to direct.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 
 \sphinxAtStartPar
 None
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 
 \sphinxAtStartPar
 None
@@ -912,15 +1415,15 @@ None
 \phantomsection\label{\detokenize{base:MultiInputOutputObject.MultiInputOutputObject.set_control_increment}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_control\_increment}}}{}{}
 \sphinxAtStartPar
 Sets control mode to increment.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 
 \sphinxAtStartPar
 None
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 
 \sphinxAtStartPar
 None
@@ -933,15 +1436,15 @@ None
 \phantomsection\label{\detokenize{base:MultiInputOutputObject.MultiInputOutputObject.set_control_toggle}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_control\_toggle}}}{}{}
 \sphinxAtStartPar
 Sets control mode to toggle.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 
 \sphinxAtStartPar
 None
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 
 \sphinxAtStartPar
 None
@@ -954,18 +1457,18 @@ None
 \phantomsection\label{\detokenize{base:MultiInputOutputObject.MultiInputOutputObject.set_inversion}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_inversion}}}{\emph{\DUrole{n}{is\_inverted}}}{}
 \sphinxAtStartPar
 Sets whether to invert the output signal or not.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 \begin{description}
 \item[{is\_inverted}] \leavevmode{[}boolean{]}
 \sphinxAtStartPar
 the state to set the attribute is\_inverted to
 
 \end{description}
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 
 \sphinxAtStartPar
 None
@@ -979,9 +1482,9 @@ None
 \sphinxAtStartPar
 Sets which channels to output to and the minimun, default, and maximum pulse width for each of those channels.
 Also sets current outputs to the same values as the default.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 \begin{description}
 \item[{minimums\_output}] \leavevmode{[}{[}int{]}{]}
 \sphinxAtStartPar
@@ -996,9 +1499,9 @@ neutral pulse width values for the corresponding servo channel, also determines 
 maximum pulse width values for the corresponding servo channel
 
 \end{description}
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 
 \sphinxAtStartPar
 None
@@ -1024,9 +1527,9 @@ It inherits attributes and methods from OutputObject.
 
 \sphinxAtStartPar
 …
-\begin{quote}\begin{description}
-\item[{Attributes}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Attributes}
 \begin{description}
 \item[{name}] \leavevmode{[}str{]}
 \sphinxAtStartPar
@@ -1080,18 +1583,18 @@ used when control mode is set to TOGGLE to determine the current output state
 
 \sphinxAtStartPar
 …
-\begin{quote}\begin{description}
-\item[{Methods}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Methods}
 \index{\_\_init\_\_() (DigitalOutputObject.DigitalOutputObject method)@\spxentry{\_\_init\_\_()}\spxextra{DigitalOutputObject.DigitalOutputObject method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{generic:DigitalOutputObject.DigitalOutputObject.__init__}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{\_\_init\_\_}}}{\emph{\DUrole{n}{name}}, \emph{\DUrole{n}{num\_outputs}}, \emph{\DUrole{n}{channels\_output}}}{}
 \sphinxAtStartPar
 Class constructor. Assigns the values passed in and initalizes remaining members to default values.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 \begin{description}
 \item[{name}] \leavevmode{[}string{]}
 \sphinxAtStartPar
@@ -1117,15 +1620,15 @@ list of the output channels used by the object
 \sphinxAtStartPar
 Returns the default output values for the object.
 \end{quote}
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 
 \sphinxAtStartPar
 None
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 \begin{description}
 \item[{{[}channels\_output, default\_output{]}}] \leavevmode{[}{[}{[}int{]}, {[}int{]}{]}{]}
 \sphinxAtStartPar
@@ -1141,15 +1644,15 @@ corresponding channels to the default output values for the object
 \phantomsection\label{\detokenize{generic:DigitalOutputObject.DigitalOutputObject.get_num_channels}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_num\_channels}}}{}{}
 \sphinxAtStartPar
 Returns the number of output channels for the object.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 
 \sphinxAtStartPar
 None
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 \begin{description}
 \item[{num\_outputs}] \leavevmode{[}int{]}
 \sphinxAtStartPar
@@ -1165,9 +1668,9 @@ number of output channels the object sends output to
 \phantomsection\label{\detokenize{generic:DigitalOutputObject.DigitalOutputObject.get_output}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_output}}}{\emph{\DUrole{n}{input\_name}}, \emph{\DUrole{n}{input\_value}}}{}
 \sphinxAtStartPar
 Calculate and returns the output based on the given input value and current control mode.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 \begin{description}
 \item[{input\_name}] \leavevmode{[}str{]}
 \sphinxAtStartPar
@@ -1178,9 +1681,9 @@ name associated with the input, this object does not use this value
 the input value from the PS4 controller
 
 \end{description}
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 \begin{description}
 \item[{{[}channels\_output, current\_output{]}}] \leavevmode{[}{[}{[}int{]}, {[}int{]}{]}{]}
 \sphinxAtStartPar
@@ -1201,9 +1704,9 @@ released. Increment will increment the output value whenever input is given.
 \phantomsection\label{\detokenize{generic:DigitalOutputObject.DigitalOutputObject.map_values}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{map\_values}}}{\emph{\DUrole{n}{value}}, \emph{\DUrole{n}{input\_min}}, \emph{\DUrole{n}{input\_max}}, \emph{\DUrole{n}{out\_min}}, \emph{\DUrole{n}{out\_max}}}{}
 \sphinxAtStartPar
 Maps an input value to its output.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 \begin{description}
 \item[{value}] \leavevmode{[}float{]}
 \sphinxAtStartPar
@@ -1226,9 +1729,9 @@ minimun output value in output range
 maximun output value in output range
 
 \end{description}
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 \begin{description}
 \item[{mapped\_output}] \leavevmode{[}int{]}
 \sphinxAtStartPar
@@ -1244,15 +1747,15 @@ pulse width to output for the given input value
 \phantomsection\label{\detokenize{generic:DigitalOutputObject.DigitalOutputObject.set_control_direct}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_control\_direct}}}{}{}
 \sphinxAtStartPar
 Sets control mode to direct.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 
 \sphinxAtStartPar
 None
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 
 \sphinxAtStartPar
 None
@@ -1265,15 +1768,15 @@ None
 \phantomsection\label{\detokenize{generic:DigitalOutputObject.DigitalOutputObject.set_control_increment}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_control\_increment}}}{}{}
 \sphinxAtStartPar
 Sets control mode to increment.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 
 \sphinxAtStartPar
 None
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 
 \sphinxAtStartPar
 None
@@ -1286,15 +1789,15 @@ None
 \phantomsection\label{\detokenize{generic:DigitalOutputObject.DigitalOutputObject.set_control_toggle}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_control\_toggle}}}{}{}
 \sphinxAtStartPar
 Sets control mode to toggle.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 
 \sphinxAtStartPar
 None
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 
 \sphinxAtStartPar
 None
@@ -1307,18 +1810,18 @@ None
 \phantomsection\label{\detokenize{generic:DigitalOutputObject.DigitalOutputObject.set_inversion}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_inversion}}}{\emph{\DUrole{n}{is\_inverted}}}{}
 \sphinxAtStartPar
 Sets whether to invert the output signal or not.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 \begin{description}
 \item[{is\_inverted}] \leavevmode{[}boolean{]}
 \sphinxAtStartPar
 the state to set the attribute is\_inverted to
 
 \end{description}
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 
 \sphinxAtStartPar
 None
@@ -1332,9 +1835,9 @@ None
 \sphinxAtStartPar
 Sets which channels to output to and the minimun, default, and maximum pulse width for each of those channels.
 Also sets current outputs to the same values as the default.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 \begin{description}
 \item[{minimums\_output}] \leavevmode{[}{[}int{]}{]}
 \sphinxAtStartPar
@@ -1349,9 +1852,9 @@ neutral pulse width values for the corresponding servo channel, also determines 
 maximum pulse width values for the corresponding servo channel
 
 \end{description}
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 
 \sphinxAtStartPar
 None
@@ -1374,9 +1877,9 @@ It inherits attributes and methods from OutputObject.
 
 \sphinxAtStartPar
 …
-\begin{quote}\begin{description}
-\item[{Attributes}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Attributes}
 \begin{description}
 \item[{name}] \leavevmode{[}str{]}
 \sphinxAtStartPar
@@ -1430,18 +1933,18 @@ used when control mode is set to TOGGLE to determine the current output state
 
 \sphinxAtStartPar
 …
-\begin{quote}\begin{description}
-\item[{Methods}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Methods}
 \index{\_\_init\_\_() (AnalogOutputObject.AnalogOutputObject method)@\spxentry{\_\_init\_\_()}\spxextra{AnalogOutputObject.AnalogOutputObject method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{generic:AnalogOutputObject.AnalogOutputObject.__init__}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{\_\_init\_\_}}}{\emph{\DUrole{n}{name}}, \emph{\DUrole{n}{num\_outputs}}, \emph{\DUrole{n}{channels\_output}}}{}
 \sphinxAtStartPar
 Class constructor. Assigns the values passed in and initalizes remaining members to default values.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 \begin{description}
 \item[{name}] \leavevmode{[}string{]}
 \sphinxAtStartPar
@@ -1467,15 +1970,15 @@ list of the output channels used by the object
 \sphinxAtStartPar
 Returns the default output values for the object.
 \end{quote}
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 
 \sphinxAtStartPar
 None
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 \begin{description}
 \item[{{[}channels\_output, default\_output{]}}] \leavevmode{[}{[}{[}int{]}, {[}int{]}{]}{]}
 \sphinxAtStartPar
@@ -1491,15 +1994,15 @@ corresponding channels to the default output values for the object
 \phantomsection\label{\detokenize{generic:AnalogOutputObject.AnalogOutputObject.get_num_channels}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_num\_channels}}}{}{}
 \sphinxAtStartPar
 Returns the number of output channels for the object.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 
 \sphinxAtStartPar
 None
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 \begin{description}
 \item[{num\_outputs}] \leavevmode{[}int{]}
 \sphinxAtStartPar
@@ -1515,9 +2018,9 @@ number of output channels the object sends output to
 \phantomsection\label{\detokenize{generic:AnalogOutputObject.AnalogOutputObject.get_output}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_output}}}{\emph{\DUrole{n}{input\_name}}, \emph{\DUrole{n}{input\_value}}}{}
 \sphinxAtStartPar
 Calculate and returns the output based on the given input value and current control mode.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 \begin{description}
 \item[{input\_name}] \leavevmode{[}str{]}
 \sphinxAtStartPar
@@ -1528,9 +2031,9 @@ name associated with the input, this object does not use this value
 the input value from the PS4 controller
 
 \end{description}
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 \begin{description}
 \item[{{[}channels\_output, current\_output{]}}] \leavevmode{[}{[}{[}int{]}, {[}int{]}{]}{]}
 \sphinxAtStartPar
@@ -1551,9 +2054,9 @@ released. Increment will increment the output value whenever input is given.
 \phantomsection\label{\detokenize{generic:AnalogOutputObject.AnalogOutputObject.map_values}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{map\_values}}}{\emph{\DUrole{n}{value}}, \emph{\DUrole{n}{input\_min}}, \emph{\DUrole{n}{input\_max}}, \emph{\DUrole{n}{out\_min}}, \emph{\DUrole{n}{out\_max}}}{}
 \sphinxAtStartPar
 Maps an input value to its output.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 \begin{description}
 \item[{value}] \leavevmode{[}float{]}
 \sphinxAtStartPar
@@ -1576,9 +2079,9 @@ minimun output value in output range
 maximun output value in output range
 
 \end{description}
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 \begin{description}
 \item[{mapped\_output}] \leavevmode{[}int{]}
 \sphinxAtStartPar
@@ -1594,15 +2097,15 @@ pulse width to output for the given input value
 \phantomsection\label{\detokenize{generic:AnalogOutputObject.AnalogOutputObject.set_control_direct}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_control\_direct}}}{}{}
 \sphinxAtStartPar
 Sets control mode to direct.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 
 \sphinxAtStartPar
 None
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 
 \sphinxAtStartPar
 None
@@ -1615,15 +2118,15 @@ None
 \phantomsection\label{\detokenize{generic:AnalogOutputObject.AnalogOutputObject.set_control_increment}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_control\_increment}}}{}{}
 \sphinxAtStartPar
 Sets control mode to increment.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 
 \sphinxAtStartPar
 None
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 
 \sphinxAtStartPar
 None
@@ -1636,15 +2139,15 @@ None
 \phantomsection\label{\detokenize{generic:AnalogOutputObject.AnalogOutputObject.set_control_toggle}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_control\_toggle}}}{}{}
 \sphinxAtStartPar
 Sets control mode to toggle.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 
 \sphinxAtStartPar
 None
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 
 \sphinxAtStartPar
 None
@@ -1657,18 +2160,18 @@ None
 \phantomsection\label{\detokenize{generic:AnalogOutputObject.AnalogOutputObject.set_inversion}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_inversion}}}{\emph{\DUrole{n}{is\_inverted}}}{}
 \sphinxAtStartPar
 Sets whether to invert the output signal or not.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 \begin{description}
 \item[{is\_inverted}] \leavevmode{[}boolean{]}
 \sphinxAtStartPar
 the state to set the attribute is\_inverted to
 
 \end{description}
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 
 \sphinxAtStartPar
 None
@@ -1682,9 +2185,9 @@ None
 \sphinxAtStartPar
 Sets which channels to output to and the minimun, default, and maximum pulse width for each of those channels.
 Also sets current outputs to the same values as the default.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 \begin{description}
 \item[{minimums\_output}] \leavevmode{[}{[}int{]}{]}
 \sphinxAtStartPar
@@ -1699,9 +2202,9 @@ neutral pulse width values for the corresponding servo channel, also determines 
 maximum pulse width values for the corresponding servo channel
 
 \end{description}
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 
 \sphinxAtStartPar
 None
@@ -1724,9 +2227,9 @@ It inherits attributes and methods from MultiInputOutputObject.
 
 \sphinxAtStartPar
 …
-\begin{quote}\begin{description}
-\item[{Attributes}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Attributes}
 \begin{description}
 \item[{name}] \leavevmode{[}str{]}
 \sphinxAtStartPar
@@ -1804,18 +2307,18 @@ list to store the calculated intermediate values that will be mapped to final ou
 
 \sphinxAtStartPar
 …
-\begin{quote}\begin{description}
-\item[{Methods}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Methods}
 \index{\_\_init\_\_() (AnalogMixerOutput.AnalogMixerOutput method)@\spxentry{\_\_init\_\_()}\spxextra{AnalogMixerOutput.AnalogMixerOutput method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{generic:AnalogMixerOutput.AnalogMixerOutput.__init__}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{\_\_init\_\_}}}{\emph{\DUrole{n}{name}}, \emph{\DUrole{n}{num\_outputs}}, \emph{\DUrole{n}{channels\_output}}, \emph{\DUrole{n}{names\_input}}}{}
 \sphinxAtStartPar
 Class constructor. Assigns the values passed in and initalizes remaining members to default values.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 \begin{description}
 \item[{name}] \leavevmode{[}string{]}
 \sphinxAtStartPar
@@ -1845,15 +2348,15 @@ the names of the associated controller inputs with the object
 \sphinxAtStartPar
 Returns the default output values for the object.
 \end{quote}
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 
 \sphinxAtStartPar
 None
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 \begin{description}
 \item[{{[}channels\_output, default\_output{]}}] \leavevmode{[}{[}{[}int{]}, {[}int{]}{]}{]}
 \sphinxAtStartPar
@@ -1869,15 +2372,15 @@ corresponding channels to the default output values for the object
 \phantomsection\label{\detokenize{generic:AnalogMixerOutput.AnalogMixerOutput.get_num_channels}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_num\_channels}}}{}{}
 \sphinxAtStartPar
 Returns the number of output channels for the object.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 
 \sphinxAtStartPar
 None
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 \begin{description}
 \item[{num\_outputs}] \leavevmode{[}int{]}
 \sphinxAtStartPar
@@ -1893,9 +2396,9 @@ number of output channels the object sends output to
 \phantomsection\label{\detokenize{generic:AnalogMixerOutput.AnalogMixerOutput.get_output}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_output}}}{\emph{\DUrole{n}{input\_name}}, \emph{\DUrole{n}{input\_value}}}{}
 \sphinxAtStartPar
 Calculate and returns the output based on the given input value and current control mode.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 \begin{description}
 \item[{input\_name}] \leavevmode{[}str{]}
 \sphinxAtStartPar
@@ -1906,9 +2409,9 @@ name associated with the input
 the input value from the PS4 controller
 
 \end{description}
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 \begin{description}
 \item[{{[}channels\_output, current\_output{]}}] \leavevmode{[}{[}{[}int{]}, {[}int{]}{]}{]}
 \sphinxAtStartPar
@@ -1929,9 +2432,9 @@ released. Increment will increment the output value whenever input is given.
 \phantomsection\label{\detokenize{generic:AnalogMixerOutput.AnalogMixerOutput.map_values}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{map\_values}}}{\emph{\DUrole{n}{value}}, \emph{\DUrole{n}{input\_min}}, \emph{\DUrole{n}{input\_max}}, \emph{\DUrole{n}{out\_min}}, \emph{\DUrole{n}{out\_max}}}{}
 \sphinxAtStartPar
 Maps an input value to its output.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 \begin{description}
 \item[{value}] \leavevmode{[}float{]}
 \sphinxAtStartPar
@@ -1954,9 +2457,9 @@ minimun output value in output range
 maximun output value in output range
 
 \end{description}
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 \begin{description}
 \item[{mapped\_output}] \leavevmode{[}int{]}
 \sphinxAtStartPar
@@ -1972,15 +2475,15 @@ pulse width to output for the given input value
 \phantomsection\label{\detokenize{generic:AnalogMixerOutput.AnalogMixerOutput.set_control_direct}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_control\_direct}}}{}{}
 \sphinxAtStartPar
 Sets control mode to direct.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 
 \sphinxAtStartPar
 None
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 
 \sphinxAtStartPar
 None
@@ -1993,15 +2496,15 @@ None
 \phantomsection\label{\detokenize{generic:AnalogMixerOutput.AnalogMixerOutput.set_control_increment}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_control\_increment}}}{}{}
 \sphinxAtStartPar
 Sets control mode to increment.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 
 \sphinxAtStartPar
 None
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 
 \sphinxAtStartPar
 None
@@ -2014,15 +2517,15 @@ None
 \phantomsection\label{\detokenize{generic:AnalogMixerOutput.AnalogMixerOutput.set_control_toggle}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_control\_toggle}}}{}{}
 \sphinxAtStartPar
 Sets control mode to toggle.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 
 \sphinxAtStartPar
 None
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 
 \sphinxAtStartPar
 None
@@ -2035,18 +2538,18 @@ None
 \phantomsection\label{\detokenize{generic:AnalogMixerOutput.AnalogMixerOutput.set_inversion}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_inversion}}}{\emph{\DUrole{n}{is\_inverted}}}{}
 \sphinxAtStartPar
 Sets whether to invert the output signal or not.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 \begin{description}
 \item[{is\_inverted}] \leavevmode{[}boolean{]}
 \sphinxAtStartPar
 the state to set the attribute is\_inverted to
 
 \end{description}
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 
 \sphinxAtStartPar
 None
@@ -2060,9 +2563,9 @@ None
 \sphinxAtStartPar
 Sets which channels to output to and the minimun, default, and maximum pulse width for each of those channels.
 Also sets current outputs to the same values as the default.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 \begin{description}
 \item[{minimums\_output}] \leavevmode{[}{[}int{]}{]}
 \sphinxAtStartPar
@@ -2077,9 +2580,9 @@ neutral pulse width values for the corresponding servo channel, also determines 
 maximum pulse width values for the corresponding servo channel
 
 \end{description}
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 
 \sphinxAtStartPar
 None
@@ -2105,9 +2608,9 @@ It inherits attributes and methods from MultiInputOutputObject.
 
 \sphinxAtStartPar
 …
-\begin{quote}\begin{description}
-\item[{Attributes}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Attributes}
 \begin{description}
 \item[{name}] \leavevmode{[}str{]}
 \sphinxAtStartPar
@@ -2185,18 +2688,18 @@ list to store the calculated intermediate values that will be mapped to final ou
 
 \sphinxAtStartPar
 …
-\begin{quote}\begin{description}
-\item[{Methods}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Methods}
 \index{\_\_init\_\_() (EarOutput.EarOutput method)@\spxentry{\_\_init\_\_()}\spxextra{EarOutput.EarOutput method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{specific:EarOutput.EarOutput.__init__}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{\_\_init\_\_}}}{\emph{\DUrole{n}{name}}, \emph{\DUrole{n}{num\_outputs}}, \emph{\DUrole{n}{channels\_output}}, \emph{\DUrole{n}{names\_input}}}{}
 \sphinxAtStartPar
 Class constructor. Assigns the values passed in and initalizes remaining members to default values.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 \begin{description}
 \item[{name}] \leavevmode{[}string{]}
 \sphinxAtStartPar
@@ -2226,15 +2729,15 @@ the names of the associated controller inputs with the object
 \sphinxAtStartPar
 Returns the default output values for the object.
 \end{quote}
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 
 \sphinxAtStartPar
 None
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 \begin{description}
 \item[{{[}channels\_output, default\_output{]}}] \leavevmode{[}{[}{[}int{]}, {[}int{]}{]}{]}
 \sphinxAtStartPar
@@ -2250,15 +2753,15 @@ corresponding channels to the default output values for the object
 \phantomsection\label{\detokenize{specific:EarOutput.EarOutput.get_num_channels}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_num\_channels}}}{}{}
 \sphinxAtStartPar
 Returns the number of output channels for the object.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 
 \sphinxAtStartPar
 None
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 \begin{description}
 \item[{num\_outputs}] \leavevmode{[}int{]}
 \sphinxAtStartPar
@@ -2274,9 +2777,9 @@ number of output channels the object sends output to
 \phantomsection\label{\detokenize{specific:EarOutput.EarOutput.get_output}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_output}}}{\emph{\DUrole{n}{input\_name}}, \emph{\DUrole{n}{input\_value}}}{}
 \sphinxAtStartPar
 Calculate and returns the output based on the given input value and current control mode.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 \begin{description}
 \item[{input\_name}] \leavevmode{[}str{]}
 \sphinxAtStartPar
@@ -2287,9 +2790,9 @@ name associated with the input
 the input value from the PS4 controller
 
 \end{description}
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 \begin{description}
 \item[{{[}channels\_output, current\_output{]}}] \leavevmode{[}{[}{[}int{]}, {[}int{]}{]}{]}
 \sphinxAtStartPar
@@ -2310,9 +2813,9 @@ released. Increment will increment the output value whenever input is given.
 \phantomsection\label{\detokenize{specific:EarOutput.EarOutput.map_values}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{map\_values}}}{\emph{\DUrole{n}{value}}, \emph{\DUrole{n}{input\_min}}, \emph{\DUrole{n}{input\_max}}, \emph{\DUrole{n}{out\_min}}, \emph{\DUrole{n}{out\_max}}}{}
 \sphinxAtStartPar
 Maps an input value to its output.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 \begin{description}
 \item[{value}] \leavevmode{[}float{]}
 \sphinxAtStartPar
@@ -2335,9 +2838,9 @@ minimun output value in output range
 maximun output value in output range
 
 \end{description}
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 \begin{description}
 \item[{mapped\_output}] \leavevmode{[}int{]}
 \sphinxAtStartPar
@@ -2353,15 +2856,15 @@ pulse width to output for the given input value
 \phantomsection\label{\detokenize{specific:EarOutput.EarOutput.set_control_direct}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_control\_direct}}}{}{}
 \sphinxAtStartPar
 Sets control mode to direct.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 
 \sphinxAtStartPar
 None
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 
 \sphinxAtStartPar
 None
@@ -2374,15 +2877,15 @@ None
 \phantomsection\label{\detokenize{specific:EarOutput.EarOutput.set_control_increment}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_control\_increment}}}{}{}
 \sphinxAtStartPar
 Sets control mode to increment.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 
 \sphinxAtStartPar
 None
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 
 \sphinxAtStartPar
 None
@@ -2395,15 +2898,15 @@ None
 \phantomsection\label{\detokenize{specific:EarOutput.EarOutput.set_control_toggle}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_control\_toggle}}}{}{}
 \sphinxAtStartPar
 Sets control mode to toggle.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 
 \sphinxAtStartPar
 None
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 
 \sphinxAtStartPar
 None
@@ -2416,18 +2919,18 @@ None
 \phantomsection\label{\detokenize{specific:EarOutput.EarOutput.set_inversion}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_inversion}}}{\emph{\DUrole{n}{is\_inverted}}}{}
 \sphinxAtStartPar
 Sets whether to invert the output signal or not.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 \begin{description}
 \item[{is\_inverted}] \leavevmode{[}boolean{]}
 \sphinxAtStartPar
 the state to set the attribute is\_inverted to
 
 \end{description}
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 
 \sphinxAtStartPar
 None
@@ -2441,9 +2944,9 @@ None
 \sphinxAtStartPar
 Sets which channels to output to and the minimun, default, and maximum pulse width for each of those channels.
 Also sets current outputs to the same values as the default.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 \begin{description}
 \item[{minimums\_output}] \leavevmode{[}{[}int{]}{]}
 \sphinxAtStartPar
@@ -2458,9 +2961,9 @@ neutral pulse width values for the corresponding servo channel, also determines 
 maximum pulse width values for the corresponding servo channel
 
 \end{description}
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 
 \sphinxAtStartPar
 None
@@ -2483,9 +2986,9 @@ It inherits attributes and methods from MultiInputOutputObject.
 
 \sphinxAtStartPar
 …
-\begin{quote}\begin{description}
-\item[{Attributes}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Attributes}
 \begin{description}
 \item[{name}] \leavevmode{[}str{]}
 \sphinxAtStartPar
@@ -2563,18 +3066,18 @@ list to store the calculated intermediate values that will be mapped to final ou
 
 \sphinxAtStartPar
 …
-\begin{quote}\begin{description}
-\item[{Methods}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Methods}
 \index{\_\_init\_\_() (EyebrowsOutput.EyebrowsOutput method)@\spxentry{\_\_init\_\_()}\spxextra{EyebrowsOutput.EyebrowsOutput method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{specific:EyebrowsOutput.EyebrowsOutput.__init__}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{\_\_init\_\_}}}{\emph{\DUrole{n}{name}}, \emph{\DUrole{n}{num\_outputs}}, \emph{\DUrole{n}{channels\_output}}, \emph{\DUrole{n}{names\_input}}}{}
 \sphinxAtStartPar
 Class constructor. Assigns the values passed in and initalizes remaining members to default values.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 \begin{description}
 \item[{name}] \leavevmode{[}string{]}
 \sphinxAtStartPar
@@ -2604,15 +3107,15 @@ the names of the associated controller inputs with the object
 \sphinxAtStartPar
 Returns the default output values for the object.
 \end{quote}
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 
 \sphinxAtStartPar
 None
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 \begin{description}
 \item[{{[}channels\_output, default\_output{]}}] \leavevmode{[}{[}{[}int{]}, {[}int{]}{]}{]}
 \sphinxAtStartPar
@@ -2628,15 +3131,15 @@ corresponding channels to the default output values for the object
 \phantomsection\label{\detokenize{specific:EyebrowsOutput.EyebrowsOutput.get_num_channels}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_num\_channels}}}{}{}
 \sphinxAtStartPar
 Returns the number of output channels for the object.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 
 \sphinxAtStartPar
 None
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 \begin{description}
 \item[{num\_outputs}] \leavevmode{[}int{]}
 \sphinxAtStartPar
@@ -2652,9 +3155,9 @@ number of output channels the object sends output to
 \phantomsection\label{\detokenize{specific:EyebrowsOutput.EyebrowsOutput.get_output}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_output}}}{\emph{\DUrole{n}{input\_name}}, \emph{\DUrole{n}{input\_value}}}{}
 \sphinxAtStartPar
 Calculate and returns the output based on the given input value and current control mode.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 \begin{description}
 \item[{input\_name}] \leavevmode{[}str{]}
 \sphinxAtStartPar
@@ -2665,9 +3168,9 @@ name associated with the input
 the input value from the PS4 controller
 
 \end{description}
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 \begin{description}
 \item[{{[}channels\_output, current\_output{]}}] \leavevmode{[}{[}{[}int{]}, {[}int{]}{]}{]}
 \sphinxAtStartPar
@@ -2688,9 +3191,9 @@ released. Increment will increment the output value whenever input is given.
 \phantomsection\label{\detokenize{specific:EyebrowsOutput.EyebrowsOutput.map_values}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{map\_values}}}{\emph{\DUrole{n}{value}}, \emph{\DUrole{n}{input\_min}}, \emph{\DUrole{n}{input\_max}}, \emph{\DUrole{n}{out\_min}}, \emph{\DUrole{n}{out\_max}}}{}
 \sphinxAtStartPar
 Maps an input value to its output.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 \begin{description}
 \item[{value}] \leavevmode{[}float{]}
 \sphinxAtStartPar
@@ -2713,9 +3216,9 @@ minimun output value in output range
 maximun output value in output range
 
 \end{description}
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 \begin{description}
 \item[{mapped\_output}] \leavevmode{[}int{]}
 \sphinxAtStartPar
@@ -2731,15 +3234,15 @@ pulse width to output for the given input value
 \phantomsection\label{\detokenize{specific:EyebrowsOutput.EyebrowsOutput.set_control_direct}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_control\_direct}}}{}{}
 \sphinxAtStartPar
 Sets control mode to direct.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 
 \sphinxAtStartPar
 None
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 
 \sphinxAtStartPar
 None
@@ -2752,15 +3255,15 @@ None
 \phantomsection\label{\detokenize{specific:EyebrowsOutput.EyebrowsOutput.set_control_increment}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_control\_increment}}}{}{}
 \sphinxAtStartPar
 Sets control mode to increment.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 
 \sphinxAtStartPar
 None
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 
 \sphinxAtStartPar
 None
@@ -2773,15 +3276,15 @@ None
 \phantomsection\label{\detokenize{specific:EyebrowsOutput.EyebrowsOutput.set_control_toggle}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_control\_toggle}}}{}{}
 \sphinxAtStartPar
 Sets control mode to toggle.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 
 \sphinxAtStartPar
 None
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 
 \sphinxAtStartPar
 None
@@ -2794,18 +3297,18 @@ None
 \phantomsection\label{\detokenize{specific:EyebrowsOutput.EyebrowsOutput.set_inversion}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_inversion}}}{\emph{\DUrole{n}{is\_inverted}}}{}
 \sphinxAtStartPar
 Sets whether to invert the output signal or not.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 \begin{description}
 \item[{is\_inverted}] \leavevmode{[}boolean{]}
 \sphinxAtStartPar
 the state to set the attribute is\_inverted to
 
 \end{description}
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 
 \sphinxAtStartPar
 None
@@ -2819,9 +3322,9 @@ None
 \sphinxAtStartPar
 Sets which channels to output to and the minimun, default, and maximum pulse width for each of those channels.
 Also sets current outputs to the same values as the default.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 \begin{description}
 \item[{minimums\_output}] \leavevmode{[}{[}int{]}{]}
 \sphinxAtStartPar
@@ -2836,9 +3339,9 @@ neutral pulse width values for the corresponding servo channel, also determines 
 maximum pulse width values for the corresponding servo channel
 
 \end{description}
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 
 \sphinxAtStartPar
 None
@@ -2861,9 +3364,9 @@ It inherits attributes and methods from MultiInputOutputObject.
 
 \sphinxAtStartPar
 …
-\begin{quote}\begin{description}
-\item[{Attributes}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Attributes}
 \begin{description}
 \item[{name}] \leavevmode{[}str{]}
 \sphinxAtStartPar
@@ -2941,18 +3444,18 @@ list to store the calculated intermediate values that will be mapped to final ou
 
 \sphinxAtStartPar
 …
-\begin{quote}\begin{description}
-\item[{Methods}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Methods}
 \index{\_\_init\_\_() (SideLipOutput.SideLipOutput method)@\spxentry{\_\_init\_\_()}\spxextra{SideLipOutput.SideLipOutput method}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{specific:SideLipOutput.SideLipOutput.__init__}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{\_\_init\_\_}}}{\emph{\DUrole{n}{name}}, \emph{\DUrole{n}{num\_outputs}}, \emph{\DUrole{n}{channels\_output}}, \emph{\DUrole{n}{names\_input}}}{}
 \sphinxAtStartPar
 Class constructor. Assigns the values passed in and initalizes remaining members to default values.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 \begin{description}
 \item[{name}] \leavevmode{[}string{]}
 \sphinxAtStartPar
@@ -2982,15 +3485,15 @@ the names of the associated controller inputs with the object
 \sphinxAtStartPar
 Returns the default output values for the object.
 \end{quote}
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 
 \sphinxAtStartPar
 None
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 \begin{description}
 \item[{{[}channels\_output, default\_output{]}}] \leavevmode{[}{[}{[}int{]}, {[}int{]}{]}{]}
 \sphinxAtStartPar
@@ -3006,15 +3509,15 @@ corresponding channels to the default output values for the object
 \phantomsection\label{\detokenize{specific:SideLipOutput.SideLipOutput.get_num_channels}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_num\_channels}}}{}{}
 \sphinxAtStartPar
 Returns the number of output channels for the object.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 
 \sphinxAtStartPar
 None
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 \begin{description}
 \item[{num\_outputs}] \leavevmode{[}int{]}
 \sphinxAtStartPar
@@ -3030,9 +3533,9 @@ number of output channels the object sends output to
 \phantomsection\label{\detokenize{specific:SideLipOutput.SideLipOutput.get_output}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_output}}}{\emph{\DUrole{n}{input\_name}}, \emph{\DUrole{n}{input\_value}}}{}
 \sphinxAtStartPar
 Calculate and returns the output based on the given input value and current control mode.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 \begin{description}
 \item[{input\_name}] \leavevmode{[}str{]}
 \sphinxAtStartPar
@@ -3043,9 +3546,9 @@ name associated with the input
 the input value from the PS4 controller
 
 \end{description}
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 \begin{description}
 \item[{{[}channels\_output, current\_output{]}}] \leavevmode{[}{[}{[}int{]}, {[}int{]}{]}{]}
 \sphinxAtStartPar
@@ -3066,9 +3569,9 @@ released. Increment will increment the output value whenever input is given.
 \phantomsection\label{\detokenize{specific:SideLipOutput.SideLipOutput.map_values}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{map\_values}}}{\emph{\DUrole{n}{value}}, \emph{\DUrole{n}{input\_min}}, \emph{\DUrole{n}{input\_max}}, \emph{\DUrole{n}{out\_min}}, \emph{\DUrole{n}{out\_max}}}{}
 \sphinxAtStartPar
 Maps an input value to its output.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 \begin{description}
 \item[{value}] \leavevmode{[}float{]}
 \sphinxAtStartPar
@@ -3091,9 +3594,9 @@ minimun output value in output range
 maximun output value in output range
 
 \end{description}
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 \begin{description}
 \item[{mapped\_output}] \leavevmode{[}int{]}
 \sphinxAtStartPar
@@ -3109,15 +3612,15 @@ pulse width to output for the given input value
 \phantomsection\label{\detokenize{specific:SideLipOutput.SideLipOutput.set_control_direct}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_control\_direct}}}{}{}
 \sphinxAtStartPar
 Sets control mode to direct.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 
 \sphinxAtStartPar
 None
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 
 \sphinxAtStartPar
 None
@@ -3130,15 +3633,15 @@ None
 \phantomsection\label{\detokenize{specific:SideLipOutput.SideLipOutput.set_control_increment}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_control\_increment}}}{}{}
 \sphinxAtStartPar
 Sets control mode to increment.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 
 \sphinxAtStartPar
 None
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 
 \sphinxAtStartPar
 None
@@ -3151,15 +3654,15 @@ None
 \phantomsection\label{\detokenize{specific:SideLipOutput.SideLipOutput.set_control_toggle}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_control\_toggle}}}{}{}
 \sphinxAtStartPar
 Sets control mode to toggle.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 
 \sphinxAtStartPar
 None
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 
 \sphinxAtStartPar
 None
@@ -3172,18 +3675,18 @@ None
 \phantomsection\label{\detokenize{specific:SideLipOutput.SideLipOutput.set_inversion}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_inversion}}}{\emph{\DUrole{n}{is\_inverted}}}{}
 \sphinxAtStartPar
 Sets whether to invert the output signal or not.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 \begin{description}
 \item[{is\_inverted}] \leavevmode{[}boolean{]}
 \sphinxAtStartPar
 the state to set the attribute is\_inverted to
 
 \end{description}
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 
 \sphinxAtStartPar
 None
@@ -3197,9 +3700,9 @@ None
 \sphinxAtStartPar
 Sets which channels to output to and the minimun, default, and maximum pulse width for each of those channels.
 Also sets current outputs to the same values as the default.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 \begin{description}
 \item[{minimums\_output}] \leavevmode{[}{[}int{]}{]}
 \sphinxAtStartPar
@@ -3214,9 +3717,9 @@ neutral pulse width values for the corresponding servo channel, also determines 
 maximum pulse width values for the corresponding servo channel
 
 \end{description}
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 
 \sphinxAtStartPar
 None
@@ -3239,9 +3742,9 @@ It inherits attributes and methods from MultiInputOutputObject.
 
 \sphinxAtStartPar
 …
-\begin{quote}\begin{description}
-\item[{Attributes}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Attributes}
 \begin{description}
 \item[{name}] \leavevmode{[}str{]}
 \sphinxAtStartPar
@@ -3319,9 +3822,9 @@ list to store the calculated intermediate values that will be mapped to final ou
 
 \sphinxAtStartPar
 …
-\begin{quote}\begin{description}
-\item[{Methods}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Methods}
 \begin{description}
 \item[{\_\_init\_(name, num\_outputs, channels\_output, names\_input):}] \leavevmode
 \sphinxAtStartPar
@@ -3371,9 +3874,9 @@ Maps an input value to its output.
 \phantomsection\label{\detokenize{specific:NeckTiltOutput.NeckTiltOutput.__init__}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{\_\_init\_\_}}}{\emph{\DUrole{n}{name}}, \emph{\DUrole{n}{num\_outputs}}, \emph{\DUrole{n}{channels\_output}}, \emph{\DUrole{n}{names\_input}}}{}
 \sphinxAtStartPar
 Class constructor. Assigns the values passed in and initalizes remaining members to default values.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 \begin{description}
 \item[{name}] \leavevmode{[}string{]}
 \sphinxAtStartPar
@@ -3403,15 +3906,15 @@ the names of the associated controller inputs with the object
 \sphinxAtStartPar
 Returns the default output values for the object.
 \end{quote}
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 
 \sphinxAtStartPar
 None
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 \begin{description}
 \item[{{[}channels\_output, default\_output{]}}] \leavevmode{[}{[}{[}int{]}, {[}int{]}{]}{]}
 \sphinxAtStartPar
@@ -3427,15 +3930,15 @@ corresponding channels to the default output values for the object
 \phantomsection\label{\detokenize{specific:NeckTiltOutput.NeckTiltOutput.get_num_channels}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_num\_channels}}}{}{}
 \sphinxAtStartPar
 Returns the number of output channels for the object.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 
 \sphinxAtStartPar
 None
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 \begin{description}
 \item[{num\_outputs}] \leavevmode{[}int{]}
 \sphinxAtStartPar
@@ -3451,9 +3954,9 @@ number of output channels the object sends output to
 \phantomsection\label{\detokenize{specific:NeckTiltOutput.NeckTiltOutput.get_output}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{get\_output}}}{\emph{\DUrole{n}{input\_name}}, \emph{\DUrole{n}{input\_value}}}{}
 \sphinxAtStartPar
 Calculate and returns the output based on the given input value and current control mode.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 \begin{description}
 \item[{input\_name}] \leavevmode{[}str{]}
 \sphinxAtStartPar
@@ -3464,9 +3967,9 @@ name associated with the input
 the input value from the PS4 controller
 
 \end{description}
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 \begin{description}
 \item[{{[}channels\_output, current\_output{]}}] \leavevmode{[}{[}{[}int{]}, {[}int{]}{]}{]}
 \sphinxAtStartPar
@@ -3487,9 +3990,9 @@ released. Increment will increment the output value whenever input is given.
 \phantomsection\label{\detokenize{specific:NeckTiltOutput.NeckTiltOutput.map_values}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{map\_values}}}{\emph{\DUrole{n}{value}}, \emph{\DUrole{n}{input\_min}}, \emph{\DUrole{n}{input\_max}}, \emph{\DUrole{n}{out\_min}}, \emph{\DUrole{n}{out\_max}}}{}
 \sphinxAtStartPar
 Maps an input value to its output.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 \begin{description}
 \item[{value}] \leavevmode{[}float{]}
 \sphinxAtStartPar
@@ -3512,9 +4015,9 @@ minimun output value in output range
 maximun output value in output range
 
 \end{description}
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 \begin{description}
 \item[{mapped\_output}] \leavevmode{[}int{]}
 \sphinxAtStartPar
@@ -3530,15 +4033,15 @@ pulse width to output for the given input value
 \phantomsection\label{\detokenize{specific:NeckTiltOutput.NeckTiltOutput.set_control_direct}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_control\_direct}}}{}{}
 \sphinxAtStartPar
 Sets control mode to direct.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 
 \sphinxAtStartPar
 None
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 
 \sphinxAtStartPar
 None
@@ -3551,15 +4054,15 @@ None
 \phantomsection\label{\detokenize{specific:NeckTiltOutput.NeckTiltOutput.set_control_increment}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_control\_increment}}}{}{}
 \sphinxAtStartPar
 Sets control mode to increment.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 
 \sphinxAtStartPar
 None
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 
 \sphinxAtStartPar
 None
@@ -3572,15 +4075,15 @@ None
 \phantomsection\label{\detokenize{specific:NeckTiltOutput.NeckTiltOutput.set_control_toggle}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_control\_toggle}}}{}{}
 \sphinxAtStartPar
 Sets control mode to toggle.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 
 \sphinxAtStartPar
 None
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 
 \sphinxAtStartPar
 None
@@ -3593,18 +4096,18 @@ None
 \phantomsection\label{\detokenize{specific:NeckTiltOutput.NeckTiltOutput.set_inversion}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{set\_inversion}}}{\emph{\DUrole{n}{is\_inverted}}}{}
 \sphinxAtStartPar
 Sets whether to invert the output signal or not.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 \begin{description}
 \item[{is\_inverted}] \leavevmode{[}boolean{]}
 \sphinxAtStartPar
 the state to set the attribute is\_inverted to
 
 \end{description}
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 
 \sphinxAtStartPar
 None
@@ -3618,9 +4121,9 @@ None
 \sphinxAtStartPar
 Sets which channels to output to and the minimun, default, and maximum pulse width for each of those channels.
 Also sets current outputs to the same values as the default.
-\begin{quote}\begin{description}
-\item[{Parameters}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Parameters}
 \begin{description}
 \item[{minimums\_output}] \leavevmode{[}{[}int{]}{]}
 \sphinxAtStartPar
@@ -3635,9 +4138,9 @@ neutral pulse width values for the corresponding servo channel, also determines 
 maximum pulse width values for the corresponding servo channel
 
 \end{description}
-\begin{quote}\begin{description}
-\item[{Returns}] \leavevmode
-\end{description}\end{quote}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Returns}
 
 \sphinxAtStartPar
 None
@@ -3647,23 +4150,6 @@ None
 
 \end{fulllineitems}
 
-
-
-\chapter{Indices and tables}
-\label{\detokenize{index:indices-and-tables}}\begin{itemize}
-\item {} 
-\sphinxAtStartPar
-\DUrole{xref,std,std-ref}{genindex}
-
-\item {} 
-\sphinxAtStartPar
-\DUrole{xref,std,std-ref}{modindex}
-
-\item {} 
-\sphinxAtStartPar
-\DUrole{xref,std,std-ref}{search}
-
-\end{itemize}
 
 
 \renewcommand{\indexname}{Python Module Index}
@@ -3681,8 +4167,8 @@ None
 \item\relax\sphinxstyleindexentry{EyebrowsOutput}\sphinxstyleindexpageref{specific:\detokenize{module-EyebrowsOutput}}
 \indexspace
 \bigletter{m}
-\item\relax\sphinxstyleindexentry{manualControl}\sphinxstyleindexpageref{input:\detokenize{module-manualControl}}
-\item\relax\sphinxstyleindexentry{MovementMap}\sphinxstyleindexpageref{mapping:\detokenize{module-MovementMap}}
+\item\relax\sphinxstyleindexentry{manualControl}\sphinxstyleindexpageref{manualcontrol:\detokenize{module-manualControl}}
+\item\relax\sphinxstyleindexentry{MovementMap}\sphinxstyleindexpageref{movementmap:\detokenize{module-MovementMap}}
 \item\relax\sphinxstyleindexentry{MultiInputOutputObject}\sphinxstyleindexpageref{base:\detokenize{module-MultiInputOutputObject}}
 \indexspace
 \bigletter{n}

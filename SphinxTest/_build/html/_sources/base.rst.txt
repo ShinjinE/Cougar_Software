@@ -5,7 +5,7 @@ Base Objects
 Output Object
 =============
 
-.. module:: OutputObject
+.. py:module:: OutputObject
 .. autoclass:: OutputObject
    :members:
    :inherited-members:
