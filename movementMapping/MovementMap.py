@@ -10,64 +10,60 @@ from time import sleep
 
 class MovementMap:
     """
-    A class that handles controller inputs. Contains a mapping of input objects to output objects.
+    A class that handles controller inputs. Contains a mapping of input 
+    objects to output objects.
 
     ...
 
-    Attributes
-    ----------
-    servoBoard : maestro.Controller
-        object that establishes serial conection to the Maestro and has functions to send commands to the board
-    output_objects : [OutputObject]
-        list of all the output objects, used to activate each output on the Maestro board on startup
-    right_ear : AnalogOutputObject
-        object to map inputs to output for the right ear movements
-    left_ear : AnalogOutputObject
-        object to map inputs to output for the left ear movements
-    eyelids : AnalogOutputObject
-        object to map input to outputs for the top and bottom eyelid movements
-    eyes_horizontal : AnalogOutputObject
-        object to map input to outputs for the left and right eye horizontal movements
-    eyes_vertical : AnalogOutputObject
-        object to map input to outputs for the left and right eye vertical movements
-    eyebrows : EybrowsOutput
-        object to map inputs to outputs for the eyebrow movements
-    nose : DigitalOutputObject
-        object to map input to output for the nose movements
-    top_lip : DigitalOutputObject
-        object to map input to output for the top lip movements
-    right_lip : SideLipOutput
-        object to map inputs to outputs for the right lip movements
-    left_lip : SideLipOutput
-        object to map inputs to outputs for the left lip movements
-    jaw : AnalogOutputObject
-        object to map input to outputs for the jaw movements
-    neck_twist : AnalogOutputObject
-        object to map input to output for the neck twist movements
-    neck_tilt : NeckTiltOutput
-        object to map inputs to outpus for the neck tilt movements
-    input_map : dictionary [input_name (string): output_object (OutputObject)]
-        mapping of the controller inputs to movement outputs
+    :Attributes:
+        * **servoBoard**\ (\ *maestro.Controller*\ ) -- object that 
+          establishes serial conection to the Maestro and has functions 
+          to send commands to the board
+        * **output_objects**\ (\ *[OutputObject]*\ ) -- list of all the 
+          output objects, used to activate each output on the Maestro 
+          board on startup
+        * **right_ear**\ (\ *AnalogOutputObject*\ ) -- object to map 
+          inputs to output for the right ear movements
+        * **left_ear**\ (\ *AnalogOutputObject*\ ) -- object to map 
+          inputs to output for the left ear movements
+        * **eyelids**\ (\ *AnalogOutputObject*\ ) -- object to map input 
+          to outputs for the top and bottom eyelid movements
+        * **eyes_horizontal**\ (\ *AnalogOutputObject*\ ) -- object to 
+          map input to outputs for the left and right eye horizontal 
+          movements
+        * **eyes_vertical**\ (\ *AnalogOutputObject*\ ) -- object to map 
+          input to outputs for the left and right eye vertical movements
+        * **eyebrows**\ (\ *EybrowsOutput*\ ) -- object to map inputs to 
+          outputs for the eyebrow movements
+        * **nose**\ (\ *DigitalOutputObject*\ ) -- object to map input to 
+          output for the nose movements
+        * **top_lip**\ (\ *DigitalOutputObject*\ ) -- object to map input 
+          to output for the top lip movements
+        * **right_lip**\ (\ *SideLipOutput*\ ) -- object to map inputs to 
+          outputs for the right lip movements
+        * **left_lip**\ (\ *SideLipOutput*\ ) -- object to map inputs to 
+          outputs for the left lip movements
+        * **jaw**\ (\ *AnalogOutputObject*\ ) -- object to map input to 
+          outputs for the jaw movements
+        * **neck_twist**\ (\ *AnalogOutputObject*\ ) -- object to map input 
+          to output for the neck twist movements
+        * **neck_tilt**\ (\ *NeckTiltOutput*\ ) -- object to map inputs to 
+          outpus for the neck tilt movements
+        * **input_map**\ (\ *dictionary [input_name (string): output_object 
+          (OutputObject)]*\ ) -- mapping of the controller inputs to movement 
+          outputs
+    
+    ...
 
-    Methods
-    -------
-    __init_():
-        Class constructor. Creates needed output objects and sets their parameters. Also creates the input map.
-    send_outputs(num_outputs, channel, output):
-        Sends the output to the corresponding channel from the given lists of channels and outputs.
-    process_input(input_object):
-        Using the input map, determines the correct output object to send the input value to. The returned outputs are passed to the maestro board.
-    start_outputs():
-        Sends the starting outputs for each motor to the Maestro board to activate each channel in default positions.
+    **Methods**
+
     """
 
     def __init__(self):
         """
-        Class constructor. Creates needed output objects and sets their parameters. Also creates the input map.
+        Class constructor. Creates needed output objects and sets their parameters. Also 
+        creates the input map.
 
-        Parameters
-        ----------
-        None
         """
         # Create connection to Maestro
         # If connection fails, unplug and replug the USB cable, then run code again
@@ -203,35 +199,30 @@ class MovementMap:
 
     def send_outputs(self, num_outputs, channel, output):
         """
-        Sends the output to the corresponding channel from the given lists of channels and outputs.
+        Sends the output to the corresponding channel from the given lists of channels and
+        outputs.
 
-        Parameters
-        ----------
-        num_outputs : int
-            number of channels and outputs to loop through
-        channel : [int]
-            channel numbers on the Maestro board to send outputs to
-        output : [double]
-            values to output on the Maestro board, cast to int to ensure proper typing
+        :param num_outputs: number of channels and outputs to loop through
+        :param channel: channel numbers on the Maestro board to send outputs to
+        :param output: values to output on the Maestro board, cast to int to ensure proper
+            typing
+        :type num_outputs: int
+        :type channel: [int]
+        :type output: [double]
 
-        Returns
-        -------
-        None
         """
         for i in range(num_outputs):
             self.servoBoard.setTarget(channel[i], int(output[i]))
 
     def process_input(self, input_object):
         """
-        Using the input map, determines the correct output object to send the input value to. The returned outputs are passed to the maestro board.
+        Using the input map, determines the correct output object to send the input value to. 
+        The returned outputs are passed to the maestro board.
 
-        Parameters
-        ----------
-        input_object : ControllerEvent
-            object containing the name of the input and its associated value to be processed
+        :param input_object: object containing the name of the input and its associated value 
+            to be processed
+        :type input_object: ControllerEvent
 
-        Returns
-        -------
         """
         # Get info about input
         input_name = input_object.name
@@ -253,15 +244,9 @@ class MovementMap:
 
     def start_outputs(self):
         """
-        Sends the starting outputs for each motor to the Maestro board to activate each channel in default positions.
+        Sends the starting outputs for each motor to the Maestro board to activate each channel
+         in default positions.
 
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
         """
         # Time to delay between activating servo groups
         # Total time to activate is about 1 second for all 13 groups

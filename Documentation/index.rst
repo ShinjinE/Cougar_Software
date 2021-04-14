@@ -1,5 +1,5 @@
 .. Cosmotron documentation master file, created by
-   sphinx-quickstart on Tue Apr  6 14:46:07 2021.
+   sphinx-quickstart on Tue Apr  6 14:34:42 2021.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
@@ -7,15 +7,25 @@ Welcome to Cosmotron's documentation!
 =====================================
 
 .. toctree::
-   :maxdepth: 2
+   :name: mastertoc
+   :maxdepth: 3
    :caption: Contents:
 
-   /home/pi/Cougar_Code/movementMapping/manualControl
-   /home/pi/Cougar_Code/movementMapping/MovementMap
+   intro
+   technical
+   input
+   mapping
+   output
 
-Indices and tables
-==================
+..
+   These two dots followed by a block of text is a comment.
+   Both these lines of text will be ignored.
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+..
+   Indices and tables
+   ==================
+
+..
+   * :ref:`genindex`
+   * :ref:`modindex`
+   * :ref:`search`
